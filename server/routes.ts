@@ -18,8 +18,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const userId = "default-user";
       const items = await storage.getUserContentItems(userId);
       res.json(items);
-    } catch (error) {
-      res.status(500).json({ message: error.message });
+    } catch (error: any) {
+      res.status(500).json({ message: error?.message || 'Failed to fetch content items' });
     }
   });
 
@@ -46,8 +46,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       processContentAsync(contentItem.id, req.file.path, "document", parsedOptions);
 
       res.json(contentItem);
-    } catch (error) {
-      res.status(400).json({ message: error.message });
+    } catch (error: any) {
+      res.status(400).json({ message: error?.message || 'Failed to process document' });
     }
   });
 
@@ -73,8 +73,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       processContentAsync(contentItem.id, req.file.path, "image", parsedOptions);
 
       res.json(contentItem);
-    } catch (error) {
-      res.status(400).json({ message: error.message });
+    } catch (error: any) {
+      res.status(400).json({ message: error?.message || 'Failed to process image' });
     }
   });
 
@@ -96,8 +96,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       processContentAsync(contentItem.id, null, "video", parsedOptions, url);
 
       res.json(contentItem);
-    } catch (error) {
-      res.status(400).json({ message: error.message });
+    } catch (error: any) {
+      res.status(400).json({ message: error?.message || 'Failed to process video' });
     }
   });
 
@@ -109,8 +109,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Content not found" });
       }
       res.json(item);
-    } catch (error) {
-      res.status(500).json({ message: error.message });
+    } catch (error: any) {
+      res.status(500).json({ message: error?.message || 'Failed to get content item' });
     }
   });
 
@@ -129,8 +129,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       res.setHeader("Content-Type", "audio/mpeg");
       res.sendFile(path.resolve(audioPath));
-    } catch (error) {
-      res.status(500).json({ message: error.message });
+    } catch (error: any) {
+      res.status(500).json({ message: error?.message || 'Failed to get audio file' });
     }
   });
 
@@ -142,8 +142,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Content not found" });
       }
       res.json({ message: "Content deleted successfully" });
-    } catch (error) {
-      res.status(500).json({ message: error.message });
+    } catch (error: any) {
+      res.status(500).json({ message: error?.message || 'Failed to delete content item' });
     }
   });
 
@@ -187,11 +187,11 @@ async function processContentAsync(
     if (filePath && fs.existsSync(filePath)) {
       fs.unlinkSync(filePath);
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error("Processing failed:", error);
     await storage.updateContentItem(contentId, {
       status: "failed",
-      errorMessage: error.message,
+      errorMessage: error?.message || 'Processing failed',
     });
 
     // Clean up uploaded file on error
