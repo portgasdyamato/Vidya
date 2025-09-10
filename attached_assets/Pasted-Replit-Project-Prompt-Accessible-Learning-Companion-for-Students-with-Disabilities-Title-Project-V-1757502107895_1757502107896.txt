@@ -1,0 +1,41 @@
+Replit Project Prompt: Accessible Learning Companion for Students with Disabilities
+Title: Project Vidya: An AI-Powered Accessible Learning Companion
+
+Problem Statement
+Students in India with visual or hearing impairments often face significant barriers to education. Standard educational materials like PDFs, textbooks, and video lectures are not designed to be easily accessible to them. This lack of access leads to a considerable gap in learning and engagement, hindering their academic progress and future opportunities. We aim to address this by building a tool that transforms traditional content into accessible formats.
+
+Your Solution
+Project Vidya is a multimodal web application that acts as a learning companion for students with disabilities. A student can upload a digital document (PDF, DOCX), an image of a textbook page, or a link to a video lecture. The platform will process this content using advanced AI and provide tailored, accessible outputs. For instance, it will convert text into high-quality audio, describe images, and summarize complex topics. This makes learning materials not only accessible but also interactive and personalized.
+
+Use of OpenAI APIs
+
+Vision API (part of GPT-4o): This is the core of our image processing. A student can upload a photo of a textbook page, and the Vision API will read the text, recognize diagrams, and provide detailed descriptions of the images, graphs, or charts for a visually impaired user.
+
+Whisper API: We'll use this to transcribe the audio from video lectures. A student can paste a video link, and Whisper will convert the spoken content into accurate text. This transcript can then be summarized or made available for students with hearing impairments.
+
+GPT-4: We will use GPT-4 for content analysis and interaction. After the Vision or Whisper API has processed the content, GPT-4 will be used to:
+
+Summarize: Create concise summaries of long documents or lectures.
+
+Simplify: Re-explain complex concepts in a simpler, more digestible manner.
+
+Generate Quizzes: Create interactive quizzes from the material to test understanding.
+
+Text-to-Speech (TTS): To convert the processed text (from documents, summaries, or image descriptions) into natural-sounding audio for visually impaired students. We'll explore using a variety of voices to enhance the user experience.
+
+Feasibility
+This project will be built as a full-stack web application on Replit, taking advantage of its collaborative and deployment features.
+
+Front-end: A simple, clean, and accessible user interface using a framework like React or Next.js. The design will prioritize ease of use, with large, clear buttons and support for screen readers.
+
+Back-end: The server will be built with Node.js and Express. It will handle the API calls to OpenAI, manage file uploads, and stream the responses back to the front-end. We'll use a simple database like MongoDB to store user history and preferences.
+
+Project Plan:
+
+Phase 1 (MVP): Focus on a single functionality. We'll start with the image-to-audio feature using the Vision API. The user can upload an image of a text page and hear the content read aloud.
+
+Phase 2 (Extension): Integrate the Whisper and TTS APIs to handle video lectures.
+
+Phase 3 (Full Solution): Add the GPT-4 features for summarization, simplification, and quiz generation to create a truly comprehensive learning tool.
+
+Note: We plan to host this project on Replit, with our code publicly available on GitHub. We will also include a short video demo showing the core functionalities.
