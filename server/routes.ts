@@ -168,7 +168,7 @@ async function processContentAsync(
 
     // Save audio file if generated
     let audioUrl: string | undefined;
-    if (result.audioBuffer) {
+    if (result.audioBuffer && result.audioBuffer.length > 0) {
       audioUrl = `audio_${contentId}.mp3`;
       const audioPath = path.join("uploads", audioUrl);
       fs.writeFileSync(audioPath, result.audioBuffer);
