@@ -65,7 +65,8 @@ export async function processContent(
   filePath: string | null,
   contentType: "document" | "image" | "video",
   options: ProcessingOptions,
-  originalUrl?: string
+  originalUrl?: string,
+  originalFileName?: string
 ): Promise<{
   extractedText: string;
   summary?: string;
@@ -76,13 +77,14 @@ export async function processContent(
 
   // Extract text based on content type
   if (contentType === "document" && filePath) {
-    const ext = path.extname(filePath).toLowerCase();
+    // Use original filename extension instead of uploaded file path
+    const ext = originalFileName ? path.extname(originalFileName).toLowerCase() : path.extname(filePath).toLowerCase();
     if (ext === ".pdf") {
       extractedText = await processPDF(filePath);
     } else if (ext === ".docx") {
       extractedText = await processDOCX(filePath);
     } else {
-      throw new Error(`Unsupported document format: ${ext}`);
+      throw new Error(`Unsupported document format: ${ext}. Supported formats: PDF, DOCX`);
     }
   } else if (contentType === "image" && filePath) {
     extractedText = await processImage(filePath);
