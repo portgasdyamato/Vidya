@@ -133,11 +133,14 @@ export default function ImageUpload() {
             onChange={handleFileSelect}
             data-testid="input-file-images"
           />
-          <Label htmlFor="image-upload">
-            <Button type="button" className="btn-primary cursor-pointer" data-testid="button-choose-images">
-              Choose Images
-            </Button>
-          </Label>
+          <Button 
+            type="button" 
+            className="btn-primary cursor-pointer" 
+            data-testid="button-choose-images"
+            onClick={() => document.getElementById('image-upload')?.click()}
+          >
+            Choose Images
+          </Button>
         </div>
 
         {/* Selected Files */}

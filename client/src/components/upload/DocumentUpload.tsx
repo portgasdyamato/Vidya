@@ -134,11 +134,14 @@ export default function DocumentUpload() {
             onChange={handleFileSelect}
             data-testid="input-file-documents"
           />
-          <Label htmlFor="file-upload">
-            <Button type="button" className="btn-primary cursor-pointer" data-testid="button-choose-files">
-              Choose Files
-            </Button>
-          </Label>
+          <Button 
+            type="button" 
+            className="btn-primary cursor-pointer" 
+            data-testid="button-choose-files"
+            onClick={() => document.getElementById('file-upload')?.click()}
+          >
+            Choose Files
+          </Button>
         </div>
 
         {/* Selected Files */}
