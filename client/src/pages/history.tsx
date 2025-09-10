@@ -137,7 +137,7 @@ export default function History() {
                               Summary Available
                             </Badge>
                           )}
-                          {item.quizData && (
+                          {item.quizData && Array.isArray(item.quizData) && item.quizData.length > 0 && (
                             <Badge variant="outline" data-testid={`badge-quiz-${item.id}`}>
                               Quiz Generated
                             </Badge>

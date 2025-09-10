@@ -25,8 +25,8 @@ export async function processPDF(filePath: string): Promise<string> {
       .join("\n\n");
 
     return text;
-  } catch (error) {
-    throw new Error(`Failed to process PDF: ${error.message}`);
+  } catch (error: any) {
+    throw new Error(`Failed to process PDF: ${error?.message || 'Unknown error'}`);
   }
 }
 
@@ -35,8 +35,8 @@ export async function processDOCX(filePath: string): Promise<string> {
     const buffer = fs.readFileSync(filePath);
     const result = await mammoth.extractRawText({ buffer });
     return result.value;
-  } catch (error) {
-    throw new Error(`Failed to process DOCX: ${error.message}`);
+  } catch (error: any) {
+    throw new Error(`Failed to process DOCX: ${error?.message || 'Unknown error'}`);
   }
 }
 
@@ -45,8 +45,8 @@ export async function processImage(filePath: string): Promise<string> {
     const imageBuffer = fs.readFileSync(filePath);
     const base64Image = imageBuffer.toString("base64");
     return await extractTextFromImage(base64Image);
-  } catch (error) {
-    throw new Error(`Failed to process image: ${error.message}`);
+  } catch (error: any) {
+    throw new Error(`Failed to process image: ${error?.message || 'Unknown error'}`);
   }
 }
 
@@ -56,8 +56,8 @@ export async function downloadAndTranscribeVideo(videoUrl: string): Promise<stri
     // For now, we'll return a placeholder that indicates video processing
     // In a real implementation, you'd download the audio and transcribe it
     throw new Error("Video processing not fully implemented - requires youtube-dl integration");
-  } catch (error) {
-    throw new Error(`Failed to process video: ${error.message}`);
+  } catch (error: any) {
+    throw new Error(`Failed to process video: ${error?.message || 'Unknown error'}`);
   }
 }
 
