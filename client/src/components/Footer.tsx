@@ -47,8 +47,8 @@ export default function Footer() {
             <h4 className="text-lg font-semibold mb-4">Support</h4>
             <ul className="space-y-2 text-background/80">
               <li>
-                <Link href="/history">
-                  <a className="hover:text-primary transition-colors focus-ring rounded">Your History</a>
+                <Link href="/history" className="hover:text-primary transition-colors focus-ring rounded">
+                  Your History
                 </Link>
               </li>
               <li>
