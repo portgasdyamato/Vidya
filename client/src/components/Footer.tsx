@@ -72,7 +72,7 @@ export default function Footer() {
         
         <div className="border-t border-background/20 mt-8 pt-8 text-center">
           <p className="text-background/60">
-            © 2024 Project Vidya. Built for educational accessibility and inclusion.
+            © 2025 Project Vidya by Pippo. Built for educational accessibility and inclusion.
           </p>
         </div>
       </div>
