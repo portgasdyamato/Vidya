@@ -105,7 +105,12 @@ export async function processContent(
 
   // Generate audio if requested
   if (options.generateAudio) {
-    result.audioBuffer = await generateSpeech(extractedText, options.voiceId);
+    try {
+      result.audioBuffer = await generateSpeech(extractedText, options.voiceId);
+    } catch (error) {
+      console.log("Audio generation skipped:", error);
+      // Continue without audio - don't fail the entire upload
+    }
   }
 
   // Generate quiz if requested

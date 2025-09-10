@@ -95,13 +95,14 @@ export async function transcribeAudio(audioBuffer: Buffer, mimeType: string): Pr
   }
 }
 
-export async function generateSpeech(text: string, voiceId: string = "alloy"): Promise<Buffer> {
+export async function generateSpeech(text: string, voiceId: string = "alloy"): Promise<Buffer | null> {
   try {
-    // For now, we'll use a placeholder implementation
-    // In a real app, you'd use Google Cloud Text-to-Speech API
-    // or implement Web Speech API on the frontend
-    throw new Error("Text-to-speech not yet implemented with Google APIs. Please use the Web Speech API on the frontend for now.");
+    // Text-to-speech with Google APIs requires additional setup
+    // For now, we'll skip audio generation and let users use browser speech synthesis
+    console.log("Audio generation skipped - will be available in future update");
+    return null;
   } catch (error: any) {
-    throw new Error(`Failed to generate speech: ${error?.message || 'Unknown error'}`);
+    console.error("Audio generation failed:", error);
+    return null;
   }
 }
