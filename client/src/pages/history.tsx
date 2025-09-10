@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import AudioPlayer from "@/components/AudioPlayer";
@@ -6,13 +7,36 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { AlertCircle, Download, Play, FileText, Image, Video } from "lucide-react";
+import { AlertCircle, Download, Play, FileText, Image, Video, Volume2, VolumeX } from "lucide-react";
 import type { ContentItem } from "@shared/schema";
 
 export default function History() {
   const { data: contentItems, isLoading, error } = useQuery<ContentItem[]>({
     queryKey: ["/api/content"],
   });
+  
+  const [speakingItemId, setSpeakingItemId] = useState<string | null>(null);
+  
+  const speakText = (text: string, itemId: string) => {
+    // Cancel any ongoing speech
+    window.speechSynthesis.cancel();
+    
+    if (speakingItemId === itemId) {
+      setSpeakingItemId(null);
+      return;
+    }
+    
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.rate = 0.8;
+    utterance.pitch = 1;
+    utterance.volume = 1;
+    
+    utterance.onstart = () => setSpeakingItemId(itemId);
+    utterance.onend = () => setSpeakingItemId(null);
+    utterance.onerror = () => setSpeakingItemId(null);
+    
+    window.speechSynthesis.speak(utterance);
+  };
 
   const getTypeIcon = (type: string) => {
     switch (type) {
@@ -137,7 +161,7 @@ export default function History() {
                               Summary Available
                             </Badge>
                           )}
-                          {item.quizData && Array.isArray(item.quizData) && (item.quizData as any[]).length > 0 && (
+                          {item.quizData && Array.isArray(item.quizData) && item.quizData.length > 0 && (
                             <Badge variant="outline" data-testid={`badge-quiz-${item.id}`}>
                               Quiz Generated
                             </Badge>
@@ -153,10 +177,62 @@ export default function History() {
 
                         {item.summary && (
                           <div className="mb-4">
-                            <h4 className="font-medium text-card-foreground mb-2">Summary:</h4>
-                            <p className="text-sm text-muted-foreground leading-relaxed">
-                              {item.summary}
-                            </p>
+                            <div className="flex items-center justify-between mb-3">
+                              <h4 className="font-medium text-card-foreground">Summary</h4>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => speakText(item.summary!, item.id)}
+                                className="text-primary hover:text-primary-foreground"
+                                data-testid={`button-speak-${item.id}`}
+                              >
+                                {speakingItemId === item.id ? (
+                                  <VolumeX className="h-4 w-4" />
+                                ) : (
+                                  <Volume2 className="h-4 w-4" />
+                                )}
+                                <span className="ml-1 text-xs">
+                                  {speakingItemId === item.id ? 'Stop' : 'Listen'}
+                                </span>
+                              </Button>
+                            </div>
+                            <div className="bg-muted/30 rounded-lg p-4 border-l-4 border-primary/20">
+                              <div className="text-sm text-foreground leading-relaxed whitespace-pre-line">
+                                {item.summary}
+                              </div>
+                            </div>
+                          </div>
+                        )}
+
+                        {item.extractedText && (
+                          <div className="mb-4">
+                            <div className="flex items-center justify-between mb-3">
+                              <h4 className="font-medium text-card-foreground">Extracted Text</h4>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => speakText(item.extractedText!, item.id + '-text')}
+                                className="text-muted-foreground hover:text-foreground"
+                                data-testid={`button-speak-text-${item.id}`}
+                              >
+                                {speakingItemId === item.id + '-text' ? (
+                                  <VolumeX className="h-4 w-4" />
+                                ) : (
+                                  <Volume2 className="h-4 w-4" />
+                                )}
+                                <span className="ml-1 text-xs">
+                                  {speakingItemId === item.id + '-text' ? 'Stop' : 'Listen'}
+                                </span>
+                              </Button>
+                            </div>
+                            <div className="bg-muted/20 rounded-lg p-4 max-h-48 overflow-y-auto">
+                              <div className="text-xs text-muted-foreground leading-relaxed whitespace-pre-line">
+                                {item.extractedText.length > 1000 
+                                  ? item.extractedText.substring(0, 1000) + "..." 
+                                  : item.extractedText
+                                }
+                              </div>
+                            </div>
                           </div>
                         )}
 
