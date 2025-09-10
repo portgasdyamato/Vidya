@@ -43,7 +43,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
 
       // Process in background
-      processContentAsync(contentItem.id, req.file.path, "document", parsedOptions);
+      processContentAsync(contentItem.id, req.file.path, "document", parsedOptions, undefined, req.file.originalname);
 
       res.json(contentItem);
     } catch (error: any) {
@@ -70,7 +70,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
 
       // Process in background
-      processContentAsync(contentItem.id, req.file.path, "image", parsedOptions);
+      processContentAsync(contentItem.id, req.file.path, "image", parsedOptions, undefined, req.file.originalname);
 
       res.json(contentItem);
     } catch (error: any) {
@@ -157,14 +157,15 @@ async function processContentAsync(
   filePath: string | null,
   contentType: "document" | "image" | "video",
   options: any,
-  originalUrl?: string
+  originalUrl?: string,
+  originalFileName?: string
 ) {
   try {
     // Update status to processing
     await storage.updateContentItem(contentId, { status: "processing" });
 
     // Process the content
-    const result = await processContent(filePath, contentType, options, originalUrl);
+    const result = await processContent(filePath, contentType, options, originalUrl, originalFileName);
 
     // Save audio file if generated
     let audioUrl: string | undefined;
