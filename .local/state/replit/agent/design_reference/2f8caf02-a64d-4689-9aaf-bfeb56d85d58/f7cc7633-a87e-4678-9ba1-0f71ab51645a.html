@@ -1,0 +1,920 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Vidya - Accessible Learning Companion</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+    tailwind.config = {
+        theme: {
+            extend: {
+                borderRadius: {
+                    lg: "var(--radius)",
+                    md: "calc(var(--radius) - 2px)", 
+                    sm: "calc(var(--radius) - 4px)",
+                },
+                colors: {
+                    background: "var(--background)",
+                    foreground: "var(--foreground)",
+                    card: {
+                        DEFAULT: "var(--card)",
+                        foreground: "var(--card-foreground)",
+                    },
+                    popover: {
+                        DEFAULT: "var(--popover)",
+                        foreground: "var(--popover-foreground)",
+                    },
+                    primary: {
+                        DEFAULT: "var(--primary)",
+                        foreground: "var(--primary-foreground)",
+                    },
+                    secondary: {
+                        DEFAULT: "var(--secondary)",
+                        foreground: "var(--secondary-foreground)",
+                    },
+                    muted: {
+                        DEFAULT: "var(--muted)",
+                        foreground: "var(--muted-foreground)",
+                    },
+                    accent: {
+                        DEFAULT: "var(--accent)",
+                        foreground: "var(--accent-foreground)",
+                    },
+                    destructive: {
+                        DEFAULT: "var(--destructive)",
+                        foreground: "var(--destructive-foreground)",
+                    },
+                    border: "var(--border)",
+                    input: "var(--input)",
+                    ring: "var(--ring)",
+                    success: "var(--success)",
+                    warning: "var(--warning)",
+                },
+                fontFamily: {
+                    sans: ["var(--font-sans)"],
+                    serif: ["var(--font-serif)"],
+                    mono: ["var(--font-mono)"],
+                }
+            },
+        }
+    };
+    </script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --background: hsl(210 40% 98%);
+            --foreground: hsl(222.2 84% 4.9%);
+            --card: hsl(0 0% 100%);
+            --card-foreground: hsl(222.2 84% 4.9%);
+            --popover: hsl(0 0% 100%);
+            --popover-foreground: hsl(222.2 84% 4.9%);
+            --primary: hsl(210 83% 53%);
+            --primary-foreground: hsl(210 40% 98%);
+            --secondary: hsl(122 39% 49%);
+            --secondary-foreground: hsl(210 40% 98%);
+            --muted: hsl(210 40% 96%);
+            --muted-foreground: hsl(215.4 16.3% 46.9%);
+            --accent: hsl(210 40% 96%);
+            --accent-foreground: hsl(222.2 84% 4.9%);
+            --destructive: hsl(0 84.2% 60.2%);
+            --destructive-foreground: hsl(210 40% 98%);
+            --border: hsl(214.3 31.8% 91.4%);
+            --input: hsl(214.3 31.8% 91.4%);
+            --ring: hsl(210 83% 53%);
+            --success: hsl(122 39% 49%);
+            --warning: hsl(38 92% 50%);
+            --radius: 8px;
+            --font-sans: 'Roboto', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            --font-serif: 'Roboto Slab', Georgia, serif;
+            --font-mono: 'Roboto Mono', 'Courier New', monospace;
+        }
+        
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --background: hsl(222.2 84% 4.9%);
+                --foreground: hsl(210 40% 98%);
+                --card: hsl(222.2 84% 4.9%);
+                --card-foreground: hsl(210 40% 98%);
+                --popover: hsl(222.2 84% 4.9%);
+                --popover-foreground: hsl(210 40% 98%);
+                --primary: hsl(210 83% 53%);
+                --primary-foreground: hsl(222.2 84% 4.9%);
+                --secondary: hsl(122 39% 49%);
+                --secondary-foreground: hsl(222.2 84% 4.9%);
+                --muted: hsl(217.2 32.6% 17.5%);
+                --muted-foreground: hsl(215 20.2% 65.1%);
+                --accent: hsl(217.2 32.6% 17.5%);
+                --accent-foreground: hsl(210 40% 98%);
+                --destructive: hsl(0 62.8% 30.6%);
+                --destructive-foreground: hsl(210 40% 98%);
+                --border: hsl(217.2 32.6% 17.5%);
+                --input: hsl(217.2 32.6% 17.5%);
+                --ring: hsl(210 83% 53%);
+                --success: hsl(122 39% 49%);
+                --warning: hsl(38 92% 50%);
+            }
+        }
+
+        body {
+            font-family: var(--font-sans);
+            font-size: 18px;
+            line-height: 1.6;
+        }
+
+        /* Focus indicators for accessibility */
+        .focus-visible:focus {
+            outline: 3px solid hsl(var(--ring));
+            outline-offset: 2px;
+        }
+
+        /* Custom audio player styling */
+        .audio-player {
+            background: hsl(var(--card));
+            border: 2px solid hsl(var(--border));
+            border-radius: var(--radius);
+        }
+
+        /* Loading animation */
+        .loading-spinner {
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* File upload drop zone */
+        .drop-zone {
+            border: 3px dashed hsl(var(--border));
+            transition: all 0.3s ease;
+        }
+
+        .drop-zone.dragover {
+            border-color: hsl(var(--primary));
+            background-color: hsl(var(--muted));
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Roboto+Slab:wght@400;600&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body class="bg-background text-foreground min-h-screen">
+    <!-- Skip to main content link for screen readers -->
+    <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-primary text-primary-foreground px-4 py-2 rounded-md z-50">
+        Skip to main content
+    </a>
+
+    <!-- Header -->
+    <!-- @COMPONENT: Header [navigation and branding] -->
+    <header class="bg-card border-b border-border shadow-sm" role="banner">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <div class="flex items-center space-x-4">
+                    <div class="w-12 h-12 bg-primary rounded-lg flex items-center justify-center">
+                        <i class="fas fa-book-open text-primary-foreground text-xl" aria-hidden="true"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-2xl font-bold text-foreground">Project Vidya</h1>
+                        <p class="text-sm text-muted-foreground">Accessible Learning Companion</p>
+                    </div>
+                </div>
+                
+                <nav role="navigation" aria-label="Main navigation">
+                    <ul class="flex items-center space-x-6">
+                        <li><a href="#upload" class="text-foreground hover:text-primary focus-visible px-3 py-2 rounded-md font-medium" aria-current="page">Upload</a></li>
+                        <li><a href="#history" class="text-muted-foreground hover:text-primary focus-visible px-3 py-2 rounded-md font-medium">History</a></li>
+                        <li><a href="#settings" class="text-muted-foreground hover:text-primary focus-visible px-3 py-2 rounded-md font-medium">Settings</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+    <!-- @END_COMPONENT: Header -->
+
+    <!-- Main Content -->
+    <main id="main-content" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8" role="main">
+        
+        <!-- Welcome Section -->
+        <!-- @COMPONENT: WelcomeSection [introduction and accessibility features] -->
+        <section class="text-center mb-12" aria-labelledby="welcome-heading">
+            <h2 id="welcome-heading" class="text-4xl font-bold text-foreground mb-4">
+                Transform Learning Materials into Accessible Content
+            </h2>
+            <p class="text-xl text-muted-foreground mb-8 max-w-3xl mx-auto">
+                Upload documents, images, or video links to convert them into audio, summaries, and accessible formats for students with disabilities.
+            </p>
+            
+            <!-- Accessibility Features Grid -->
+            <div class="grid md:grid-cols-3 gap-6 mb-12">
+                <div class="bg-card p-6 rounded-lg border border-border shadow-sm">
+                    <div class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-volume-up text-primary text-2xl" aria-hidden="true"></i>
+                    </div>
+                    <h3 class="text-lg font-semibold text-foreground mb-2">Text-to-Speech</h3>
+                    <p class="text-muted-foreground">Convert any document or text content into natural-sounding audio</p>
+                </div>
+                
+                <div class="bg-card p-6 rounded-lg border border-border shadow-sm">
+                    <div class="w-16 h-16 bg-secondary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-eye text-secondary text-2xl" aria-hidden="true"></i>
+                    </div>
+                    <h3 class="text-lg font-semibold text-foreground mb-2">Image Description</h3>
+                    <p class="text-muted-foreground">AI-powered descriptions of diagrams, charts, and images</p>
+                </div>
+                
+                <div class="bg-card p-6 rounded-lg border border-border shadow-sm">
+                    <div class="w-16 h-16 bg-accent/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-closed-captioning text-accent-foreground text-2xl" aria-hidden="true"></i>
+                    </div>
+                    <h3 class="text-lg font-semibold text-foreground mb-2">Video Transcription</h3>
+                    <p class="text-muted-foreground">Automatic transcription and summarization of video lectures</p>
+                </div>
+            </div>
+        </section>
+        <!-- @END_COMPONENT: WelcomeSection -->
+
+        <!-- Upload Section -->
+        <!-- @COMPONENT: UploadSection [file upload and processing interface] -->
+        <section id="upload" class="mb-12" aria-labelledby="upload-heading">
+            <h2 id="upload-heading" class="text-3xl font-bold text-foreground mb-8 text-center">
+                Upload Your Learning Materials
+            </h2>
+            
+            <div class="grid lg:grid-cols-2 gap-8">
+                <!-- Document Upload -->
+                <div class="bg-card p-8 rounded-lg border border-border shadow-sm">
+                    <h3 class="text-xl font-semibold text-foreground mb-4 flex items-center">
+                        <i class="fas fa-file-alt text-primary mr-3" aria-hidden="true"></i>
+                        Documents & Images
+                    </h3>
+                    <p class="text-muted-foreground mb-6">Upload PDF files, Word documents, or images of textbook pages</p>
+                    
+                    <!-- File Drop Zone -->
+                    <div class="drop-zone p-8 rounded-lg text-center cursor-pointer hover:bg-muted/50 transition-colors" 
+                         role="button" 
+                         tabindex="0" 
+                         aria-label="Drop files here or click to select files"
+                         data-implementation="Should handle file drag and drop, file selection dialog">
+                        <i class="fas fa-cloud-upload-alt text-4xl text-muted-foreground mb-4" aria-hidden="true"></i>
+                        <p class="text-lg font-medium text-foreground mb-2">Drop files here or click to browse</p>
+                        <p class="text-sm text-muted-foreground">Supports PDF, DOCX, JPG, PNG files up to 10MB</p>
+                        <input type="file" 
+                               class="hidden" 
+                               id="file-upload" 
+                               accept=".pdf,.docx,.jpg,.jpeg,.png"
+                               multiple
+                               aria-describedby="file-upload-description"
+                               data-implementation="Should validate file types and sizes">
+                        <label for="file-upload" class="inline-block mt-4 bg-primary text-primary-foreground px-6 py-3 rounded-md font-medium hover:bg-primary/90 focus-visible cursor-pointer">
+                            Select Files
+                        </label>
+                    </div>
+                    
+                    <!-- Upload Progress (Hidden by default) -->
+                    <div class="mt-6 hidden" id="upload-progress" data-implementation="Show during file upload">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-sm font-medium text-foreground">Uploading document.pdf</span>
+                            <span class="text-sm text-muted-foreground" data-bind="uploadProgress">75%</span>
+                        </div>
+                        <div class="w-full bg-muted rounded-full h-2">
+                            <div class="bg-primary h-2 rounded-full transition-all duration-300" style="width: 75%" data-bind="uploadProgressBar"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Video URL Input -->
+                <div class="bg-card p-8 rounded-lg border border-border shadow-sm">
+                    <h3 class="text-xl font-semibold text-foreground mb-4 flex items-center">
+                        <i class="fas fa-video text-secondary mr-3" aria-hidden="true"></i>
+                        Video Lectures
+                    </h3>
+                    <p class="text-muted-foreground mb-6">Paste a YouTube or video URL to get transcription and summaries</p>
+                    
+                    <form data-event="submit:handleVideoSubmit" data-implementation="Should validate URL and extract video content">
+                        <div class="mb-4">
+                            <label for="video-url" class="block text-sm font-medium text-foreground mb-2">
+                                Video URL
+                            </label>
+                            <input type="url" 
+                                   id="video-url" 
+                                   class="w-full px-4 py-3 text-lg bg-input border border-border rounded-md focus:ring-2 focus:ring-ring focus:border-transparent"
+                                   placeholder="https://www.youtube.com/watch?v=..."
+                                   aria-describedby="video-url-help"
+                                   data-bind="videoUrl">
+                            <p id="video-url-help" class="text-sm text-muted-foreground mt-1">
+                                Supports YouTube, Vimeo, and direct video links
+                            </p>
+                        </div>
+                        
+                        <button type="submit" 
+                                class="w-full bg-secondary text-secondary-foreground px-6 py-3 rounded-md font-medium hover:bg-secondary/90 focus-visible">
+                            <i class="fas fa-play mr-2" aria-hidden="true"></i>
+                            Process Video
+                        </button>
+                    </form>
+                    
+                    <!-- Processing Status -->
+                    <div class="mt-6 hidden" id="video-processing" data-implementation="Show during video processing">
+                        <div class="flex items-center text-muted-foreground">
+                            <i class="fas fa-spinner loading-spinner mr-3" aria-hidden="true"></i>
+                            <span>Transcribing video content...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- @END_COMPONENT: UploadSection -->
+
+        <!-- Processing Results Section -->
+        <!-- @COMPONENT: ProcessingResults [displays processed content and audio player] -->
+        <section id="results" class="mb-12 hidden" aria-labelledby="results-heading" data-implementation="Show after content processing">
+            <h2 id="results-heading" class="text-3xl font-bold text-foreground mb-8 text-center">
+                Processed Content
+            </h2>
+            
+            <div class="grid lg:grid-cols-3 gap-8">
+                <!-- Original Content Preview -->
+                <div class="bg-card p-6 rounded-lg border border-border shadow-sm">
+                    <h3 class="text-lg font-semibold text-foreground mb-4 flex items-center">
+                        <i class="fas fa-file-text text-primary mr-3" aria-hidden="true"></i>
+                        Original Content
+                    </h3>
+                    <div class="bg-muted p-4 rounded-md text-sm font-mono max-h-64 overflow-y-auto" data-bind="originalContent">
+                        <p data-mock="true">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...</p>
+                    </div>
+                </div>
+                
+                <!-- AI Summary -->
+                <div class="bg-card p-6 rounded-lg border border-border shadow-sm">
+                    <h3 class="text-lg font-semibold text-foreground mb-4 flex items-center">
+                        <i class="fas fa-brain text-secondary mr-3" aria-hidden="true"></i>
+                        AI Summary
+                    </h3>
+                    <div class="text-foreground space-y-3" data-bind="aiSummary">
+                        <p data-mock="true">This document discusses the fundamentals of machine learning, covering supervised and unsupervised learning approaches.</p>
+                        <p data-mock="true">Key topics include linear regression, decision trees, and neural networks with practical applications.</p>
+                    </div>
+                    <button class="mt-4 text-primary hover:text-primary/80 focus-visible font-medium" 
+                            data-event="click:generateDetailedSummary"
+                            data-implementation="Should request more detailed summary from GPT-4">
+                        <i class="fas fa-expand mr-2" aria-hidden="true"></i>
+                        Generate Detailed Summary
+                    </button>
+                </div>
+                
+                <!-- Audio Player -->
+                <div class="bg-card p-6 rounded-lg border border-border shadow-sm">
+                    <h3 class="text-lg font-semibold text-foreground mb-4 flex items-center">
+                        <i class="fas fa-headphones text-accent-foreground mr-3" aria-hidden="true"></i>
+                        Audio Version
+                    </h3>
+                    
+                    <!-- Custom Audio Player -->
+                    <div class="audio-player p-4" data-implementation="Should implement Web Audio API for text-to-speech">
+                        <div class="flex items-center justify-between mb-4">
+                            <button class="w-12 h-12 bg-primary text-primary-foreground rounded-full flex items-center justify-center hover:bg-primary/90 focus-visible"
+                                    aria-label="Play audio"
+                                    data-event="click:toggleAudioPlayback">
+                                <i class="fas fa-play" aria-hidden="true"></i>
+                            </button>
+                            <div class="flex-1 mx-4">
+                                <div class="bg-muted rounded-full h-2 relative">
+                                    <div class="bg-primary h-2 rounded-full" style="width: 30%" data-bind="audioProgress"></div>
+                                    <button class="absolute top-1/2 transform -translate-y-1/2 w-4 h-4 bg-primary rounded-full border-2 border-background shadow-sm"
+                                            style="left: 30%"
+                                            aria-label="Seek audio position"
+                                            data-bind="audioSeeker"></button>
+                                </div>
+                            </div>
+                            <span class="text-sm text-muted-foreground font-mono" data-bind="audioTime">1:23 / 4:15</span>
+                        </div>
+                        
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-2">
+                                <button class="p-2 text-muted-foreground hover:text-foreground focus-visible rounded"
+                                        aria-label="Previous section"
+                                        data-event="click:previousSection">
+                                    <i class="fas fa-step-backward" aria-hidden="true"></i>
+                                </button>
+                                <button class="p-2 text-muted-foreground hover:text-foreground focus-visible rounded"
+                                        aria-label="Next section"
+                                        data-event="click:nextSection">
+                                    <i class="fas fa-step-forward" aria-hidden="true"></i>
+                                </button>
+                            </div>
+                            
+                            <div class="flex items-center space-x-2">
+                                <label for="playback-speed" class="sr-only">Playback speed</label>
+                                <select id="playback-speed" 
+                                        class="bg-input border border-border rounded px-2 py-1 text-sm focus:ring-2 focus:ring-ring"
+                                        data-bind="playbackSpeed">
+                                    <option value="0.5">0.5x</option>
+                                    <option value="0.75">0.75x</option>
+                                    <option value="1" selected>1x</option>
+                                    <option value="1.25">1.25x</option>
+                                    <option value="1.5">1.5x</option>
+                                    <option value="2">2x</option>
+                                </select>
+                                
+                                <button class="p-2 text-muted-foreground hover:text-foreground focus-visible rounded"
+                                        aria-label="Volume control"
+                                        data-event="click:toggleMute">
+                                    <i class="fas fa-volume-up" aria-hidden="true"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Download Options -->
+                    <div class="mt-4 space-y-2">
+                        <button class="w-full bg-muted text-foreground px-4 py-2 rounded-md hover:bg-muted/80 focus-visible font-medium text-left"
+                                data-event="click:downloadAudio"
+                                data-implementation="Should generate and download audio file">
+                            <i class="fas fa-download mr-2" aria-hidden="true"></i>
+                            Download Audio (MP3)
+                        </button>
+                        <button class="w-full bg-muted text-foreground px-4 py-2 rounded-md hover:bg-muted/80 focus-visible font-medium text-left"
+                                data-event="click:downloadTranscript"
+                                data-implementation="Should download text transcript">
+                            <i class="fas fa-file-text mr-2" aria-hidden="true"></i>
+                            Download Transcript (TXT)
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Additional AI Features -->
+            <div class="mt-8 grid md:grid-cols-2 gap-6">
+                <div class="bg-card p-6 rounded-lg border border-border shadow-sm">
+                    <h3 class="text-lg font-semibold text-foreground mb-4 flex items-center">
+                        <i class="fas fa-question-circle text-primary mr-3" aria-hidden="true"></i>
+                        Generate Quiz
+                    </h3>
+                    <p class="text-muted-foreground mb-4">Create interactive quiz questions from the content to test understanding</p>
+                    <button class="bg-primary text-primary-foreground px-6 py-3 rounded-md font-medium hover:bg-primary/90 focus-visible"
+                            data-event="click:generateQuiz"
+                            data-implementation="Should use GPT-4 to generate quiz questions">
+                        <i class="fas fa-magic mr-2" aria-hidden="true"></i>
+                        Create Quiz
+                    </button>
+                </div>
+                
+                <div class="bg-card p-6 rounded-lg border border-border shadow-sm">
+                    <h3 class="text-lg font-semibold text-foreground mb-4 flex items-center">
+                        <i class="fas fa-lightbulb text-secondary mr-3" aria-hidden="true"></i>
+                        Simplify Content
+                    </h3>
+                    <p class="text-muted-foreground mb-4">Rewrite complex concepts in simpler, more digestible language</p>
+                    <button class="bg-secondary text-secondary-foreground px-6 py-3 rounded-md font-medium hover:bg-secondary/90 focus-visible"
+                            data-event="click:simplifyContent"
+                            data-implementation="Should use GPT-4 to simplify content">
+                        <i class="fas fa-layer-group mr-2" aria-hidden="true"></i>
+                        Simplify Text
+                    </button>
+                </div>
+            </div>
+        </section>
+        <!-- @END_COMPONENT: ProcessingResults -->
+
+        <!-- Content History Section -->
+        <!-- @COMPONENT: ContentHistory [saved content and user history] -->
+        <section id="history" class="mb-12" aria-labelledby="history-heading">
+            <h2 id="history-heading" class="text-3xl font-bold text-foreground mb-8 text-center">
+                Your Learning History
+            </h2>
+            
+            <div class="bg-card rounded-lg border border-border shadow-sm overflow-hidden">
+                <div class="p-6 border-b border-border">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-lg font-semibold text-foreground">Recent Content</h3>
+                        <button class="text-primary hover:text-primary/80 focus-visible font-medium"
+                                data-event="click:clearHistory"
+                                data-implementation="Should clear user history with confirmation">
+                            <i class="fas fa-trash mr-2" aria-hidden="true"></i>
+                            Clear History
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- @MAP: historyItems.map(item => ( -->
+                <div class="divide-y divide-border" data-implementation="Should render list of user's processed content">
+                    <div class="p-6 hover:bg-muted/50 transition-colors">
+                        <div class="flex items-start justify-between">
+                            <div class="flex-1">
+                                <h4 class="font-medium text-foreground mb-2" data-bind="item.title">Machine Learning Fundamentals.pdf</h4>
+                                <p class="text-sm text-muted-foreground mb-3" data-bind="item.summary">AI-generated summary about supervised learning, neural networks, and practical applications...</p>
+                                <div class="flex items-center space-x-4 text-xs text-muted-foreground">
+                                    <span data-bind="item.date">2 hours ago</span>
+                                    <span data-bind="item.type">Document</span>
+                                    <span data-bind="item.duration">4:23 audio</span>
+                                </div>
+                            </div>
+                            <div class="flex items-center space-x-2 ml-4">
+                                <button class="p-2 text-muted-foreground hover:text-foreground focus-visible rounded"
+                                        aria-label="Play audio for Machine Learning Fundamentals"
+                                        data-event="click:playHistoryItem">
+                                    <i class="fas fa-play" aria-hidden="true"></i>
+                                </button>
+                                <button class="p-2 text-muted-foreground hover:text-foreground focus-visible rounded"
+                                        aria-label="Download content"
+                                        data-event="click:downloadHistoryItem">
+                                    <i class="fas fa-download" aria-hidden="true"></i>
+                                </button>
+                                <button class="p-2 text-muted-foreground hover:text-foreground focus-visible rounded"
+                                        aria-label="Delete from history"
+                                        data-event="click:deleteHistoryItem">
+                                    <i class="fas fa-trash" aria-hidden="true"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="p-6 hover:bg-muted/50 transition-colors">
+                        <div class="flex items-start justify-between">
+                            <div class="flex-1">
+                                <h4 class="font-medium text-foreground mb-2" data-bind="item.title">Khan Academy: Introduction to Calculus</h4>
+                                <p class="text-sm text-muted-foreground mb-3" data-bind="item.summary">Video transcription covering limits, derivatives, and basic integration concepts...</p>
+                                <div class="flex items-center space-x-4 text-xs text-muted-foreground">
+                                    <span data-bind="item.date">1 day ago</span>
+                                    <span data-bind="item.type">Video</span>
+                                    <span data-bind="item.duration">15:47 audio</span>
+                                </div>
+                            </div>
+                            <div class="flex items-center space-x-2 ml-4">
+                                <button class="p-2 text-muted-foreground hover:text-foreground focus-visible rounded"
+                                        aria-label="Play audio for Khan Academy calculus video"
+                                        data-event="click:playHistoryItem">
+                                    <i class="fas fa-play" aria-hidden="true"></i>
+                                </button>
+                                <button class="p-2 text-muted-foreground hover:text-foreground focus-visible rounded"
+                                        aria-label="Download content"
+                                        data-event="click:downloadHistoryItem">
+                                    <i class="fas fa-download" aria-hidden="true"></i>
+                                </button>
+                                <button class="p-2 text-muted-foreground hover:text-foreground focus-visible rounded"
+                                        aria-label="Delete from history"
+                                        data-event="click:deleteHistoryItem">
+                                    <i class="fas fa-trash" aria-hidden="true"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="p-6 hover:bg-muted/50 transition-colors">
+                        <div class="flex items-start justify-between">
+                            <div class="flex-1">
+                                <h4 class="font-medium text-foreground mb-2" data-bind="item.title">Textbook Chapter 5 - Data Structures</h4>
+                                <p class="text-sm text-muted-foreground mb-3" data-bind="item.summary">Image-extracted content about arrays, linked lists, stacks, and queues with visual diagrams...</p>
+                                <div class="flex items-center space-x-4 text-xs text-muted-foreground">
+                                    <span data-bind="item.date">3 days ago</span>
+                                    <span data-bind="item.type">Image</span>
+                                    <span data-bind="item.duration">8:15 audio</span>
+                                </div>
+                            </div>
+                            <div class="flex items-center space-x-2 ml-4">
+                                <button class="p-2 text-muted-foreground hover:text-foreground focus-visible rounded"
+                                        aria-label="Play audio for textbook chapter"
+                                        data-event="click:playHistoryItem">
+                                    <i class="fas fa-play" aria-hidden="true"></i>
+                                </button>
+                                <button class="p-2 text-muted-foreground hover:text-foreground focus-visible rounded"
+                                        aria-label="Download content"
+                                        data-event="click:downloadHistoryItem">
+                                    <i class="fas fa-download" aria-hidden="true"></i>
+                                </button>
+                                <button class="p-2 text-muted-foreground hover:text-foreground focus-visible rounded"
+                                        aria-label="Delete from history"
+                                        data-event="click:deleteHistoryItem">
+                                    <i class="fas fa-trash" aria-hidden="true"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- @END_MAP )) -->
+                
+                <!-- Empty State -->
+                <div class="p-12 text-center hidden" id="empty-history" data-implementation="Show when no history items">
+                    <i class="fas fa-history text-4xl text-muted-foreground mb-4" aria-hidden="true"></i>
+                    <h3 class="text-lg font-semibold text-foreground mb-2">No Content History</h3>
+                    <p class="text-muted-foreground">Upload your first document or video to get started</p>
+                </div>
+            </div>
+        </section>
+        <!-- @END_COMPONENT: ContentHistory -->
+
+        <!-- Settings Section -->
+        <!-- @COMPONENT: SettingsSection [accessibility and user preferences] -->
+        <section id="settings" class="mb-12" aria-labelledby="settings-heading">
+            <h2 id="settings-heading" class="text-3xl font-bold text-foreground mb-8 text-center">
+                Accessibility Settings
+            </h2>
+            
+            <div class="max-w-4xl mx-auto grid md:grid-cols-2 gap-8">
+                <!-- Audio Settings -->
+                <div class="bg-card p-6 rounded-lg border border-border shadow-sm">
+                    <h3 class="text-lg font-semibold text-foreground mb-6 flex items-center">
+                        <i class="fas fa-volume-up text-primary mr-3" aria-hidden="true"></i>
+                        Audio Preferences
+                    </h3>
+                    
+                    <div class="space-y-6">
+                        <div>
+                            <label for="voice-selection" class="block text-sm font-medium text-foreground mb-2">
+                                Voice Selection
+                            </label>
+                            <select id="voice-selection" 
+                                    class="w-full bg-input border border-border rounded-md px-3 py-2 focus:ring-2 focus:ring-ring"
+                                    data-bind="selectedVoice">
+                                <option value="female-1">Sarah (Female, English)</option>
+                                <option value="male-1">David (Male, English)</option>
+                                <option value="female-2">Priya (Female, Hindi-English)</option>
+                                <option value="male-2">Arjun (Male, Hindi-English)</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label for="speech-rate" class="block text-sm font-medium text-foreground mb-2">
+                                Speech Rate
+                            </label>
+                            <div class="flex items-center space-x-4">
+                                <span class="text-sm text-muted-foreground">Slow</span>
+                                <input type="range" 
+                                       id="speech-rate" 
+                                       min="0.5" 
+                                       max="2" 
+                                       step="0.1" 
+                                       value="1"
+                                       class="flex-1 bg-muted rounded-full"
+                                       data-bind="speechRate">
+                                <span class="text-sm text-muted-foreground">Fast</span>
+                            </div>
+                            <p class="text-xs text-muted-foreground mt-1" data-bind="speechRateValue">1.0x speed</p>
+                        </div>
+                        
+                        <div>
+                            <label for="pause-duration" class="block text-sm font-medium text-foreground mb-2">
+                                Pause Between Sentences
+                            </label>
+                            <select id="pause-duration" 
+                                    class="w-full bg-input border border-border rounded-md px-3 py-2 focus:ring-2 focus:ring-ring"
+                                    data-bind="pauseDuration">
+                                <option value="short">Short (0.5s)</option>
+                                <option value="normal" selected>Normal (1s)</option>
+                                <option value="long">Long (2s)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Display Settings -->
+                <div class="bg-card p-6 rounded-lg border border-border shadow-sm">
+                    <h3 class="text-lg font-semibold text-foreground mb-6 flex items-center">
+                        <i class="fas fa-eye text-secondary mr-3" aria-hidden="true"></i>
+                        Display Preferences
+                    </h3>
+                    
+                    <div class="space-y-6">
+                        <div>
+                            <label for="font-size" class="block text-sm font-medium text-foreground mb-2">
+                                Font Size
+                            </label>
+                            <div class="flex items-center space-x-4">
+                                <span class="text-sm text-muted-foreground">Small</span>
+                                <input type="range" 
+                                       id="font-size" 
+                                       min="14" 
+                                       max="24" 
+                                       step="2" 
+                                       value="18"
+                                       class="flex-1 bg-muted rounded-full"
+                                       data-bind="fontSize">
+                                <span class="text-sm text-muted-foreground">Large</span>
+                            </div>
+                            <p class="text-xs text-muted-foreground mt-1" data-bind="fontSizeValue">18px</p>
+                        </div>
+                        
+                        <div>
+                            <label for="contrast-mode" class="block text-sm font-medium text-foreground mb-2">
+                                Contrast Mode
+                            </label>
+                            <select id="contrast-mode" 
+                                    class="w-full bg-input border border-border rounded-md px-3 py-2 focus:ring-2 focus:ring-ring"
+                                    data-bind="contrastMode">
+                                <option value="normal">Normal</option>
+                                <option value="high">High Contrast</option>
+                                <option value="dark">Dark Mode</option>
+                                <option value="auto">Auto (System Preference)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <label for="reduce-motion" class="text-sm font-medium text-foreground">
+                                    Reduce Motion
+                                </label>
+                                <p class="text-xs text-muted-foreground">Minimize animations and transitions</p>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" 
+                                       id="reduce-motion" 
+                                       class="sr-only peer"
+                                       data-bind="reduceMotion">
+                                <div class="w-11 h-6 bg-muted peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-ring rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Content Processing Settings -->
+                <div class="bg-card p-6 rounded-lg border border-border shadow-sm md:col-span-2">
+                    <h3 class="text-lg font-semibold text-foreground mb-6 flex items-center">
+                        <i class="fas fa-cog text-accent-foreground mr-3" aria-hidden="true"></i>
+                        Content Processing
+                    </h3>
+                    
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="summary-detail" class="block text-sm font-medium text-foreground mb-2">
+                                Summary Detail Level
+                            </label>
+                            <select id="summary-detail" 
+                                    class="w-full bg-input border border-border rounded-md px-3 py-2 focus:ring-2 focus:ring-ring"
+                                    data-bind="summaryDetail">
+                                <option value="brief">Brief (Key points only)</option>
+                                <option value="standard" selected>Standard (Balanced)</option>
+                                <option value="detailed">Detailed (Comprehensive)</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label for="language-preference" class="block text-sm font-medium text-foreground mb-2">
+                                Language Preference
+                            </label>
+                            <select id="language-preference" 
+                                    class="w-full bg-input border border-border rounded-md px-3 py-2 focus:ring-2 focus:ring-ring"
+                                    data-bind="languagePreference">
+                                <option value="en" selected>English</option>
+                                <option value="hi">Hindi</option>
+                                <option value="bn">Bengali</option>
+                                <option value="te">Telugu</option>
+                                <option value="ta">Tamil</option>
+                            </select>
+                        </div>
+                        
+                        <div class="md:col-span-2">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <label for="auto-play" class="text-sm font-medium text-foreground">
+                                        Auto-play Audio
+                                    </label>
+                                    <p class="text-xs text-muted-foreground">Automatically start audio when content is processed</p>
+                                </div>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" 
+                                           id="auto-play" 
+                                           class="sr-only peer"
+                                           data-bind="autoPlay">
+                                    <div class="w-11 h-6 bg-muted peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-ring rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-6 pt-6 border-t border-border">
+                        <button class="bg-primary text-primary-foreground px-6 py-3 rounded-md font-medium hover:bg-primary/90 focus-visible mr-4"
+                                data-event="click:saveSettings"
+                                data-implementation="Should save user preferences to database">
+                            <i class="fas fa-save mr-2" aria-hidden="true"></i>
+                            Save Settings
+                        </button>
+                        <button class="bg-muted text-foreground px-6 py-3 rounded-md font-medium hover:bg-muted/80 focus-visible"
+                                data-event="click:resetSettings"
+                                data-implementation="Should reset to default settings">
+                            <i class="fas fa-undo mr-2" aria-hidden="true"></i>
+                            Reset to Defaults
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- @END_COMPONENT: SettingsSection -->
+
+    </main>
+
+    <!-- Footer -->
+    <!-- @COMPONENT: Footer [additional information and links] -->
+    <footer class="bg-card border-t border-border mt-16" role="contentinfo">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div class="grid md:grid-cols-3 gap-8">
+                <div>
+                    <div class="flex items-center space-x-3 mb-4">
+                        <div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+                            <i class="fas fa-book-open text-primary-foreground text-sm" aria-hidden="true"></i>
+                        </div>
+                        <span class="text-lg font-bold text-foreground">Project Vidya</span>
+                    </div>
+                    <p class="text-muted-foreground">
+                        Making education accessible for students with disabilities through AI-powered content transformation.
+                    </p>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold text-foreground mb-4">Accessibility</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#keyboard-shortcuts" class="text-muted-foreground hover:text-primary focus-visible">Keyboard Shortcuts</a></li>
+                        <li><a href="#screen-reader-guide" class="text-muted-foreground hover:text-primary focus-visible">Screen Reader Guide</a></li>
+                        <li><a href="#accessibility-statement" class="text-muted-foreground hover:text-primary focus-visible">Accessibility Statement</a></li>
+                        <li><a href="#feedback" class="text-muted-foreground hover:text-primary focus-visible">Feedback</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold text-foreground mb-4">Support</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#help" class="text-muted-foreground hover:text-primary focus-visible">Help Center</a></li>
+                        <li><a href="#tutorials" class="text-muted-foreground hover:text-primary focus-visible">Video Tutorials</a></li>
+                        <li><a href="#contact" class="text-muted-foreground hover:text-primary focus-visible">Contact Us</a></li>
+                        <li><a href="#privacy" class="text-muted-foreground hover:text-primary focus-visible">Privacy Policy</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-border mt-8 pt-8 text-center">
+                <p class="text-muted-foreground">
+                    © 2024 Project Vidya. Built with accessibility in mind for inclusive education.
+                </p>
+            </div>
+        </div>
+    </footer>
+    <!-- @END_COMPONENT: Footer -->
+
+    <script>
+        // TODO: Implement business logic, API calls, and state management
+        
+        (function() {
+            // Basic accessibility enhancements
+            
+            // Focus management for keyboard navigation
+            document.addEventListener('keydown', function(e) {
+                // Skip to main content with Ctrl+/
+                if (e.ctrlKey && e.key === '/') {
+                    e.preventDefault();
+                    document.getElementById('main-content').focus();
+                }
+            });
+            
+            // File upload drag and drop simulation
+            const dropZone = document.querySelector('.drop-zone');
+            if (dropZone) {
+                dropZone.addEventListener('dragover', function(e) {
+                    e.preventDefault();
+                    this.classList.add('dragover');
+                });
+                
+                dropZone.addEventListener('dragleave', function(e) {
+                    e.preventDefault();
+                    this.classList.remove('dragover');
+                });
+                
+                dropZone.addEventListener('drop', function(e) {
+                    e.preventDefault();
+                    this.classList.remove('dragover');
+                    // TODO: Handle file upload
+                    console.log('Files dropped:', e.dataTransfer.files);
+                });
+            }
+            
+            // Settings sliders update display
+            const speechRateSlider = document.getElementById('speech-rate');
+            const fontSizeSlider = document.getElementById('font-size');
+            
+            if (speechRateSlider) {
+                speechRateSlider.addEventListener('input', function() {
+                    const value = document.querySelector('[data-bind="speechRateValue"]');
+                    if (value) value.textContent = this.value + 'x speed';
+                });
+            }
+            
+            if (fontSizeSlider) {
+                fontSizeSlider.addEventListener('input', function() {
+                    const value = document.querySelector('[data-bind="fontSizeValue"]');
+                    if (value) value.textContent = this.value + 'px';
+                });
+            }
+            
+            // Announce dynamic content changes for screen readers
+            function announceToScreenReader(message) {
+                const announcement = document.createElement('div');
+                announcement.setAttribute('aria-live', 'polite');
+                announcement.setAttribute('aria-atomic', 'true');
+                announcement.className = 'sr-only';
+                announcement.textContent = message;
+                document.body.appendChild(announcement);
+                setTimeout(() => document.body.removeChild(announcement), 1000);
+            }
+            
+            // TODO: Implement actual file processing, API integration, and state management
+        })();
+    </script>
+</body>
+</html>
