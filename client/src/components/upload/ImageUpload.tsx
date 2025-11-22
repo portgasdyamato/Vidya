@@ -200,9 +200,9 @@ export default function ImageUpload() {
                 data-testid="checkbox-summary-images"
               />
               <div>
-                <Label htmlFor="summary-image" className="font-medium">Create Summary</Label>
+                <Label htmlFor="summary-image" className="font-medium">Create Summary & Flashcards</Label>
                 <p className="text-sm text-muted-foreground">
-                  Generate a concise summary of key visual elements
+                  Get structured highlights plus study-ready flashcards for visuals
                 </p>
               </div>
             </div>

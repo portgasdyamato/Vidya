@@ -13,6 +13,7 @@ export default function AudioPlayer({ audioUrl, title }: AudioPlayerProps) {
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [volume, setVolume] = useState(1);
+  const [playbackRate, setPlaybackRate] = useState(1);
   const audioRef = useRef<HTMLAudioElement>(null);
 
   useEffect(() => {
@@ -25,13 +26,18 @@ export default function AudioPlayer({ audioUrl, title }: AudioPlayerProps) {
     };
 
     const setAudioTime = () => setCurrentTime(audio.currentTime);
+    const setAudioRate = () => {
+      audio.playbackRate = playbackRate;
+    };
 
     audio.addEventListener("loadeddata", setAudioData);
     audio.addEventListener("timeupdate", setAudioTime);
+    audio.addEventListener("ratechange", setAudioRate);
 
     return () => {
       audio.removeEventListener("loadeddata", setAudioData);
       audio.removeEventListener("timeupdate", setAudioTime);
+      audio.removeEventListener("ratechange", setAudioRate);
     };
   }, []);
 
@@ -63,6 +69,15 @@ export default function AudioPlayer({ audioUrl, title }: AudioPlayerProps) {
     const newVolume = value[0];
     audio.volume = newVolume;
     setVolume(newVolume);
+  };
+
+  const handlePlaybackRateChange = (value: number[]) => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    const newRate = value[0];
+    audio.playbackRate = newRate;
+    setPlaybackRate(newRate);
   };
 
   const formatTime = (time: number) => {
@@ -132,7 +147,21 @@ export default function AudioPlayer({ audioUrl, title }: AudioPlayerProps) {
             aria-label="Volume control"
           />
         </div>
-
+        
+        <div className="flex items-center space-x-2 flex-shrink-0 ml-2">
+          <span className="text-xs text-muted-foreground">Speed</span>
+          <Slider
+            value={[playbackRate]}
+            min={0.5}
+            max={2}
+            step={0.1}
+            onValueChange={handlePlaybackRateChange}
+            className="w-24"
+            data-testid="slider-playback-rate"
+            aria-label="Playback speed"
+          />
+          <span className="text-xs ml-1">{playbackRate.toFixed(1)}x</span>
+        </div>
         <Button
           variant="ghost"
           size="sm"

@@ -153,9 +153,9 @@ export default function VideoUpload() {
                 data-testid="checkbox-summary-videos"
               />
               <div>
-                <Label htmlFor="summary-video" className="font-medium">Create Summary</Label>
+                <Label htmlFor="summary-video" className="font-medium">Create Summary & Flashcards</Label>
                 <p className="text-sm text-muted-foreground">
-                  Generate a concise summary of the video content
+                  Receive structured highlights plus flashcards from the transcript
                 </p>
               </div>
             </div>

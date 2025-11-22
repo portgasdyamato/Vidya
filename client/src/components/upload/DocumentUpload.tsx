@@ -1,21 +1,37 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { Link } from "wouter";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Upload, FileText } from "lucide-react";
+import { Loader2, Upload, FileText, CheckCircle2, AlertTriangle } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 
-export default function DocumentUpload() {
+type ProcessingState = {
+  id: string;
+  title: string;
+  status: "pending" | "processing" | "completed" | "failed";
+  errorMessage?: string | null;
+};
+
+interface DocumentUploadProps {
+  onSuccess?: (contentItem: { id: string; title: string; status: string }) => void;
+  hideProgress?: boolean; // Hide internal progress when used in workspace
+}
+
+export default function DocumentUpload({ onSuccess, hideProgress = false }: DocumentUploadProps = {}) {
   const [dragActive, setDragActive] = useState(false);
   const [files, setFiles] = useState<File[]>([]);
   const [title, setTitle] = useState("");
   const [generateAudio, setGenerateAudio] = useState(true);
   const [generateSummary, setGenerateSummary] = useState(true);
   const [generateQuiz, setGenerateQuiz] = useState(false);
+  const [processingItem, setProcessingItem] = useState<ProcessingState | null>(null);
+  const [progressValue, setProgressValue] = useState(15);
   
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -25,14 +41,21 @@ export default function DocumentUpload() {
       const response = await apiRequest("POST", "/api/content/document", formData);
       return response.json();
     },
-    onSuccess: () => {
+    onSuccess: (contentItem) => {
       toast({
         title: "Upload successful",
         description: "Your document is being processed. Check back soon for results.",
       });
       setFiles([]);
       setTitle("");
+      setProcessingItem({
+        id: contentItem.id,
+        title: contentItem.title,
+        status: contentItem.status,
+      });
+      setProgressValue(25);
       queryClient.invalidateQueries({ queryKey: ["/api/content"] });
+      onSuccess?.(contentItem);
     },
     onError: (error: any) => {
       toast({
@@ -42,6 +65,40 @@ export default function DocumentUpload() {
       });
     },
   });
+
+  useEffect(() => {
+    if (!processingItem || ["completed", "failed"].includes(processingItem.status)) {
+      return;
+    }
+
+    const { id } = processingItem;
+
+    const interval = setInterval(async () => {
+      try {
+        const response = await fetch(`/api/content/${id}`, {
+          credentials: "include",
+        });
+        if (!response.ok) return;
+        const data = await response.json();
+        setProcessingItem({
+          id: data.id,
+          title: data.title,
+          status: data.status,
+          errorMessage: data.errorMessage,
+        });
+        setProgressValue((prev) => Math.min(prev + 15, 90));
+        if (data.status === "completed" || data.status === "failed") {
+          clearInterval(interval);
+          setProgressValue(data.status === "completed" ? 100 : 0);
+          queryClient.invalidateQueries({ queryKey: ["/api/content"] });
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, [processingItem?.status, processingItem?.id, queryClient]);
 
   const handleDrag = (e: React.DragEvent) => {
     e.preventDefault();
@@ -201,9 +258,9 @@ export default function DocumentUpload() {
                 data-testid="checkbox-summary-documents"
               />
               <div>
-                <Label htmlFor="summary" className="font-medium">Create Summary</Label>
+                <Label htmlFor="summary" className="font-medium">Create Summary & Flashcards</Label>
                 <p className="text-sm text-muted-foreground">
-                  Generate concise summaries of key concepts
+                  Get structured highlights with bold headings plus ready-to-use flashcards
                 </p>
               </div>
             </div>
@@ -224,6 +281,55 @@ export default function DocumentUpload() {
             </div>
           </div>
         </div>
+
+        {processingItem && !hideProgress && (
+          <div className="mt-8 rounded-2xl border border-border/60 bg-muted/20 p-6">
+            <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+              <div>
+                <p className="text-xs uppercase tracking-wide text-muted-foreground">Processing</p>
+                <h4 className="text-lg font-semibold text-foreground">{processingItem.title}</h4>
+                <p className="text-sm text-muted-foreground">
+                  Status:{" "}
+                  <span className="font-medium text-primary">
+                    {processingItem.status === "completed"
+                      ? "Ready to study"
+                      : processingItem.status === "failed"
+                        ? "Failed"
+                        : "Analyzing content"}
+                  </span>
+                </p>
+                {processingItem.errorMessage && (
+                  <p className="mt-2 text-xs text-destructive">{processingItem.errorMessage}</p>
+                )}
+              </div>
+              <div className="flex items-center gap-2">
+                {processingItem.status === "completed" ? (
+                  <CheckCircle2 className="h-10 w-10 text-primary" />
+                ) : processingItem.status === "failed" ? (
+                  <AlertTriangle className="h-10 w-10 text-destructive" />
+                ) : (
+                  <Loader2 className="h-10 w-10 animate-spin text-muted-foreground" />
+                )}
+              </div>
+            </div>
+            <Progress value={progressValue} className="mt-4" />
+            <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center">
+              <p className="text-xs text-muted-foreground">
+                We'll automatically refresh this status. You can navigate away and come back anytime.
+              </p>
+              {!onSuccess && (
+                <Button asChild disabled={processingItem.status !== "completed"}>
+                  <Link href={`/study/${processingItem.id}`}>Continue to Study</Link>
+                </Button>
+              )}
+              {onSuccess && processingItem.status === "completed" && (
+                <p className="text-xs text-primary font-medium">
+                  ✓ Processing complete! Returning to workspace...
+                </p>
+              )}
+            </div>
+          </div>
+        )}
 
         {/* Process Button */}
         <div className="mt-8 text-center">

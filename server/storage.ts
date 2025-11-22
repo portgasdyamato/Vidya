@@ -33,12 +33,30 @@ export class DatabaseStorage implements IStorage {
     return user;
   }
 
-  async createContentItem(contentItem: InsertContentItem & { userId: string }): Promise<ContentItem> {
-    const [item] = await db
-      .insert(contentItems)
-      .values(contentItem)
+  async ensureDefaultUser(): Promise<User> {
+    const existing = await this.getUserByUsername("default-user");
+    if (existing) return existing;
+
+    // create a default user with a fixed id to avoid FK issues in dev
+    const [user] = await db
+      .insert(users)
+      .values({ id: "default-user", username: "default-user", password: "" })
       .returning();
-    return item;
+
+    return user;
+  }
+
+  async createContentItem(contentItem: InsertContentItem & { userId: string }): Promise<ContentItem> {
+    try {
+      const [item] = await db
+        .insert(contentItems)
+        .values(contentItem)
+        .returning();
+      return item;
+    } catch (error: any) {
+      console.error("Error creating content item:", error);
+      throw new Error(`Failed to create content item: ${error?.message || 'Unknown error'}`);
+    }
   }
 
   async getContentItem(id: string): Promise<ContentItem | undefined> {
@@ -56,11 +74,17 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getUserContentItems(userId: string): Promise<ContentItem[]> {
-    return await db
-      .select()
-      .from(contentItems)
-      .where(eq(contentItems.userId, userId))
-      .orderBy(desc(contentItems.createdAt));
+    try {
+      return await db
+        .select()
+        .from(contentItems)
+        .where(eq(contentItems.userId, userId))
+        .orderBy(desc(contentItems.createdAt));
+    } catch (error: any) {
+      console.error("Error fetching user content items:", error);
+      // Return empty array on error instead of throwing
+      return [];
+    }
   }
 
   async deleteContentItem(id: string): Promise<boolean> {

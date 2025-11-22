@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "wouter";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import DocumentUpload from "@/components/upload/DocumentUpload";
@@ -41,16 +42,12 @@ export default function Home() {
               Transform documents, images, and videos into accessible content. Project Vidya makes learning materials available to students with visual or hearing impairments through advanced AI technology.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <a 
-                href="#upload" 
-                className="bg-white text-primary px-8 py-4 rounded-lg text-xl font-semibold hover:bg-gray-50 transition-colors focus-ring inline-flex items-center min-w-48"
-                data-testid="link-start-learning"
-              >
-                Start Learning Now
+              <Link href="/workspace" className="bg-white text-primary px-8 py-4 rounded-lg text-xl font-semibold hover:bg-gray-50 transition-colors focus-ring inline-flex items-center min-w-48 shadow-lg hover:shadow-xl" data-testid="link-start-learning">
+                Get Started
                 <svg className="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path>
                 </svg>
-              </a>
+              </Link>
               <a 
                 href="#how-it-works" 
                 className="text-white border-2 border-white px-8 py-4 rounded-lg text-xl font-semibold hover:bg-white hover:text-primary transition-colors focus-ring min-w-48"

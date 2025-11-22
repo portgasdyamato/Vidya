@@ -1,10 +1,23 @@
+import "dotenv/config";
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
+import { ensureSchema } from "./db";
 import { setupVite, serveStatic, log } from "./vite";
 
 const app = express();
+app.set("etag", false);
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+
+app.use((req, res, next) => {
+  if (req.path.startsWith("/api")) {
+    res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate");
+    res.setHeader("Pragma", "no-cache");
+    res.setHeader("Expires", "0");
+    res.setHeader("Surrogate-Control", "no-store");
+  }
+  next();
+});
 
 app.use((req, res, next) => {
   const start = Date.now();
@@ -37,6 +50,13 @@ app.use((req, res, next) => {
 });
 
 (async () => {
+  // Ensure database schema exists (creates tables/types if missing)
+  try {
+    await ensureSchema();
+  } catch (err) {
+    console.error("Failed to ensure database schema:", err);
+  }
+
   const server = await registerRoutes(app);
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
