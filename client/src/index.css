@@ -111,7 +111,8 @@
   }
 
   .gradient-bg {
-    background: linear-gradient(135deg, hsl(197, 80%, 90%) 0%, hsl(199, 89%, 48%) 100%);
+    /* Dark glassmorphism gradient */
+    background: linear-gradient(135deg, rgba(24, 24, 27, 0.9) 0%, rgba(0, 0, 0, 0.9) 100%);
   }
   
   .focus-ring:focus {
@@ -136,6 +137,18 @@
   .card-hover:hover {
     transform: translateY(-4px);
     box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  }
+
+  /* reveal-on-scroll animation */
+  .reveal {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+  }
+
+  .reveal.active {
+    opacity: 1;
+    transform: none;
   }
   
   @media (prefers-reduced-motion: reduce) {

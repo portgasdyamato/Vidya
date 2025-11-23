@@ -1,8 +1,9 @@
 import { Link } from "wouter";
+import { Github, Twitter, Linkedin } from "lucide-react";
 
 export default function Footer() {
   return (
-    <footer className="bg-foreground text-background py-12" role="contentinfo">
+    <footer className="bg-gradient-to-br from-gray-900 to-black text-background/90 py-16 reveal" role="contentinfo">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid md:grid-cols-4 gap-8">
           <div className="md:col-span-2">
@@ -71,6 +72,17 @@ export default function Footer() {
         </div>
         
         <div className="border-t border-background/20 mt-8 pt-8 text-center">
+          <div className="flex justify-center gap-6 mb-6">
+            <a href="https://github.com" aria-label="GitHub" className="hover:text-primary transition-transform hover:-translate-y-1 focus-ring rounded-full">
+              <Github className="w-6 h-6" />
+            </a>
+            <a href="https://twitter.com" aria-label="Twitter" className="hover:text-primary transition-transform hover:-translate-y-1 focus-ring rounded-full">
+              <Twitter className="w-6 h-6" />
+            </a>
+            <a href="https://linkedin.com" aria-label="LinkedIn" className="hover:text-primary transition-transform hover:-translate-y-1 focus-ring rounded-full">
+              <Linkedin className="w-6 h-6" />
+            </a>
+          </div>
           <p className="text-background/60">
             © 2025 Project Vidya by Pippo. Built for educational accessibility and inclusion.
           </p>

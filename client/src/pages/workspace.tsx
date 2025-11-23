@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
+import { useLocation } from "wouter";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link } from "wouter";
 import Header from "@/components/Header";
@@ -1379,6 +1380,15 @@ function buildAssistantReply(summary: string, extractedText: string, question: s
 }
 
 export default function Workspace() {
+  const [location, navigate] = useLocation();
+  useEffect(() => {
+    fetch('/api/auth/user', { credentials: 'include' })
+      .then((r) => r.json())
+      .then((d) => {
+        if (!d.user) navigate('/');
+      })
+      .catch(() => navigate('/'));
+  }, [navigate]);
   const [selectedSession, setSelectedSession] = useState<ChatSession | undefined>();
   const [selectedView, setSelectedView] = useState<string>("chat"); // Default to chat
   const [showUpload, setShowUpload] = useState(false);

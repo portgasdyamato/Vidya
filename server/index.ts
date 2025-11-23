@@ -1,13 +1,36 @@
 import "dotenv/config";
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
+import session from "express-session";
+import { setupGoogleAuth } from "./auth";
 import { ensureSchema } from "./db";
 import { setupVite, serveStatic, log } from "./vite";
+import path from "path";
 
 const app = express();
 app.set("etag", false);
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+
+// Serve GIF assets used by the podcast player
+app.get("/talk.gif", (_req, res) => {
+  res.sendFile(path.join(process.cwd(), "talk.gif"));
+});
+app.get("/stop.gif", (_req, res) => {
+  res.sendFile(path.join(process.cwd(), "stop.gif"));
+});
+
+// Session middleware (required for Passport)
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || "vidya_secret",
+    resave: false,
+    saveUninitialized: false,
+  })
+);
+
+// Passport + Google OAuth
+setupGoogleAuth(app);
 
 app.use((req, res, next) => {
   if (req.path.startsWith("/api")) {

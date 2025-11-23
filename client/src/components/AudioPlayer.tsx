@@ -96,7 +96,7 @@ export default function AudioPlayer({ audioUrl, title }: AudioPlayerProps) {
   };
 
   return (
-    <div className="bg-muted p-4 rounded-lg" data-testid="audio-player">
+    <div className="glass-card p-5 rounded-2xl shadow-lg animate-fade-in" data-testid="audio-player">
       <audio ref={audioRef} src={audioUrl} preload="metadata" />
       
       <div className="flex items-center space-x-4">

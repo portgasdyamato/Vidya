@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "wouter";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -12,6 +12,27 @@ type TabType = "documents" | "images" | "videos";
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState<TabType>("documents");
+
+  // Simple intersection observer to trigger reveal animations
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("active");
+          }
+        });
+      },
+      { threshold: 0.2 }
+    );
+
+    const elements = document.querySelectorAll<HTMLElement>(".reveal");
+    elements.forEach((el) => observer.observe(el));
+
+    return () => {
+      elements.forEach((el) => observer.unobserve(el));
+    };
+  }, []);
 
   const renderUploadComponent = () => {
     switch (activeTab) {
@@ -32,29 +53,41 @@ export default function Home() {
       
       <main id="main-content" role="main">
         {/* Hero Section */}
-        <section className="gradient-bg py-20" aria-labelledby="hero-heading">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h1 id="hero-heading" className="text-5xl md:text-6xl font-bold text-white mb-6 leading-tight">
-              AI-Powered Learning
-              <span className="block">for Everyone</span>
-            </h1>
-            <p className="text-xl text-white/90 mb-8 max-w-3xl mx-auto leading-relaxed">
-              Transform documents, images, and videos into accessible content. Project Vidya makes learning materials available to students with visual or hearing impairments through advanced AI technology.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <Link href="/workspace" className="bg-white text-primary px-8 py-4 rounded-lg text-xl font-semibold hover:bg-gray-50 transition-colors focus-ring inline-flex items-center min-w-48 shadow-lg hover:shadow-xl" data-testid="link-start-learning">
-                Get Started
-                <svg className="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path>
-                </svg>
-              </Link>
-              <a 
-                href="#how-it-works" 
-                className="text-white border-2 border-white px-8 py-4 rounded-lg text-xl font-semibold hover:bg-white hover:text-primary transition-colors focus-ring min-w-48"
-                data-testid="link-how-it-works"
-              >
-                See How It Works
-              </a>
+        <section className="bg-black py-20" aria-labelledby="hero-heading">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center gap-12">
+            {/* Left: text content */}
+            <div className="flex-1 md:text-left text-center">
+              <h1 id="hero-heading" className="text-5xl md:text-6xl font-bold text-white mb-6 leading-tight">
+                AI-Powered Learning
+                <span className="block">for Everyone</span>
+              </h1>
+              <p className="text-xl text-white/90 mb-8 max-w-xl leading-relaxed md:mx-0 mx-auto">
+                Transform documents, images, and videos into accessible content. Project Vidya makes learning materials available to students with visual or hearing impairments through advanced AI technology.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start items-center">
+                <a href="/auth/google" className="bg-white text-primary px-8 py-4 rounded-lg text-xl font-semibold hover:bg-gray-50 transition-colors focus-ring inline-flex items-center min-w-48 shadow-lg hover:shadow-xl" data-testid="link-get-started">
+                  Get Started
+                  <svg className="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+                  </svg>
+                </a>
+                <a
+                  href="#how-it-works"
+                  className="text-white border-2 border-white px-8 py-4 rounded-lg text-xl font-semibold hover:bg-white hover:text-primary transition-colors focus-ring min-w-48"
+                  data-testid="link-how-it-works"
+                >
+                  See How It Works
+                </a>
+              </div>
+            </div>
+
+            {/* Right: GIF */}
+            <div className="flex-1">
+              <img
+                src="/talk.gif"
+                alt="Animated AI conversation"
+                className="w-full max-w-xl mx-auto rounded-xl shadow-xl"
+              />
             </div>
           </div>
         </section>
@@ -89,8 +122,8 @@ export default function Home() {
                   icon: Video
                 }
               ].map((feature, index) => (
-                <Card key={index} className="p-8 card-hover border border-border" role="article">
-                  <div className="w-16 h-16 bg-gradient-to-br from-primary to-blue-600 rounded-lg flex items-center justify-center mb-6">
+                <Card key={index} className="p-8 card-hover border border-border reveal" role="article">
+                  <div className="w-16 h-16 bg-gradient-to-br from-gray-700/70 to-gray-900/90 rounded-lg flex items-center justify-center mb-6">
                     <feature.icon className="w-8 h-8 text-white" />
                   </div>
                   <h3 className="text-2xl font-semibold text-card-foreground mb-4">{feature.title}</h3>
@@ -133,8 +166,8 @@ export default function Home() {
                   description: "Receive accessible output including audio, text descriptions, summaries, and interactive quizzes tailored to your needs."
                 }
               ].map((step, index) => (
-                <div key={index} className="text-center" role="article">
-                  <div className="w-20 h-20 bg-gradient-to-br from-primary to-blue-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                <div key={index} className="text-center reveal" role="article">
+                  <div className="w-20 h-20 bg-gradient-to-br from-gray-700/70 to-gray-900/90 rounded-full flex items-center justify-center mx-auto mb-6">
                     <span className="text-2xl font-bold text-white">{step.step}</span>
                   </div>
                   <h3 className="text-2xl font-semibold text-foreground mb-4">{step.title}</h3>

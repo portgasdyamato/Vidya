@@ -2,9 +2,8 @@ import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { Card, CardContent } from "@/components/ui/card";
-import { Play, Pause, Volume2, Gauge, Subtitles } from "lucide-react";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
+import { Play, Pause, Volume2, Gauge, Subtitles, Rewind, FastForward } from "lucide-react";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 
 interface PodcastPlayerProps {
   audioUrl: string;
@@ -24,8 +23,16 @@ export default function PodcastPlayer({ audioUrl, title, transcript, summary, us
   const [playbackRate, setPlaybackRate] = useState(1);
   const [showSubtitles, setShowSubtitles] = useState(true);
   const [currentSubtitle, setCurrentSubtitle] = useState("");
+  // Choose transcript first; fallback to summary if provided
+  const primaryText = transcript || summary || "";
+  // Remove code/json fences
+  const cleanText = primaryText
+    .replace(/```[\s\S]*?```/g, " ")
+    .replace(/[{}\[\]]/g, " ");
   const [speechProgress, setSpeechProgress] = useState(0);
-  const textToSpeak = summary || transcript || "";
+  const textToSpeak = cleanText;
+  const gifPath = isPlaying ? '/talk.gif' : '/stop.gif';
+  const gifSrc = import.meta.env.DEV ? `http://localhost:5001${gifPath}` : gifPath;
 
   // Web Speech API implementation
   useEffect(() => {
@@ -221,7 +228,30 @@ export default function PodcastPlayer({ audioUrl, title, transcript, summary, us
     return `${mins}:${secs.toString().padStart(2, "0")}`;
   };
 
-  const speedOptions = [0.5, 0.75, 1, 1.25, 1.5, 1.75, 2];
+  const handleDownload = () => {
+  if (!audioUrl || useWebSpeech) return;
+  const link = document.createElement("a");
+  link.href = audioUrl;
+  link.download = `${title || "podcast"}.mp3`;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+};
+
+const handleShare = async () => {
+  try {
+    if (navigator.share) {
+      await navigator.share({ title, url: audioUrl || window.location.href });
+    } else if (audioUrl) {
+      await navigator.clipboard.writeText(audioUrl);
+      alert("Link copied to clipboard");
+    }
+  } catch (err) {
+    console.error(err);
+  }
+};
+
+const speedOptions = [0.5, 0.75, 1, 1.25, 1.5, 1.75, 2];
 
   // Cleanup on unmount
   useEffect(() => {
@@ -232,136 +262,118 @@ export default function PodcastPlayer({ audioUrl, title, transcript, summary, us
     };
   }, [useWebSpeech]);
 
+// Keyboard shortcuts for enhanced accessibility and quicker controls
+useEffect(() => {
+  const handleKeyDown = (e: KeyboardEvent) => {
+    const tag = (e.target as HTMLElement)?.tagName;
+    if (["INPUT", "TEXTAREA"].includes(tag ?? "")) return;
+
+    switch (e.code) {
+      case "Space":
+        e.preventDefault();
+        togglePlay();
+        break;
+      case "ArrowLeft":
+        handleSeek([Math.max(0, currentTime - 10)]);
+        break;
+      case "ArrowRight":
+        handleSeek([Math.min(duration, currentTime + 10)]);
+        break;
+      case "ArrowUp":
+        setVolume((v) => Math.min(1, v + 0.05));
+        break;
+      case "ArrowDown":
+        setVolume((v) => Math.max(0, v - 0.05));
+        break;
+      case "KeyS":
+        setShowSubtitles((v) => !v);
+        break;
+      case "BracketRight":
+        setPlaybackRate((rate) => {
+          const idx = speedOptions.indexOf(rate);
+          return idx < speedOptions.length - 1 ? speedOptions[idx + 1] : rate;
+        });
+        break;
+      case "BracketLeft":
+        setPlaybackRate((rate) => {
+          const idx = speedOptions.indexOf(rate);
+          return idx > 0 ? speedOptions[idx - 1] : rate;
+        });
+        break;
+      default:
+        break;
+    }
+  };
+  window.addEventListener("keydown", handleKeyDown);
+  return () => window.removeEventListener("keydown", handleKeyDown);
+}, [currentTime, duration, togglePlay, handleSeek]);
+
   return (
-    <div className="space-y-4">
-      {!useWebSpeech && <audio ref={audioRef} src={audioUrl} preload="metadata" />}
-      
-      {/* Audio Player Controls */}
-      <Card className="border-border/50">
-        <CardContent className="p-4 space-y-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="font-semibold text-foreground">{title}</h3>
-              <p className="text-sm text-muted-foreground">
-                {useWebSpeech ? "Audio Podcast (Text-to-Speech)" : "Audio Podcast"}
-              </p>
-            </div>
-            <Button
-              onClick={togglePlay}
-              size="lg"
-              className="h-12 w-12 rounded-full"
-              disabled={useWebSpeech && !textToSpeak}
-            >
-              {isPlaying ? <Pause className="h-5 w-5" /> : <Play className="h-5 w-5" />}
-            </Button>
-          </div>
+  <div className="space-y-6">
+    {!useWebSpeech && <audio ref={audioRef} src={audioUrl} preload="metadata" />}
 
-          {/* Progress Bar */}
-          <div className="space-y-2">
-            <Slider
-              value={[currentTime]}
-              max={duration || 100}
-              step={0.1}
-              onValueChange={handleSeek}
-              className="w-full"
-              disabled={useWebSpeech && !isPlaying}
-            />
-            <div className="flex justify-between text-xs text-muted-foreground">
-              <span>{formatTime(currentTime)}</span>
-              <span>{formatTime(duration)}</span>
-            </div>
-          </div>
+    <div className="flex flex-col items-center gap-6">
+      <img
+        src={gifSrc}
+        alt="animation"
+        className="w-64 h-64 rounded-full shadow-xl object-cover"
+      />
 
-          {/* Controls Row */}
-          <div className="flex items-center gap-4">
-            {/* Volume */}
-            <div className="flex items-center gap-2 flex-1">
-              <Volume2 className="h-4 w-4 text-muted-foreground" />
-              <Slider
-                value={[volume]}
-                max={1}
-                step={0.01}
-                onValueChange={(v) => setVolume(v[0])}
-                className="flex-1"
-              />
-            </div>
+      <div className="text-center">
+        <h3 className="text-2xl font-semibold">{title}</h3>
+        <p className="text-sm text-muted-foreground">
+          {useWebSpeech ? "Audio Podcast (Text-to-Speech)" : "Audio Podcast"}
+        </p>
+      </div>
 
-            {/* Speed Control */}
-            <div className="flex items-center gap-2">
-              <Gauge className="h-4 w-4 text-muted-foreground" />
-              <div className="flex gap-1">
-                {speedOptions.map((speed) => (
-                  <Button
-                    key={speed}
-                    variant={playbackRate === speed ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => setPlaybackRate(speed)}
-                    className="h-8 px-2 text-xs"
-                  >
-                    {speed}x
-                  </Button>
-                ))}
-              </div>
-            </div>
-
-            {/* Subtitles Toggle */}
-            <Button
-              variant={showSubtitles ? "default" : "outline"}
-              size="sm"
-              onClick={() => setShowSubtitles(!showSubtitles)}
-              className="h-8"
-            >
-              <Subtitles className="h-4 w-4 mr-1" />
-              {showSubtitles ? "Hide" : "Show"} Subtitles
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Subtitles Display */}
-      {showSubtitles && (currentSubtitle || transcript) && (
-        <Card className="border-border/50 bg-card/50">
-          <CardContent className="p-4">
-            <div className="flex items-center gap-2 mb-3">
-              <Subtitles className="h-4 w-4 text-muted-foreground" />
-              <h4 className="text-sm font-semibold text-foreground">Subtitles</h4>
-            </div>
-            <div className="min-h-[60px] p-3 rounded-lg bg-background/50 border border-border/30">
-              <p className="text-sm leading-relaxed text-foreground">
-                {currentSubtitle || transcript?.substring(0, 200) + "..."}
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Summary/Transcript Display */}
-      {summary && (
-        <Card className="border-border/50">
-          <CardContent className="p-4">
-            <h4 className="text-sm font-semibold text-foreground mb-3">Summary</h4>
-            <div className="prose prose-sm dark:prose-invert max-w-none">
-              <ReactMarkdown 
-                remarkPlugins={[remarkGfm]}
-                components={{
-                  h1: ({node, ...props}) => <h1 className="text-xl font-bold text-foreground mb-3 mt-4" {...props} />,
-                  h2: ({node, ...props}) => <h2 className="text-lg font-semibold text-foreground mb-2 mt-3" {...props} />,
-                  h3: ({node, ...props}) => <h3 className="text-base font-semibold text-foreground mb-2 mt-2" {...props} />,
-                  p: ({node, ...props}) => <p className="mb-2 leading-relaxed text-foreground text-sm" {...props} />,
-                  strong: ({node, ...props}) => <strong className="font-semibold text-foreground" {...props} />,
-                  ul: ({node, ...props}) => <ul className="list-disc list-inside mb-2 space-y-1 text-foreground text-sm" {...props} />,
-                  ol: ({node, ...props}) => <ol className="list-decimal list-inside mb-2 space-y-1 text-foreground text-sm" {...props} />,
-                  li: ({node, ...props}) => <li className="ml-4" {...props} />,
-                  code: ({node, ...props}) => <code className="bg-muted px-1.5 py-0.5 rounded text-sm font-mono" {...props} />,
-                  pre: ({node, ...props}) => <pre className="bg-muted p-3 rounded-lg overflow-x-auto mb-3" {...props} />,
-                }}
-              >
-                {summary}
-              </ReactMarkdown>
-            </div>
-          </CardContent>
-        </Card>
-      )}
+      <Button onClick={togglePlay} className="h-14 w-14 rounded-full">
+        {isPlaying ? <Pause className="h-6 w-6" /> : <Play className="h-6 w-6" />}
+      </Button>
     </div>
-  );
-}
+
+    {/* progress */}
+    <div>
+      <Slider value={[currentTime]} max={duration || 100} step={0.1} onValueChange={handleSeek} />
+      <div className="flex justify-between text-xs text-muted-foreground mt-1">
+        <span>{formatTime(currentTime)}</span>
+        <span>{formatTime(duration)}</span>
+      </div>
+    </div>
+
+    {/* controls */}
+    <div className="flex flex-wrap justify-center items-center gap-4">
+      <Button variant="ghost" onClick={() => handleSeek([Math.max(0, currentTime - 10)])}>
+        <Rewind className="h-5 w-5" />
+      </Button>
+
+      <div className="flex items-center gap-2">
+        <Volume2 className="h-4 w-4" />
+        <Slider value={[volume]} max={1} step={0.01} onValueChange={(v) => setVolume(v[0])} className="w-32" />
+      </div>
+
+      <Select value={String(playbackRate)} onValueChange={(v) => setPlaybackRate(parseFloat(v))}>
+        <SelectTrigger className="w-20 h-8 text-xs">
+          <SelectValue placeholder={`${playbackRate}x`} />
+        </SelectTrigger>
+        <SelectContent>
+          {speedOptions.map((s) => (
+            <SelectItem key={s} value={String(s)}>{s}x</SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+
+      <Button variant="ghost" onClick={() => handleSeek([Math.min(duration, currentTime + 10)])}>
+        <FastForward className="h-5 w-5" />
+      </Button>
+
+      <Button variant={showSubtitles ? "default" : "outline"} onClick={() => setShowSubtitles(!showSubtitles)}>
+        <Subtitles className="h-4 w-4 mr-1" />
+        {showSubtitles ? "Hide" : "Show"} Subtitles
+      </Button>
+    </div>
+
+    {showSubtitles && currentSubtitle && (
+      <div className="rounded-lg border p-4 bg-muted/20 text-sm">{currentSubtitle}</div>
+    )}
+  </div>
+  )}
