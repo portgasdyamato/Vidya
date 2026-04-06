@@ -5,7 +5,7 @@ import mammoth from "mammoth";
 import ytdl from "ytdl-core";
 // Note: youtube-transcript removed - using audio download + Whisper as primary method
 // import { YoutubeTranscript } from "youtube-transcript";
-import { extractTextFromImage, summarizeContent, generateQuiz, generateSpeech, transcribeAudio, generateFormattedSummaryAndFlashcards, generatePodcastScript } from "./openai";
+import { extractTextFromImage, summarizeContent, generateQuiz, generateSpeech, transcribeAudio, generateFormattedSummaryAndFlashcards, generatePodcastScript, generateMindMap } from "./openai";
 import type { ProcessingOptions } from "@shared/schema";
 
 const pdfExtract = new PDFExtract();
@@ -268,6 +268,7 @@ export async function processContent(
   podcastAudioBuffer?: Buffer;
   quizData?: Array<{ question: string; options: string[]; correctAnswer: number }>;
   flashcards?: GeneratedFlashcard[];
+  mindMap?: { chart: string; explanations: Record<string, string> } | string;
 }> {
   let extractedText = "";
 
@@ -302,6 +303,7 @@ export async function processContent(
     podcastAudioBuffer?: Buffer;
     quizData?: Array<{ question: string; options: string[]; correctAnswer: number }>;
     flashcards?: GeneratedFlashcard[];
+    mindMap?: { chart: string; explanations: Record<string, string> } | string;
   } = { extractedText };
 
   // Generate summary if requested
@@ -322,8 +324,17 @@ export async function processContent(
     }
   }
 
-  // For videos: Generate podcast script (always for videos)
-  if (contentType === "video") {
+  // Generate mind map if requested
+  if (options.generateMindMap) {
+    try {
+      result.mindMap = await generateMindMap(extractedText);
+    } catch (mmErr) {
+      console.warn("Mind map generation failed:", mmErr);
+    }
+  }
+
+  // Generate podcast script (for videos or documents if audio requested)
+  if (contentType === "video" || (contentType === "document" && options.generateAudio)) {
     try {
       const podcastScript = await generatePodcastScript(extractedText, summaryText);
       result.podcastScript = podcastScript;

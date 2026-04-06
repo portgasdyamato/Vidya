@@ -3,22 +3,102 @@ import OpenAI from "openai";
 import * as fs from "fs";
 import * as path from "path";
 
-// Initialize Google Gemini client only if key present
+// ── AI Provider Setup ─────────────────────────────────────────────────────────
+// Priority: DeepSeek (primary) → Gemini (fallback) → OpenAI (fallback)
+
+// 1. DeepSeek — primary provider (OpenAI-compatible API)
+const DEEPSEEK_API_KEY = process.env.DEEPSEEK_API_KEY || "";
+const deepseek = DEEPSEEK_API_KEY
+  ? new OpenAI({ apiKey: DEEPSEEK_API_KEY, baseURL: "https://api.deepseek.com/v1" })
+  : null;
+
+// 2. Google Gemini — fallback
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY || "";
 const googleAI = GEMINI_API_KEY ? new GoogleGenAI({ apiKey: GEMINI_API_KEY }) : null;
 
-// Initialize OpenAI client as a fallback when available
+// 3. OpenAI — fallback (mainly for TTS audio)
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY || "";
 const openai = OPENAI_API_KEY ? new OpenAI({ apiKey: OPENAI_API_KEY }) : null;
+
+// ── DeepSeek helpers ──────────────────────────────────────────────────────────
+
+/**
+ * Generate text via DeepSeek-V3.
+ * deepseek-chat = DeepSeek-V3 (best for most tasks).
+ * deepseek-reasoner = DeepSeek-R1 (best for reasoning/math — costs more).
+ */
+async function deepseekChat(
+  systemPrompt: string,
+  userPrompt: string,
+  model: "deepseek-chat" | "deepseek-reasoner" = "deepseek-chat",
+  maxTokens = 2000
+): Promise<string> {
+  if (!deepseek) throw new Error("DeepSeek not configured");
+  const res = await deepseek.chat.completions.create({
+    model,
+    messages: [
+      { role: "system", content: systemPrompt },
+      { role: "user", content: userPrompt },
+    ],
+    max_tokens: maxTokens,
+    temperature: 0.5,
+  });
+  return res.choices?.[0]?.message?.content || "";
+}
+
+/**
+ * Generate JSON via DeepSeek-V3 with json_object response format.
+ */
+async function deepseekJSON(
+  systemPrompt: string,
+  userPrompt: string,
+  maxTokens = 3000
+): Promise<string> {
+  if (!deepseek) throw new Error("DeepSeek not configured");
+  const res = await deepseek.chat.completions.create({
+    model: "deepseek-chat",
+    messages: [
+      { role: "system", content: systemPrompt },
+      { role: "user", content: userPrompt },
+    ],
+    response_format: { type: "json_object" },
+    max_tokens: maxTokens,
+    temperature: 0.4,
+  });
+  const text = res.choices?.[0]?.message?.content || "{}";
+  console.log("DEEPSEEK_JSON OUTPUT:", text.substring(0, 300) + "...");
+  return text;
+}
+
+// ── Gemini helpers ────────────────────────────────────────────────────────────
+
+/** Text generation via Gemini v1 SDK */
+async function geminiGenerate(prompt: string, model = "gemini-1.5-flash"): Promise<string> {
+  if (!googleAI) throw new Error("Gemini not configured");
+  const response = await googleAI.models.generateContent({
+    model,
+    contents: [{ role: "user", parts: [{ text: prompt }] }],
+  });
+  return response.candidates?.[0]?.content?.parts?.[0]?.text || "";
+}
+
+/** JSON generation via Gemini v1 SDK */
+async function geminiGenerateJSON(prompt: string, model = "gemini-1.5-pro"): Promise<string> {
+  if (!googleAI) throw new Error("Gemini not configured");
+  const response = await googleAI.models.generateContent({
+    model,
+    contents: [{ role: "user", parts: [{ text: prompt }] }],
+    config: { responseMimeType: "application/json" },
+  });
+  return response.candidates?.[0]?.content?.parts?.[0]?.text || "";
+}
+
+// ── Utility ───────────────────────────────────────────────────────────────────
 
 function describeError(err: unknown): string {
   if (err instanceof Error) return err.message;
   if (typeof err === "string") return err;
-  try {
-    return JSON.stringify(err);
-  } catch {
-    return "Unknown error";
-  }
+  try { return JSON.stringify(err); } catch { return "Unknown error"; }
 }
 
 export interface ProcessingResult {
@@ -35,24 +115,23 @@ export async function extractTextFromImage(base64Image: string): Promise<string>
     const prompt = "Extract all text from this image. If there are diagrams, charts, or visual elements, describe them in detail for accessibility. Format your response as plain text that can be read aloud.";
     
     if (googleAI) {
-      const response = await googleAI.models.generateContent({
-        model: "gemini-2.5-flash",
-        contents: [
-          {
+      try {
+        // Use vision-capable model with inline image
+        const response = await googleAI.models.generateContent({
+          model: "gemini-1.5-flash",
+          contents: [{
+            role: "user",
             parts: [
               { text: prompt },
-              {
-                inlineData: {
-                  data: base64Image,
-                  mimeType: "image/jpeg",
-                },
-              },
-            ],
-          },
-        ],
-      });
-
-      return response.text || "";
+              { inlineData: { data: base64Image, mimeType: "image/jpeg" } }
+            ]
+          }],
+        });
+        const txt = response.candidates?.[0]?.content?.parts?.[0]?.text || "";
+        return txt;
+      } catch (err) {
+        console.warn("Google Gemini extractTextFromImage failed:", describeError(err));
+      }
     }
 
     // Fallback: if Google client not available, return empty string
@@ -64,189 +143,143 @@ export async function extractTextFromImage(base64Image: string): Promise<string>
 
 export async function summarizeContent(text: string): Promise<string> {
   try {
-    const prompt = `You are an educational assistant. Create concise, accessible summaries that highlight key concepts and learning objectives. Make the summary suitable for students with disabilities.\n\nPlease summarize the following educational content, focusing on key concepts and main ideas:\n\n${text}`;
+    const sysprompt = "You are an educational assistant. Produce concise, accessible summaries highlighting key concepts. Suitable for students.";
+    const userprompt = `Summarize the following educational content, focusing on key concepts and main ideas:\n\n${text}`;
 
-    // Try Google Gemini first if available
-    if (googleAI) {
+    // 1. DeepSeek (primary)
+    if (deepseek) {
       try {
-        const response = await googleAI.models.generateContent({ model: "gemini-2.5-flash", contents: prompt });
-        return response.text || localSummarize(text);
-      } catch (err: any) {
-        console.warn("Google Gemini summarize failed:", describeError(err));
-      }
+        const result = await deepseekChat(sysprompt, userprompt, "deepseek-chat", 1000);
+        if (result) return result;
+      } catch (err) { console.warn("DeepSeek summarize failed:", describeError(err)); }
     }
 
-    // Fallback to OpenAI Chat Completions if configured
-    if (openai) {
+    // 2. Gemini (fallback)
+    if (googleAI) {
       try {
-        const chatResp = await openai.chat.completions.create({
-          model: "gpt-3.5-turbo",
-          messages: [
-            { role: "system", content: "You are an educational assistant. Produce concise accessible summaries." },
-            { role: "user", content: prompt },
-          ],
-          max_tokens: 1000,
-        });
-
-        const content = chatResp.choices?.[0]?.message?.content || "";
-        return content || localSummarize(text);
-      } catch (err: any) {
-        console.warn("OpenAI summarize failed:", describeError(err));
-      }
+        const result = await geminiGenerate(`${sysprompt}\n\n${userprompt}`, "gemini-1.5-flash");
+        if (result) return result;
+      } catch (err) { console.warn("Gemini summarize failed:", describeError(err)); }
     }
 
     return localSummarize(text);
   } catch (error: any) {
-    // If AI call fails (missing API key / permission), return a local fallback summary
-    console.warn("summarizeContent fallback to local summarizer:", error?.message || error);
+    console.warn("summarizeContent fallback to local:", error?.message || error);
     return localSummarize(text);
   }
 }
 
 export async function generateFormattedSummaryAndFlashcards(text: string): Promise<{ summary_markdown: string; flashcards: Array<{ question: string; answer: string }> }> {
   try {
-     const prompt = `You are an educational assistant. Create a well-structured, clean summary in Markdown format.
+  const prompt = `You are a world-class educational content designer with expertise in pedagogy. Transform the following content into the highest-quality study guide possible.
 
-  CRITICAL FORMATTING REQUIREMENTS:
-  1. Use proper Markdown syntax - clean, readable, and well-structured
-  2. Start with a main heading using ## (not #)
-  3. Use ### for subheadings to organize sections
-  4. Use **bold** for key terms, important concepts, and definitions
-  5. Use bullet points (- or *) for lists of items, concepts, or key points
-  6. Use numbered lists (1., 2., 3.) for sequential steps or ordered information
-  7. For mathematical expressions:
-    - ALWAYS use triple backticks (\`\`\`math ... \`\`\` blocks) for ALL math equations in the summary
-    - Example: 
-      \`\`\`math
-      E = mc^2
-      \`\`\`
-    - DO NOT use $...$ or $$...$$ for math in the summary
-  8. Use proper paragraph breaks (blank lines) between sections
-  9. DO NOT include:
-    - Raw code blocks unless absolutely necessary
-    - JSON structures or code-like syntax
-    - Unescaped special characters that break rendering
-    - Multiple consecutive blank lines
-    - Markdown syntax errors
-    - Any flashcard questions or answers in the summary. The summary must ONLY contain the document content, not flashcards.
+PHASE 1 - MASTER STUDY GUIDE (Markdown):
+Create a deeply insightful, richly structured study guide. Think like a brilliant professor writing a textbook chapter.
 
-  STRUCTURE GUIDELINES:
-  - Begin with a brief overview paragraph (2-3 sentences)
-  - Organize content into logical sections with ### subheadings
-  - Use bullet points for key concepts, takeaways, or important points
-  - Use numbered lists for processes, steps, or sequential information
-  - End with a brief conclusion or summary of main points
+Structure:
+1. ## [Compelling Title]: Specific, descriptive, not generic
+2. **TL;DR**: 2-3 sentences capturing the essence
+3. ### Key Takeaways: 5-7 critical insights, each a complete thought
+4. ### [Deep Dive Sections]: 3-5 sections on natural content themes. For each:
+   - Opening statement about the section
+   - 2-3 paragraphs with clear, academic-depth explanations
+   - Bullet points for complex sub-concepts
+5. ### Real-World Application: How this knowledge applies in practice
+6. ### Connections & Context: How this relates to broader knowledge
 
-  CONTENT REQUIREMENTS:
-  - Be comprehensive but concise
-  - Focus on key concepts, main ideas, and important details
-  - Make it accessible and easy to understand
-  - Highlight important terms and definitions with **bold**
+Formatting Rules:
+- **Bold** every key technical term on first mention
+- Use inline math $eq$ or block math $$eq$$ for ALL mathematical equations
+- Use > blockquotes for important definitions or quotes
+- ONLY ## and ### headings, never H1 (#)
+- No JSON artifacts or code syntax in the body text
 
-  Return a JSON object with exactly two fields:
-  1. "summary_markdown": A clean, well-formatted Markdown summary following all the rules above
-  2. "flashcards": An array of exactly 10 flashcards, each with {"question":"...","answer":"..."}
+PHASE 2 - ELITE FLASHCARDS (JSON):
+Generate EXACTLY 12 world-class flashcards:
+- 4 Conceptual: "What is X and why does it matter?" - test core understanding
+- 3 Reasoning: "Explain WHY X leads to Y" - test causal reasoning
+- 2 Application: "In a real-world scenario where [Z occurs], how would you apply X?" - test practical use
+- 2 Critical Analysis: "Contrast X with Y" or "What is the fundamental limitation of X?" - test depth
+- 1 Synthesis: A question requiring connecting multiple concepts
 
-  IMPORTANT: The summary_markdown must be clean Markdown that will render perfectly in a Markdown viewer. No raw code, no JSON artifacts, just clean, readable formatted text. Do NOT include any flashcard questions or answers in the summary.
+Rules: Questions must be precise and unambiguous. Answers must be 2-4 comprehensive sentences.
 
-  Content to summarize:
-  ${text}
+RETURN FORMAT - Respond ONLY with valid JSON:
+{"summary_markdown": "## Title\n\n**TL;DR**: ...\n\n### Key Takeaways\n\n- ...", "flashcards": [{"question": "...", "answer": "..."}]}
 
-  Return ONLY valid JSON with no additional text before or after.`;
+CONTENT TO PROCESS:
+${text.substring(0, 12000)}
 
-    // First try Google Gemini if available
-    if (googleAI) {
+IMPORTANT: Return ONLY the JSON object. No preamble, no explanation.`;
+
+    const parseFlashcardsResponse = (jsonText: string) => {
       try {
-        const response = await googleAI.models.generateContent({ model: "gemini-2.5-flash", contents: prompt });
-        const jsonText = response.text || "{}";
-        try {
-          const parsed = JSON.parse(jsonText);
-          let summary_markdown = typeof parsed.summary_markdown === "string" ? parsed.summary_markdown : String(parsed.summary || "");
-          // Clean up the summary to ensure proper rendering
-          summary_markdown = cleanSummaryMarkdown(summary_markdown);
-          let flashcards = Array.isArray(parsed.flashcards) ? parsed.flashcards.map((f: any) => ({ question: String(f.question || ""), answer: String(f.answer || "") })) : [];
-          // Ensure we have exactly 10 flashcards (pad or trim if needed)
-          if (flashcards.length < 10) {
-            // If we have fewer than 10, try to generate more from the text
-            const additionalCards = localGenerateFlashcards(text).slice(0, 10 - flashcards.length);
-            flashcards = [...flashcards, ...additionalCards];
-          }
-          flashcards = flashcards.slice(0, 10); // Ensure max 10
-          return { summary_markdown, flashcards };
-        } catch (err) {
-          return { summary_markdown: response.text || localSummarize(text), flashcards: [] };
+        const parsed = JSON.parse(jsonText.replace(/```json\n?|\n?```/g, ''));
+        let summary_markdown = typeof parsed.summary_markdown === "string" ? parsed.summary_markdown : String(parsed.summary || "");
+        // Clean up the summary to ensure proper rendering
+        summary_markdown = cleanSummaryMarkdown(summary_markdown);
+        let flashcards = Array.isArray(parsed.flashcards) ? parsed.flashcards.map((f: any) => ({ question: String(f.question || ""), answer: String(f.answer || "") })) : [];
+        // Ensure we have exactly 10 flashcards (pad or trim if needed)
+        if (flashcards.length < 10) {
+          // If we have fewer than 10, try to generate more from the text
+          const additionalCards = localGenerateFlashcards(text).slice(0, 10 - flashcards.length);
+          flashcards = [...flashcards, ...additionalCards];
         }
+        flashcards = flashcards.slice(0, 10); // Ensure max 10
+        return { summary_markdown, flashcards };
       } catch (err) {
-        console.warn("Google quiz generation failed:", describeError(err));
+        return null;
+      }
+    };
+
+    // 1. Try DeepSeek first
+    if (deepseek) {
+      try {
+        const jsonText = await deepseekJSON("You are an expert educational content creator. Return ONLY a valid JSON object.", prompt);
+        const parsed = parseFlashcardsResponse(jsonText);
+        if (parsed) return parsed;
+      } catch (err) {
+        console.warn("DeepSeek flashcard generation failed:", describeError(err));
       }
     }
 
-    // Fallback to OpenAI if configured
+    // 2. Try Google Gemini if available
+    if (googleAI) {
+      try {
+        const jsonText = await geminiGenerateJSON(prompt, "gemini-1.5-pro");
+        const parsed = parseFlashcardsResponse(jsonText);
+        if (parsed) return parsed;
+      } catch (err) {
+        console.warn("Google flashcard generation failed:", describeError(err));
+      }
+    }
+
+    // 3. Fallback to OpenAI if configured
     if (openai) {
       try {
         const chatResp = await openai.chat.completions.create({
-          model: "gpt-3.5-turbo",
+          model: "gpt-4o-mini",
           messages: [
-            { role: "system", content: `You are an educational assistant. Create a well-structured, clean summary in Markdown format.
-
-CRITICAL FORMATTING REQUIREMENTS:
-1. Use proper Markdown syntax - clean, readable, and well-structured
-2. Start with a main heading using ## (not #)
-3. Use ### for subheadings to organize sections
-4. Use **bold** for key terms, important concepts, and definitions
-5. Use bullet points (- or *) for lists of items, concepts, or key points
-6. Use numbered lists (1., 2., 3.) for sequential steps or ordered information
-7. For mathematical expressions:
-   - Use $...$ for inline math (e.g., $E = mc^2$)
-   - Use $$...$$ for block/display math (centered equations)
-8. Use proper paragraph breaks (blank lines) between sections
-9. DO NOT include:
-   - Raw code blocks unless absolutely necessary
-   - JSON structures or code-like syntax
-   - Unescaped special characters that break rendering
-   - Multiple consecutive blank lines
-   - Markdown syntax errors
-
-STRUCTURE GUIDELINES:
-
-Return a JSON object with exactly two fields:
-1. "summary_markdown": A clean, well-formatted Markdown summary following all the rules above
-2. "flashcards": An array of exactly 10 flashcards, each with {"question":"...","answer":"..."}
-
-IMPORTANT: The summary_markdown must be clean Markdown that will render perfectly. No raw code, no JSON artifacts, just clean, readable formatted text.` },
+            { role: "system", content: "You are an expert educational content creator. Return ONLY a valid JSON object — no markdown fences, no explanation. The JSON must have: 'summary_markdown' (a well-structured markdown string) and 'flashcards' (array of {question, answer} objects with comprehensive 2-4 sentence answers)." },
             { role: "user", content: prompt },
           ],
-          max_tokens: 2000,
+          response_format: { type: "json_object" },
+          max_tokens: 4000,
         });
 
-        const text = chatResp.choices?.[0]?.message?.content || "{}";
-        try {
-          const parsed = JSON.parse(text);
-          let summary_markdown = typeof parsed.summary_markdown === "string" ? parsed.summary_markdown : String(parsed.summary || "");
-          // Clean up the summary to ensure proper rendering
-          summary_markdown = cleanSummaryMarkdown(summary_markdown);
-          let flashcards = Array.isArray(parsed.flashcards) ? parsed.flashcards.map((f: any) => ({ question: String(f.question || ""), answer: String(f.answer || "") })) : [];
-          // Ensure we have exactly 10 flashcards (pad or trim if needed)
-          if (flashcards.length < 10) {
-            // If we have fewer than 10, try to generate more from the text
-            const additionalCards = localGenerateFlashcards(text).slice(0, 10 - flashcards.length);
-            flashcards = [...flashcards, ...additionalCards];
-          }
-          flashcards = flashcards.slice(0, 10); // Ensure max 10
-          return { summary_markdown, flashcards };
-        } catch (err) {
-          return { summary_markdown: text || localSummarize(text), flashcards: [] };
-        }
+        const jsonText = chatResp.choices?.[0]?.message?.content || "{}";
+        const parsed = parseFlashcardsResponse(jsonText);
+        if (parsed) return parsed;
       } catch (err) {
-        console.warn("OpenAI generateFormattedSummaryAndFlashcards failed:", describeError(err));
+        console.warn("OpenAI flashcard generation failed:", describeError(err));
       }
     }
 
-    // Last resort: local summarizer
-    let summary_markdown = localSummarize(text);
-    summary_markdown = cleanSummaryMarkdown(summary_markdown);
-    const flashcards = localGenerateFlashcards(text);
-    return { summary_markdown, flashcards };
+    // 4. Default Fallback
+    return {
+      summary_markdown: localSummarize(text),
+      flashcards: localGenerateFlashcards(text)
+    };
   } catch (error: any) {
     throw new Error(`Failed to generate formatted summary: ${error?.message || 'Unknown error'}`);
   }
@@ -313,15 +346,42 @@ function localSummarize(text: string): string {
 }
 
 function localGenerateFlashcards(text: string): Array<{ question: string; answer: string }> {
+  // naively pick sentences that seem like they could be important
   const sentences = text.replace(/\s+/g, " ").split(/(?<=[.!?])\s+/).map(s => s.trim()).filter(Boolean);
   const cards: Array<{ question: string; answer: string }> = [];
-  // Generate up to 10 flashcards
-  for (let i = 0; i < Math.min(10, sentences.length); i++) {
-    const s = sentences[i];
-    if (!s || s.length < 10) continue; // Skip very short sentences
-    const words = s.split(/\s+/).slice(0, 8).join(' ');
-    cards.push({ question: `What is: ${words}...?`, answer: s });
+  
+  // Try to find sections that look like definitions/important points
+  sentences.forEach(s => {
+    if (cards.length >= 10) return;
+    
+    const lower = s.toLowerCase();
+    // Look for sentences that explain key concepts or have list-like properties
+    if (s.length > 40 && (lower.includes(' is ') || lower.includes(' are ') || lower.includes(' refers to ') || lower.includes(' defined as '))) {
+      const parts = s.split(/ is | are | refers to | defined as /i);
+      if (parts.length >= 2) {
+        const term = parts[0].trim();
+        const definition = parts.slice(1).join(' ').trim();
+        if (term.length > 3 && term.length < 50 && definition.length > 10) {
+          cards.push({ question: `Define: ${term}`, answer: definition });
+        }
+      }
+    }
+  });
+
+  // Fallback if we don't have enough
+  if (cards.length < 10) {
+    for (let i = 0; i < sentences.length && cards.length < 10; i++) {
+      const s = sentences[i];
+      if (s.length < 30) continue;
+      // Skip sentences we already used
+      if (cards.some(c => c.answer === s)) continue;
+      
+      const words = s.split(/\s+/);
+      const question = `Question for this section: ${words.slice(0, 6).join(' ')}...`;
+      cards.push({ question, answer: s });
+    }
   }
+  
   return cards;
 }
 
@@ -333,16 +393,30 @@ Generate 3-5 multiple choice questions based on this content:
 
 ${text}`;
     
+    const parseQuizResponse = (jsonText: string) => {
+      try {
+        const parsed = JSON.parse(jsonText.replace(/```json\n?|\n?```/g, ''));
+        return parsed.questions || [];
+      } catch {
+        return null;
+      }
+    };
+
+    if (deepseek) {
+      try {
+        const jsonText = await deepseekJSON("You are an educational quiz generator. Respond with JSON: { \"questions\": [{ \"question\": \"string\", \"options\": [\"string\"], \"correctAnswer\": number }] }", prompt);
+        const parsed = parseQuizResponse(jsonText);
+        if (parsed) return parsed;
+      } catch (err) {
+        console.warn("DeepSeek quiz generation failed:", describeError(err));
+      }
+    }
+
     if (googleAI) {
       try {
-        const response = await googleAI.models.generateContent({ model: "gemini-2.5-flash", contents: prompt });
-        const jsonText = response.text || "{}";
-        try {
-          const parsed = JSON.parse(jsonText);
-          return parsed.questions || [];
-        } catch {
-          return [];
-        }
+        const jsonText = await geminiGenerateJSON(prompt, "gemini-1.5-flash");
+        const parsed = parseQuizResponse(jsonText);
+        if (parsed) return parsed;
       } catch (err) {
         console.warn("Google quiz generation failed:", describeError(err));
       }
@@ -358,13 +432,9 @@ ${text}`;
           ],
           max_tokens: 800,
         });
-        const text = chatResp.choices?.[0]?.message?.content || "{}";
-        try {
-          const parsed = JSON.parse(text);
-          return parsed.questions || [];
-        } catch {
-          return [];
-        }
+        const jsonText = chatResp.choices?.[0]?.message?.content || "{}";
+        const parsed = parseQuizResponse(jsonText);
+        if (parsed) return parsed;
       } catch (err) {
         console.warn("OpenAI quiz generation failed:", describeError(err));
       }
@@ -412,7 +482,7 @@ export async function transcribeAudio(audioBuffer: Buffer, mimeType: string): Pr
       let file: File | fs.ReadStream;
       try {
         // File API is available in Node.js 18+
-        file = new File([audioBuffer], `audio.${extension}`, { type: mimeType || `audio/${extension}` });
+        file = new File([new Uint8Array(audioBuffer)], `audio.${extension}`, { type: mimeType || `audio/${extension}` });
       } catch {
         // Fallback to stream if File is not available
         file = fileStream;
@@ -446,74 +516,132 @@ export async function transcribeAudio(audioBuffer: Buffer, mimeType: string): Pr
 
 export async function generatePodcastScript(transcript: string, summary?: string): Promise<string> {
   try {
-    const context = summary ? `${summary}\n\nFull Transcript:\n${transcript}` : transcript;
-    const contextLimit = context.substring(0, 12000); // Limit context size
-    
-    const prompt = `You are a professional podcast script writer. Create an engaging, educational podcast script based on the following video transcript and summary.
+    // Use raw document content as the primary source, summary as context only
+    const sourceContent = transcript.substring(0, 12000);
 
-REQUIREMENTS:
-1. Write in a conversational, podcast-style format
-2. Start with an engaging introduction that hooks the listener
-3. Organize content into clear sections with natural transitions
-4. Use conversational language - write as if speaking to the listener
-5. Include key insights, main points, and important details from the transcript
-6. End with a thoughtful conclusion that summarizes key takeaways
-7. Keep it engaging and easy to follow when read aloud
-8. Use markdown formatting with ## for section headings, **bold** for emphasis, and proper paragraph breaks
+    const prompt = `You are a world-class podcast script writer who creates episodes for a show called "Vidya Insights." Your scripts are always spoken naturally and never contain any markdown, symbols, or formatting characters.
 
-Content:
-${contextLimit}
+TASK: Write a complete, engaging podcast script based on the following document content. This script will be read aloud by a text-to-speech engine.
 
-Create a well-structured podcast script that makes this content accessible and engaging for listeners.`;
+CRITICAL RULES - THESE ARE ABSOLUTE:
+1. NO markdown whatsoever. Zero hashtags (#), zero asterisks (*), zero underscores (_), zero backticks (\`), zero brackets [], zero dashes as bullets (-), zero numbered lists with periods (1.), zero angle brackets.
+2. NO symbols that sound awkward when spoken: no &, no >, no <, no |, no =, no ^, no ~, no @
+3. Write ONLY natural spoken English. Every sentence must sound exactly right when read aloud.
+4. Instead of bullet points, use phrases like "First...", "Second...", "Another key point is...", "And importantly..."
+5. Instead of headings, use natural transitions like "Let's start by talking about...", "Moving on to...", "Now, one of the most fascinating aspects is..."
+6. Write as if you are a knowledgeable, enthusiastic host speaking to a curious listener.
+7. The script must flow naturally from beginning to end with zero awkward pauses.
+8. Length: approximately 400 to 600 words — substantive but not exhausting.
 
-    // Try Google Gemini first if available
-    if (googleAI) {
+STRUCTURE (use these as natural spoken transitions, not headings):
+- Opening Hook: Start with an intriguing question, surprising fact, or bold statement that grabs attention immediately. Do not begin with "Welcome" or "Hello."
+- Topic Introduction: Establish what this episode is about in plain conversational terms
+- Main Content: Cover 3 to 4 key concepts from the document, explained clearly with examples and analogies
+- Real-World Relevance: Explain why this matters and how it applies in practice
+- Closing Takeaway: A memorable final thought or call to action for the listener
+
+DOCUMENT CONTENT TO CONVERT INTO A PODCAST:
+${sourceContent}
+
+Write the podcast script now. Begin directly with the opening hook. Output nothing else — just the spoken script.`;
+
+    let script = "";
+
+    // 1. Try DeepSeek first
+    if (deepseek) {
       try {
-        const response = await googleAI.models.generateContent({ 
-          model: "gemini-2.5-flash", 
-          contents: prompt 
-        });
-        return response.text || "";
+        script = await deepseekChat(
+          "You are a professional podcast script writer. You write ONLY clean, natural spoken English. You NEVER use markdown, hashtags, asterisks, bullet points, numbered lists, brackets, or any symbols. Every word you write must sound perfectly natural when read aloud by a text-to-speech engine.",
+          prompt,
+          "deepseek-chat",
+          1200
+        );
       } catch (err: any) {
-        console.warn("Google Gemini podcast script generation failed:", describeError(err));
+        console.warn("DeepSeek podcast script generation failed:", describeError(err));
       }
     }
 
-    // Fallback to OpenAI if configured
-    if (openai) {
+    // 2. Try Google Gemini
+    if (!script && googleAI) {
+      try {
+        script = await geminiGenerate(prompt, "gemini-1.5-pro");
+      } catch (err: any) {
+        console.warn("Gemini podcast script generation failed:", describeError(err));
+      }
+    }
+
+    // Fallback to OpenAI
+    if (!script && openai) {
       try {
         const chatResp = await openai.chat.completions.create({
-          model: "gpt-3.5-turbo",
+          model: "gpt-4o-mini",
           messages: [
-            { 
-              role: "system", 
-              content: "You are a professional podcast script writer. Create engaging, educational podcast scripts in markdown format with clear sections, conversational tone, and natural transitions." 
+            {
+              role: "system",
+              content: "You are a professional podcast script writer. You write ONLY clean, natural spoken English. You NEVER use markdown, hashtags, asterisks, bullet points, numbered lists, brackets, or any symbols. Every word you write must sound perfectly natural when read aloud by a text-to-speech engine."
             },
             { role: "user", content: prompt },
           ],
-          max_tokens: 2000,
-          temperature: 0.7, // Slightly higher for more creative/engaging content
+          max_tokens: 1200,
+          temperature: 0.75,
         });
-
-        const content = chatResp.choices?.[0]?.message?.content || "";
-        return content;
+        script = chatResp.choices?.[0]?.message?.content || "";
       } catch (err: any) {
         console.warn("OpenAI podcast script generation failed:", describeError(err));
       }
     }
 
-    // Fallback: create a simple script from summary
-    if (summary) {
-      return `# Podcast Script\n\n## Introduction\n\nWelcome to today's episode. Let's dive into the key insights from this content.\n\n## Main Content\n\n${summary}\n\n## Conclusion\n\nThat wraps up today's episode. Thanks for listening!`;
+    // Post-process to aggressively strip any remaining markdown symbols
+    if (script) {
+      script = cleanScriptForSpeech(script);
+      return script;
     }
-    
-    // Last resort: use first part of transcript
-    const sentences = transcript.split(/(?<=[.!?])\s+/).slice(0, 10).join(" ");
-    return `# Podcast Script\n\n## Introduction\n\nLet's explore the key points from this content.\n\n## Main Content\n\n${sentences}\n\n## Conclusion\n\nThese are the main insights we've covered today.`;
+
+    // Fallback: clean the raw transcript enough to read aloud
+    return cleanScriptForSpeech(
+      `Today we are diving into a fascinating topic. ${transcript.substring(0, 2000)}`
+    );
+
   } catch (error: any) {
     throw new Error(`Failed to generate podcast script: ${error?.message || 'Unknown error'}`);
   }
 }
+
+/**
+ * Strips ALL markdown and special symbols from text so it reads
+ * cleanly aloud by a TTS engine.
+ */
+function cleanScriptForSpeech(text: string): string {
+  return text
+    // Remove markdown headings (##, ###, #)
+    .replace(/^#{1,6}\s+/gm, "")
+    // Remove bold/italic markers (**, __, *, _)
+    .replace(/\*{1,3}|_{1,3}/g, "")
+    // Remove inline code backticks
+    .replace(/`{1,3}[^`]*`{1,3}/g, (match) => match.replace(/`/g, ""))
+    // Remove blockquote markers
+    .replace(/^>\s*/gm, "")
+    // Remove bullet/list markers (-, *, +, numbered)
+    .replace(/^\s*[-*+]\s+/gm, "")
+    .replace(/^\s*\d+[.)]\s+/gm, "")
+    // Remove horizontal rules
+    .replace(/^-{3,}|={3,}|\*{3,}/gm, "")
+    // Remove HTML tags
+    .replace(/<[^>]+>/g, "")
+    // Remove markdown links, keep link text
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
+    // Remove image markdown
+    .replace(/!\[[^\]]*\]\([^)]+\)/g, "")
+    // Remove special characters that sound awkward in speech
+    .replace(/[&<>|^~@#=\[\]{}\\]/g, "")
+    // Replace multiple spaces/newlines with single
+    .replace(/\n{3,}/g, "\n\n")
+    .replace(/[ \t]+/g, " ")
+    // Clean up lines that are now empty or just whitespace
+    .split("\n").map(line => line.trim()).filter(line => line.length > 0).join("\n\n")
+    .trim();
+}
+
 
 export async function generateSpeech(text: string, voiceId: string = "alloy"): Promise<Buffer | null> {
   try {
@@ -522,11 +650,15 @@ export async function generateSpeech(text: string, voiceId: string = "alloy"): P
       return null;
     }
 
-    // Use OpenAI TTS API
+    // Strip any remaining markdown/symbols before sending to TTS
+    // so the voice doesn't read hashtags, asterisks, etc.
+    const cleanText = cleanScriptForSpeech(text);
+
+    // Use OpenAI TTS API - tts-1-hd for higher quality
     const response = await openai.audio.speech.create({
-      model: "tts-1", // or "tts-1-hd" for higher quality
+      model: "tts-1-hd",
       voice: voiceId as "alloy" | "echo" | "fable" | "onyx" | "nova" | "shimmer",
-      input: text.substring(0, 4096), // TTS API has character limits
+      input: cleanText.substring(0, 4096), // TTS API has character limits
     });
 
     // Convert response to buffer
@@ -587,53 +719,47 @@ export async function generateChatAnswer(question: string, summary: string, extr
     } else if (isDefinition) {
       questionGuidance = "The student wants a definition or explanation. Provide a clear, comprehensive definition with context and examples if available.";
     } else if (isHow) {
-      questionGuidance = "The student wants to understand a process or method. Explain step-by-step or describe how something works.";
-    } else {
-      questionGuidance = "Provide a comprehensive answer that directly addresses the question with relevant details from the document.";
+      // Guidance handled in the prompt instructions
     }
-    
-    const prompt = `You are an expert educational assistant. Answer the student's question directly and helpfully.
 
-CRITICAL INSTRUCTIONS:
-1. If the question is about the document content, use information from the document to answer it.
-2. If the question is a general knowledge question (like "why is the sky blue", "what is gravity", etc.), answer it using your general knowledge - DO NOT mention the document at all.
-3. NEVER say phrases like:
-   - "the document doesn't contain"
-   - "the document doesn't discuss"
-   - "the provided document content"
-   - "the document does not contain information"
-   Just answer the question directly!
+    const prompt = `You are Vidya AI — the world's most brilliant and encouraging personal tutor. You have mastered every academic discipline. Your teaching style combines Feynman's clarity, Socratic depth, and genuine enthusiasm.
 
-FORMATTING RULES:
-- Start with a paragraph, NOT a heading
-- Only use ## for section headings if you have multiple distinct sections
-- Use **bold** for key terms and important concepts
-- Use numbered lists (1., 2., 3.) for sequential items
-- Use bullet points (- or *) for non-sequential lists
-- Use proper paragraph breaks between ideas
-- For mathematical expressions, use inline code with backticks: \`expression\`
+SOURCE MATERIAL:
+${context.length > 150 ? `You have the student's study notes to reference:
+--- STUDY NOTES ---
+${context.substring(0, 6000)}
+--- END NOTES ---
+Use these notes as primary truth for document-specific questions. Cite details naturally.` : 'You are answering from your vast general knowledge.'}
 
-OTHER RULES:
-- Answer directly - do NOT repeat or rephrase the question
-- Do NOT ask follow-up questions
-- Be comprehensive - include relevant details and context
-- ${questionGuidance}
+RESPONSE RULES:
+1. Answer DIRECTLY and COMPLETELY. No filler phrases like "Great question!" or "Certainly!"
+2. Structure: Start with a clear, direct 1-2 sentence answer. Then elaborate.
+3. Use **bold** for key terms, bullet points for lists, \`code formatting\` for technical expressions
+4. Mathematical expressions: use $inline$ or $$block$$ LaTeX notation
+5. Match depth to complexity: simple questions get crisp answers; complex ones get rich coverage
+6. NEVER say: "the document says", "based on the text", "as an AI", "I cannot", "the provided content"
+7. If notes lack info on a general question, use your expert knowledge without mentioning the gap
+8. When useful, add one golden insight that connects the concept to a bigger idea
 
-${context.length > 100 ? `Document Content (use this ONLY if the question is about the document):
-${context}
+STUDENT QUESTION: "${question}"
 
-` : ''}Student's Question: ${question}
+VIDYA AI RESPONSE:`;
 
-Answer the question directly. If it's general knowledge, use your knowledge. If it's about the document, use the document. Never mention what the document doesn't contain.`;
+    // 1. Try DeepSeek first
+    if (deepseek) {
+      try {
+        const result = await deepseekChat(prompt, "", "deepseek-chat", 1800);
+        if (result) return result;
+      } catch (err: any) {
+        console.warn("DeepSeek chat answer failed:", describeError(err));
+      }
+    }
 
-    // Try Google Gemini first if available
+    // 2. Try Google Gemini if available
     if (googleAI) {
       try {
-        const response = await googleAI.models.generateContent({ 
-          model: "gemini-2.5-flash", 
-          contents: prompt 
-        });
-        return response.text || "";
+        const result = await geminiGenerate(prompt, "gemini-1.5-pro");
+        return result || "";
       } catch (err: any) {
         console.warn("Google Gemini chat answer failed:", describeError(err));
       }
@@ -643,32 +769,21 @@ Answer the question directly. If it's general knowledge, use your knowledge. If 
     if (openai) {
       try {
         const chatResp = await openai.chat.completions.create({
-          model: "gpt-3.5-turbo",
+          model: "gpt-4o-mini",
           messages: [
-            { 
-              role: "system", 
-              content: `You are an expert educational assistant. Answer questions directly and helpfully.
-
-CRITICAL INSTRUCTIONS:
-1. If the question is about the document, use information from the document to answer it.
-2. If the question is a general knowledge question (like "why is the sky blue", "what is gravity", etc.), answer it using your general knowledge - DO NOT mention the document at all.
-3. NEVER say phrases like "the document doesn't contain", "the document doesn't discuss", "the provided document content", or "the document does not contain information". Just answer the question directly!
-
-FORMATTING RULES:
-- Start with a paragraph, NOT a heading
-- Only use ## for section headings if you have multiple distinct sections
-- Use markdown: **bold** for key terms, numbered/bullet lists, proper paragraphs
-- For math expressions, use inline code: \`expression\`
-
-OTHER RULES:
-- Answer directly without repeating the question
-- Do NOT ask follow-up questions
-- Be comprehensive and well-organized
-- ${questionGuidance}` 
+            {
+              role: "system",
+              content: `You are Vidya AI, a world-class educational tutor. Rules:
+1. Answer questions directly and comprehensively — never be vague  
+2. For document questions: use the provided notes as truth. For general questions: use your expert knowledge
+3. NEVER say "the document says", "based on the text", "I cannot", "as an AI"
+4. Format using markdown: **bold** key terms, bullet points, \`inline code\` for technical terms
+5. Start with a concise direct answer, then elaborate with depth and examples
+6. ${questionGuidance}`
             },
             { role: "user", content: prompt },
           ],
-          max_tokens: 1500,
+          max_tokens: 1800,
           temperature: 0.5, // Lower temperature for more focused answers
         });
 
@@ -810,7 +925,8 @@ function generateLocalAnswer(question: string, summary: string, extractedText: s
         score += 6;
       }
     }
-    if (isHow) {
+    const isHowQuestion = /how|process|method|approach|work|function/i.test(question);
+    if (isHowQuestion) {
       if (lower.includes('how') || lower.includes('process') || lower.includes('step') || lower.includes('method')) {
         score += 5;
       }
@@ -969,4 +1085,186 @@ function generateLocalAnswer(question: string, summary: string, extractedText: s
   }
   
   return formattedAnswer || "I couldn't find a direct answer in the notes. Try rephrasing or review the summary above.";
+}
+
+export async function generateMindMap(text: string): Promise<{ chart: string; explanations: Record<string, string> }> {
+  try {
+    const contentPreview = text.substring(0, 15000);
+
+    const prompt = `You are an expert educational content designer who creates rich, interactive concept maps based STRICTLY on the provided document.
+
+TASK: Analyze the following document and create a comprehensive Mermaid.js mindmap WITH deep, context-rich explanations. 
+DO NOT generate generic dictionary definitions. Every node and every explanation MUST be derived directly from the specifics, arguments, and data presented in the text.
+
+MERMAID MINDMAP SYNTAX RULES (FOLLOW EXACTLY):
+1. Start with: mindmap
+2. The root node uses double parentheses: root((Topic Name))
+3. First level children use 4 spaces of indentation (child nodes)
+4. Second level uses 8 spaces
+5. Third level uses 12 spaces
+6. Node labels: ONLY use plain alphanumeric text, spaces, and hyphens. NO colons, quotes, brackets, parentheses in labels (except root which uses double parens).
+7. Generate 15-25 nodes total for a rich map
+8. Keep labels SHORT: 2-5 words maximum per node
+
+EXAMPLE OF VALID SYNTAX:
+mindmap
+  root((Machine Learning))
+    Supervised Learning
+      Classification
+        Decision Trees
+        Neural Networks
+      Regression
+        Linear Models
+    Unsupervised Learning
+      Clustering
+      Dimensionality Reduction
+    Applications
+      Computer Vision
+      Natural Language
+
+RETURN FORMAT: A valid JSON object with exactly these two keys:
+{
+  "chart": "mindmap\\n  root((Topic))\\n    Branch 1\\n      Sub Point 1\\n    Branch 2",
+  "explanations": {
+    "Branch 1": "A 2-3 sentence explanation of how this concept specifically relates to the document's main thesis.",
+    "Sub Point 1": "A detailed explanation including exact examples, facts, or data points mentioned in the text regarding this topic.",
+    "Branch 2": "Explanation pulling specific context from the document."
+  }
+}
+
+IMPORTANT RULES FOR EXPLANATIONS:
+- Every node (except root) MUST have an explanation entry
+- Keys in explanations MUST exactly match the label text in the chart
+- EXPLANATIONS MUST BE SPECIFIC TO THE DOCUMENT. Do not write "X is defined as Y". Write "In this document, X is shown to lead to Y because of Z." Include specific facts, numbers, or arguments from the text. Length: 2-4 sentences.
+
+DOCUMENT TO ANALYZE:
+${contentPreview}
+
+Respond with ONLY the JSON object. No markdown fences, no extra text.`;
+
+    const defaultFallback = {
+      chart: `mindmap\n  root((Document Overview))\n    Key Concepts\n      Main Ideas\n      Core Principles\n    Details\n      Supporting Facts\n      Examples\n    Applications\n      Real World Use\n      Practical Steps\n    Summary\n      Key Takeaways\n      Action Items`,
+      explanations: {
+        "Key Concepts": "The fundamental ideas and principles that form the foundation of this document's subject matter.",
+        "Main Ideas": "The primary arguments or central themes that the author develops throughout the content.",
+        "Core Principles": "Foundational rules or theories that underpin the entire topic being discussed.",
+        "Details": "Specific supporting information, data points, and evidence that substantiate the main concepts.",
+        "Supporting Facts": "Factual information and data that validates and strengthens the document's key arguments.",
+        "Examples": "Concrete instances and case studies that illustrate how the concepts apply in practice.",
+        "Applications": "Practical ways the knowledge from this document can be applied in real situations.",
+        "Real World Use": "How these concepts manifest in actual practice, industry, or everyday scenarios.",
+        "Practical Steps": "Actionable procedures or methods derived from the document's content.",
+        "Summary": "A high-level synthesis of the most important insights from across the entire document.",
+        "Key Takeaways": "The most crucial points the reader should remember and internalize.",
+        "Action Items": "Specific next steps or changes one could implement based on this material."
+      }
+    };
+
+    const parseResponse = (raw: string): { chart: string; explanations: Record<string, string> } | null => {
+      try {
+        const match = raw.match(/\{[\s\S]*\}/);
+        if (!match) return null;
+        let jsonText = match[0];
+        
+        let parsed;
+        try {
+          parsed = JSON.parse(jsonText);
+        } catch (err: any) {
+          // Attempt to fix unescaped newlines within JSON strings (common LLM mistake)
+          // We'll replace real newlines with \n but only safely
+          try {
+             const fixed = jsonText
+                .replace(/\n\s*root/g, "\\n  root")
+                .replace(/\n\s{4,}/g, "\\n    ");
+             parsed = JSON.parse(fixed);
+          } catch (e2) {
+             console.warn("ParseResponse string fix failed.", "RAW:", raw);
+             throw err;
+          }
+        }
+
+        if (parsed.chart && typeof parsed.chart === 'string' &&
+            parsed.explanations && typeof parsed.explanations === 'object') {
+          // Validate the chart starts with mindmap
+          let chart = parsed.chart.trim();
+          chart = chart.replace(/^```(?:mermaid)?\n?/i, '').replace(/\n?```$/i, '').trim();
+          
+          if (!chart.startsWith('mindmap')) {
+            console.warn("ParseResponse failed: chart did not start with mindmap:", chart);
+            return null;
+          }
+          return { chart, explanations: parsed.explanations };
+        }
+      } catch (err) {
+        console.warn("ParseResponse JSON parse error:", err);
+      }
+      return null;
+    };
+
+    // 1. Try DeepSeek first
+    if (deepseek) {
+      try {
+        const raw = await deepseekJSON("You are a Mermaid.js expert and educational content designer. You return ONLY valid JSON with 'chart' and 'explanations' keys. The chart must be a valid Mermaid mindmap. Never use any characters in node labels that would break Mermaid parsing.", prompt);
+        const parsed = parseResponse(raw);
+        if (parsed) return parsed;
+        console.warn("DeepSeek mindmap returned invalid structure, trying fallback...");
+      } catch (err) {
+        console.warn("DeepSeek mindmap generation failed:", describeError(err));
+      }
+    }
+
+    // 2. Try Google Gemini
+    if (googleAI) {
+      try {
+        const raw = await geminiGenerateJSON(prompt, "gemini-1.5-flash"); // Flash is more stable than pro in v1 SDK
+        const parsed = parseResponse(raw);
+        if (parsed) return parsed;
+        console.warn("Gemini mindmap returned invalid structure, trying fallback...");
+      } catch (err) {
+        console.warn("Google mindmap generation failed:", describeError(err));
+      }
+    }
+
+    // Fallback to OpenAI
+    if (openai) {
+      try {
+        const chatResp = await openai.chat.completions.create({
+          model: "gpt-4o-mini",
+          messages: [
+            {
+              role: "system",
+              content: "You are a Mermaid.js expert and educational content designer. You return ONLY valid JSON with 'chart' and 'explanations' keys. The chart must be a valid Mermaid mindmap. Never use any characters in node labels that would break Mermaid parsing."
+            },
+            { role: "user", content: prompt },
+          ],
+          response_format: { type: "json_object" },
+          max_tokens: 2000,
+          temperature: 0.4,
+        });
+        const content = chatResp.choices?.[0]?.message?.content || "";
+        const parsed = parseResponse(content);
+        if (parsed) return parsed;
+      } catch (err) {
+        console.warn("OpenAI mindmap generation failed:", describeError(err));
+      }
+    }
+
+    // If ALL APIs fail (due to balance, quota, invalid keys) return an error map
+    return {
+      chart: "mindmap\n  root((API Error))\n    Check Credits\n      DeepSeek Balance Zero\n      Gemini Quota Exceeded\n    Action Required\n      Update Environment Keys",
+      explanations: {
+        "Check Credits": "Both DeepSeek and Gemini API calls failed to generate the mind map.",
+        "DeepSeek Balance Zero": "Your DeepSeek account returned a 402 Insufficient Balance error.",
+        "Gemini Quota Exceeded": "Your Google Gemini account returned a Quota/Rate Limit error.",
+        "Action Required": "Please top up your DeepSeek balance or wait for Gemini rate limits to reset.",
+        "Update Environment Keys": "You can add new API keys in your .env file."
+      }
+    };
+  } catch (error: any) {
+    console.warn("generateMindMap final catch error:", error?.message || error);
+    return {
+      chart: "mindmap\n  root((Error))\n    Generation Failed\n      Top-up required",
+      explanations: { "Generation Failed": "Mind map generation completely failed.", "Top-up required": "Check your API credits." }
+    };
+  }
 }

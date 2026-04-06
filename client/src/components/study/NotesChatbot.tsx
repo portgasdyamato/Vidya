@@ -1,16 +1,18 @@
-import { useMemo, useState, useRef } from "react";
+import { useMemo, useState, useRef, useEffect } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
 import "katex/dist/katex.min.css";
 import { Button } from "@/components/ui/button";
-import { Mic } from "lucide-react";
+import { Mic, Send, Sparkles, User,Bot, MoreHorizontal, Trash2 } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { sendChatToBackend } from "@/lib/chatClient";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface NotesChatbotProps {
+  id: string; // contentId
   summary?: string;
   extractedText?: string;
 }
@@ -20,16 +22,32 @@ interface ChatMessage {
   content: string;
 }
 
-function buildAssistantReply(summary: string, extractedText: string, question: string): string {
-  // Always fallback to a generic message if no backend answer
-  return "I'm here to help! Please ask any question about your notes.";
-}
-
-export default function NotesChatbot({ summary = "", extractedText = "" }: NotesChatbotProps) {
+export default function NotesChatbot({ id, summary = "", extractedText = "" }: NotesChatbotProps) {
     const [listening, setListening] = useState(false);
     const recognitionRef = useRef<any>(null);
+    const [input, setInput] = useState("");
+    const [loading, setLoading] = useState(false);
+    const scrollRef = useRef<HTMLDivElement>(null);
 
-    // Setup speech recognition
+    const initialMessages: ChatMessage[] = useMemo(() => [
+        {
+          role: "assistant",
+          content: "Hello! I've analyzed your notes. How can I assist you today? I can explain complex concepts, summarize specific parts, or even help you prep for an exam.",
+        }
+    ], []);
+    
+    const [messages, setMessages] = useState<ChatMessage[]>(initialMessages);
+
+    // Auto-scroll to bottom
+    useEffect(() => {
+        if (scrollRef.current) {
+            const scrollContainer = scrollRef.current.querySelector('[data-radix-scroll-area-viewport]');
+            if (scrollContainer) {
+                scrollContainer.scrollTop = scrollContainer.scrollHeight;
+            }
+        }
+    }, [messages, loading]);
+
     const startListening = () => {
       if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
         alert('Speech recognition not supported in this browser.');
@@ -44,12 +62,8 @@ export default function NotesChatbot({ summary = "", extractedText = "" }: Notes
         const transcript = event.results[0][0].transcript;
         setInput((prev) => prev + (prev ? ' ' : '') + transcript);
       };
-      recognition.onend = () => {
-        setListening(false);
-      };
-      recognition.onerror = () => {
-        setListening(false);
-      };
+      recognition.onend = () => setListening(false);
+      recognition.onerror = () => setListening(false);
       recognitionRef.current = recognition;
       recognition.start();
       setListening(true);
@@ -61,157 +75,187 @@ export default function NotesChatbot({ summary = "", extractedText = "" }: Notes
         setListening(false);
       }
     };
-  const [input, setInput] = useState("");
-  // Show only a single intro message welcoming the user and explaining they can ask about their notes
-  const initialMessages: ChatMessage[] = useMemo(() => [
-    {
-      role: "assistant",
-      content: "Welcome! Your notes are processed. You can ask anything about the material, concepts, or details—just type your question below.",
-    }
-  ], []);
-  const [messages, setMessages] = useState<ChatMessage[]>(initialMessages);
-  const [loading, setLoading] = useState(false);
 
-  // Chat is always enabled, regardless of summary/extractedText
-  const combinedSummary = "";
+    const handleAsk = async () => {
+        if (!input.trim() || loading) return;
+        const question = input.trim();
+        setInput("");
+        
+        const newMessages = [...messages, { role: "user", content: question } as ChatMessage];
+        setMessages(newMessages);
+        setLoading(true);
 
-  const handleAsk = () => {
-    if (!input.trim()) return;
-    const question = input.trim();
-    setInput("");
+        const ctx = `${summary || ""}\n\n${extractedText || ""}`.trim();
 
-    // append user message immediately
-    setMessages((prev) => [...prev, { role: "user", content: question }]);
-    setLoading(true);
+        try {
+            // Initial empty assistant message for streaming
+            setMessages(prev => [...prev, { role: "assistant", content: "" }]);
+            
+            let accumulated = "";
+            const onChunk = (chunk: string) => {
+                accumulated += chunk;
+                setMessages(prev => {
+                    const copy = [...prev];
+                    const last = copy[copy.length - 1];
+                    if (last && last.role === 'assistant') {
+                        last.content = accumulated;
+                    }
+                    return copy;
+                });
+            };
 
-    const ctx = `${summary || ""}\n\n${extractedText || ""}`.trim();
+            const resp = await sendChatToBackend(question, ctx, { 
+                messages: newMessages, 
+                onChunk 
+            });
 
-    // Build conversation history to send: send last N messages to backend
-    const history = messages.map((m) => ({ role: m.role, content: m.content }));
-    history.push({ role: "user", content: question });
-
-    // Insert a placeholder assistant message that will be filled progressively
-    const assistantIndex = messages.length + 1; // approximate position
-    setMessages((prev) => [...prev, { role: "assistant", content: "" }]);
-
-    // Use streaming-capable client to get progressive chunks
-    (async () => {
-      let accumulated = "";
-      const onChunk = (chunk: string) => {
-        accumulated += chunk;
-        // update the last assistant message progressively
-        setMessages((prev) => {
-          // find the last assistant message and replace content
-          const copy = [...prev];
-          for (let i = copy.length - 1; i >= 0; i--) {
-            if (copy[i].role === 'assistant') {
-              copy[i] = { ...copy[i], content: accumulated };
-              break;
+            if (resp.answer) {
+                setMessages(prev => {
+                    const copy = [...prev];
+                    const last = copy[copy.length - 1];
+                    if (last && last.role === 'assistant') {
+                        last.content = resp.answer || accumulated;
+                    }
+                    return copy;
+                });
             }
-          }
-          return copy;
-        });
-      };
+        } catch (error) {
+            console.error("Chat error:", error);
+            setMessages(prev => [...prev.slice(0, -1), { role: "assistant", content: "I'm sorry, I encountered an error. Please try again." }]);
+        } finally {
+            setLoading(false);
+        }
+    };
 
-      const resp = await sendChatToBackend(question, ctx, { messages: history, onChunk });
+    const clearChat = () => {
+        setMessages(initialMessages);
+    };
 
-      if (resp.answer) {
-        // ensure final content
-        setMessages((prev) => {
-          const copy = [...prev];
-          for (let i = copy.length - 1; i >= 0; i--) {
-            if (copy[i].role === 'assistant') {
-              copy[i] = { ...copy[i], content: resp.answer ?? "" };
-              break;
-            }
-          }
-          return copy;
-        });
-      } else {
-        // fallback to generic message
-        const reply = buildAssistantReply();
-        setMessages((prev) => {
-          const copy = [...prev];
-          for (let i = copy.length - 1; i >= 0; i--) {
-            if (copy[i].role === 'assistant') {
-              copy[i] = { ...copy[i], content: reply };
-              break;
-            }
-          }
-          return copy;
-        });
-      }
-
-      setLoading(false);
-    })();
-  };
-
-  return (
-    <div className="space-y-3">
-      <ScrollArea className="h-48 rounded-lg border border-border/50 bg-card/50 p-3 text-sm">
-        <div className="space-y-3">
-          {messages.map((msg, index) => (
-            <div
-              key={index}
-              className={`rounded-lg p-2 ${
-                msg.role === "assistant" ? "bg-primary/10 text-primary-foreground" : "bg-muted text-foreground"
-              }`}
-            >
-              <div className="text-xs font-semibold uppercase tracking-wide">
-                {msg.role === "assistant" ? "Study AI" : "You"}
-              </div>
-              {msg.role === "assistant" ? (
-                <ReactMarkdown
-                  remarkPlugins={[remarkGfm, remarkMath]}
-                  rehypePlugins={[rehypeKatex]}
-                  className="mt-1 text-sm whitespace-pre-line"
+    return (
+        <div className="flex flex-col h-full bg-black/20 border-l border-white/5">
+            {/* Header */}
+            <div className="flex items-center justify-between p-4 border-b border-white/5 bg-white/[0.02]">
+                <div className="flex items-center gap-2">
+                    <div className="p-1.5 rounded-lg bg-primary/10 border border-primary/20">
+                        <Sparkles className="w-4 h-4 text-primary" />
+                    </div>
+                    <div>
+                        <h3 className="text-sm font-bold text-white leading-none">AI Assistant</h3>
+                        <p className="text-[10px] text-white/30 uppercase tracking-widest mt-1">Active Learning</p>
+                    </div>
+                </div>
+                <button 
+                  onClick={clearChat}
+                  className="p-2 hover:bg-white/5 rounded-lg text-white/30 hover:text-white/60 transition-colors"
+                  title="Clear conversation"
                 >
-                  {msg.content}
-                </ReactMarkdown>
-              ) : (
-                <p className="mt-1 text-sm whitespace-pre-line">{msg.content}</p>
-              )}
+                    <Trash2 className="w-4 h-4" />
+                </button>
             </div>
-          ))}
-        </div>
-      </ScrollArea>
 
-      <div className="flex gap-2 items-center">
-        <Textarea
-          placeholder="Ask about specific topics, definitions, or next steps..."
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          className="min-h-[80px]"
-        />
-        <Button
-          type="button"
-          variant={listening ? "secondary" : "outline"}
-          onClick={listening ? stopListening : startListening}
-          aria-label={listening ? "Stop voice input" : "Start voice input"}
-          disabled={loading}
-          title={listening ? "Stop voice input" : "Record your question with your voice"}
-          className="flex items-center gap-1"
-        >
-          <Mic className={`h-5 w-5 ${listening ? 'text-red-500 animate-pulse' : ''}`} />
-          <span className="hidden sm:inline">{listening ? "Stop" : "Speak"}</span>
-        </Button>
-        {listening && (
-          <span className="ml-2 flex items-center text-xs text-red-600 font-semibold animate-pulse">
-            <span className="inline-block w-2 h-2 rounded-full bg-red-500 mr-1" />
-            Recording… Speak now
-          </span>
-        )}
-      </div>
-      <div className="flex justify-end">
-        <Button 
-          type="button" 
-          onClick={handleAsk} 
-          disabled={!combinedSummary || !combinedSummary.trim() || !input.trim() || loading}
-        >
-          {loading ? 'Thinking…' : 'Ask'}
-        </Button>
-      </div>
-    </div>
-  );
+            {/* Messages Area */}
+            <ScrollArea ref={scrollRef} className="flex-1 p-4">
+                <div className="space-y-6 max-w-2xl mx-auto">
+                    {messages.map((msg, index) => (
+                        <motion.div
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            key={index}
+                            className={`flex gap-3 ${msg.role === "user" ? "flex-row-reverse" : "flex-row"}`}
+                        >
+                            <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 border ${
+                                msg.role === "assistant" 
+                                    ? "bg-primary/20 border-primary/30 text-primary" 
+                                    : "bg-white/5 border-white/10 text-white/50"
+                            }`}>
+                                {msg.role === "assistant" ? <Bot className="w-4 h-4" /> : <User className="w-4 h-4" />}
+                            </div>
+                            
+                            <div className={`flex flex-col max-w-[85%] ${msg.role === "user" ? "items-end" : "items-start"}`}>
+                                <div className={`relative px-4 py-3 rounded-2xl text-sm leading-relaxed ${
+                                    msg.role === "assistant" 
+                                        ? "glass-card border-white/5 text-white/90 shadow-xl" 
+                                        : "bg-primary text-white shadow-lg shadow-primary/10"
+                                }`}>
+                                    {msg.role === "assistant" ? (
+                                        <div className="prose prose-sm prose-invert max-w-none">
+                                            <ReactMarkdown 
+                                                remarkPlugins={[remarkGfm, remarkMath]} 
+                                                rehypePlugins={[rehypeKatex]}
+                                            >
+                                                {msg.content || "..."}
+                                            </ReactMarkdown>
+                                        </div>
+                                    ) : (
+                                        <p className="whitespace-pre-wrap">{msg.content}</p>
+                                    )}
+                                </div>
+                                <span className="text-[9px] text-white/20 mt-1.5 uppercase font-bold tracking-tighter">
+                                    {msg.role === "assistant" ? "Assistant" : "You"}
+                                </span>
+                            </div>
+                        </motion.div>
+                    ))}
+                    {loading && (
+                        <div className="flex gap-3">
+                             <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 border bg-primary/20 border-primary/30 text-primary animate-pulse">
+                                <Bot className="w-4 h-4" />
+                            </div>
+                            <div className="flex gap-1 items-center p-3 rounded-2xl bg-white/5">
+                                <div className="w-1.5 h-1.5 rounded-full bg-primary/40 animate-bounce" style={{ animationDelay: '0ms' }} />
+                                <div className="w-1.5 h-1.5 rounded-full bg-primary/40 animate-bounce" style={{ animationDelay: '150ms' }} />
+                                <div className="w-1.5 h-1.5 rounded-full bg-primary/40 animate-bounce" style={{ animationDelay: '300ms' }} />
+                            </div>
+                        </div>
+                    )}
+                </div>
+            </ScrollArea>
+
+            {/* Input Area */}
+            <div className="p-4 border-t border-white/5 bg-white/[0.01]">
+                <div className="relative group max-w-2xl mx-auto">
+                    <Textarea
+                        placeholder="Ask me anything about your notes..."
+                        value={input}
+                        onChange={(e) => setInput(e.target.value)}
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter' && !e.shiftKey) {
+                                e.preventDefault();
+                                handleAsk();
+                            }
+                        }}
+                        className="min-h-[100px] w-full bg-white/5 border-white/10 rounded-2xl focus:border-primary/50 focus:ring-primary/20 transition-all resize-none pr-24 pl-4 py-4 text-sm placeholder:text-white/20"
+                    />
+                    
+                    <div className="absolute bottom-3 right-3 flex items-center gap-2">
+                        <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            onClick={listening ? stopListening : startListening}
+                            className={`h-9 w-9 rounded-xl border transition-all ${
+                                listening 
+                                    ? "bg-red-500/20 border-red-500/50 text-red-500 animate-pulse" 
+                                    : "bg-white/5 border-white/10 text-white/40 hover:text-white hover:bg-white/10"
+                            }`}
+                        >
+                            <Mic className="h-4 w-4" />
+                        </Button>
+                        
+                        <Button
+                            onClick={handleAsk}
+                            disabled={!input.trim() || loading}
+                            className="h-9 w-9 rounded-xl bg-primary hover:bg-primary/80 text-white shadow-lg shadow-primary/20 transition-all"
+                        >
+                            <Send className="h-4 w-4" />
+                        </Button>
+                    </div>
+                </div>
+                <p className="text-[10px] text-white/20 text-center mt-3 font-medium uppercase tracking-widest">
+                    Shift + Enter for new line • Press Enter to send
+                </p>
+            </div>
+        </div>
+    );
 }
 

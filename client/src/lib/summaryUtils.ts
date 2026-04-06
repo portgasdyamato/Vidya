@@ -113,13 +113,15 @@ export function parseSummary(raw: string | null | undefined) {
     .replace(/\\\\/g, "\\")
     .replace(/\\t/g, "\t")
     .replace(/\\r/g, "\r");
-  
-  // Remove any remaining JSON wrapper text
+
+  // Remove any remaining JSON wrapper or flashcard content so summary never shows Q/A
   result.text = result.text
     .replace(/^\{?\s*["']?summary_markdown["']?\s*[:=]\s*["']?/i, '')
     .replace(/["']?\s*[,}]\s*["']?flashcards["']?\s*[:=].*$/i, '')
     .replace(/["']?\s*\}$/, '')
+    .replace(/\{\s*"question"\s*:\s*"[^"]*"\s*,\s*"answer"\s*:\s*"[^"]*"\s*\}/g, '')
+    .replace(/"question"\s*:\s*"[^"]*"\s*,\s*"answer"\s*:\s*"[^"]*"/g, '')
     .trim();
-  
+
   return result;
 }

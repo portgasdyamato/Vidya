@@ -73,6 +73,8 @@ export async function ensureSchema(): Promise<void> {
     flashcards jsonb,
     processing_options jsonb NOT NULL,
     error_message text,
+    mind_map text,
+    progress integer DEFAULT 0,
     created_at timestamptz NOT NULL DEFAULT NOW(),
     updated_at timestamptz NOT NULL DEFAULT NOW()
   );
@@ -85,6 +87,12 @@ export async function ensureSchema(): Promise<void> {
   
   ALTER TABLE content_items
   ADD COLUMN IF NOT EXISTS podcast_audio_url text;
+  
+  ALTER TABLE content_items
+  ADD COLUMN IF NOT EXISTS mind_map text;
+
+  ALTER TABLE content_items
+  ADD COLUMN IF NOT EXISTS progress integer DEFAULT 0;
   `;
 
   try {

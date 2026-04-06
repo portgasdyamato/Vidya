@@ -13,9 +13,8 @@ type SendOptions = {
 };
 
 function getBackendBase(): string {
-  // prefer explicit VITE_CHAT_BACKEND_URL, otherwise same-origin
   // Vite exposes env vars via import.meta.env
-  const configured = (import.meta.env.VITE_CHAT_BACKEND_URL as string) || (process.env.REACT_APP_CHAT_BACKEND_URL as string) || "";
+  const configured = (import.meta.env.VITE_CHAT_BACKEND_URL as string) || "";
   if (configured && configured.trim()) return configured.replace(/\/$/, "");
   // same-origin default
   return "";
@@ -24,11 +23,11 @@ function getBackendBase(): string {
 export async function sendChatToBackend(question: string, context: string, options: SendOptions = {}): Promise<ChatResponse> {
   const base = getBackendBase();
   const url = base ? `${base}/api/chat` : `/api/chat`;
-  const apiKey = (import.meta.env.VITE_CHAT_BACKEND_KEY as string) || (process.env.REACT_APP_CHAT_BACKEND_KEY as string) || "";
+  const apiKey = (import.meta.env.VITE_CHAT_BACKEND_KEY as string) || "";
 
   const body: any = { question };
   if (options.messages) body.messages = options.messages;
-  else if (context) body.context = context;
+  if (context) body.context = context;
 
   const headers: any = { "Content-Type": "application/json" };
   if (apiKey) headers["Authorization"] = `Bearer ${apiKey}`;

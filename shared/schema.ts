@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-import { pgTable, text, varchar, timestamp, jsonb, boolean, pgEnum } from "drizzle-orm/pg-core";
+import { pgTable, text, varchar, timestamp, jsonb, boolean, pgEnum, integer } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 import { relations } from "drizzle-orm";
@@ -32,6 +32,8 @@ export const contentItems = pgTable("content_items", {
   flashcards: jsonb("flashcards"),
   processingOptions: jsonb("processing_options").notNull(),
   errorMessage: text("error_message"),
+  mindMap: jsonb("mind_map"),
+  progress: integer("progress").default(0),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
@@ -63,6 +65,7 @@ export const insertContentItemSchema = createInsertSchema(contentItems).pick({
 export const processingOptionsSchema = z.object({
   generateAudio: z.boolean().default(true),
   generateSummary: z.boolean().default(true),
+  generateMindMap: z.boolean().default(true),
   generateQuiz: z.boolean().default(false),
   voiceId: z.string().optional(),
 });

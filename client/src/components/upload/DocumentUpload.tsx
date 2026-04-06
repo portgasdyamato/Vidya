@@ -29,6 +29,7 @@ export default function DocumentUpload({ onSuccess, hideProgress = false }: Docu
   const [title, setTitle] = useState("");
   const [generateAudio, setGenerateAudio] = useState(true);
   const [generateSummary, setGenerateSummary] = useState(true);
+  const [generateMindMap, setGenerateMindMap] = useState(true);
   const [generateQuiz, setGenerateQuiz] = useState(false);
   const [processingItem, setProcessingItem] = useState<ProcessingState | null>(null);
   const [progressValue, setProgressValue] = useState(15);
@@ -153,6 +154,7 @@ export default function DocumentUpload({ onSuccess, hideProgress = false }: Docu
     formData.append("processingOptions", JSON.stringify({
       generateAudio,
       generateSummary,
+      generateMindMap,
       generateQuiz,
     }));
 
@@ -160,9 +162,9 @@ export default function DocumentUpload({ onSuccess, hideProgress = false }: Docu
   };
 
   return (
-    <Card className="border border-border shadow-lg">
+    <Card className="glass-card border border-border rounded-2xl shadow-lg">
       <CardContent className="p-8">
-        <h3 className="text-2xl font-semibold text-card-foreground mb-6">Upload Your Documents</h3>
+        <h3 className="text-2xl font-semibold text-card-foreground mb-6 font-serif">Upload Your Documents</h3>
         
         {/* File Drop Zone */}
         <div
@@ -206,13 +208,28 @@ export default function DocumentUpload({ onSuccess, hideProgress = false }: Docu
           <div className="mt-6">
             <h4 className="font-semibold text-card-foreground mb-3">Selected Files:</h4>
             {files.map((file, index) => (
-              <div key={index} className="flex items-center gap-3 p-3 bg-muted rounded-lg">
-                <FileText className="h-5 w-5 text-primary" />
-                <span className="flex-1 text-sm">{file.name}</span>
-                <span className="text-xs text-muted-foreground">
-                  {(file.size / 1024 / 1024).toFixed(2)} MB
-                </span>
-              </div>
+                <div key={index} className="flex flex-col gap-2 p-3 bg-primary/5 border border-primary/10 rounded-xl">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                       <FileText className="h-5 w-5 text-primary" />
+                       <span className="text-sm font-medium text-foreground truncate max-w-[200px]">{file.name}</span>
+                       <span className="text-[10px] text-muted-foreground uppercase">{(file.size / 1024 / 1024).toFixed(2)} MB</span>
+                    </div>
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className="h-8 text-[10px] font-bold uppercase tracking-wider text-primary hover:bg-primary/10"
+                      onClick={() => {
+                        toast({
+                          title: "Preview Mode",
+                          description: `Preparing preview for ${file.name}. Note: Large files may take a moment to render.`,
+                        });
+                      }}
+                    >
+                      Preview Source
+                    </Button>
+                  </div>
+                </div>
             ))}
           </div>
         )}
@@ -261,6 +278,21 @@ export default function DocumentUpload({ onSuccess, hideProgress = false }: Docu
                 <Label htmlFor="summary" className="font-medium">Create Summary & Flashcards</Label>
                 <p className="text-sm text-muted-foreground">
                   Get structured highlights with bold headings plus ready-to-use flashcards
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center space-x-3">
+              <Checkbox
+                id="mindmap"
+                checked={generateMindMap}
+                onCheckedChange={(checked) => setGenerateMindMap(!!checked)}
+                data-testid="checkbox-mindmap-documents"
+              />
+              <div>
+                <Label htmlFor="mindmap" className="font-medium">Generate Mind Map</Label>
+                <p className="text-sm text-muted-foreground">
+                  Create an interactive concept map with Mermaid.js
                 </p>
               </div>
             </div>

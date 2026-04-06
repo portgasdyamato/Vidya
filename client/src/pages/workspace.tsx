@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useRef } from "react";
-import { useLocation } from "wouter";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link } from "wouter";
 import Header from "@/components/Header";
@@ -7,6 +6,7 @@ import DocumentUpload from "@/components/upload/DocumentUpload";
 import FlashcardDrill from "@/components/study/FlashcardDrill";
 import SummaryPanel from "@/components/summary/SummaryPanel";
 import PodcastPlayer from "@/components/audio/PodcastPlayer";
+import MermaidChart from "@/components/study/MermaidChart";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -42,7 +42,22 @@ import {
   MoreVertical,
   Headphones,
   Mic,
-  MicOff
+  MicOff,
+  Search,
+  Copy,
+  Download,
+  Layers,
+  BarChart3,
+  ShieldCheck,
+  Home,
+  Settings,
+  BrainCircuit,
+  SquarePen,
+  Folder,
+  Library,
+  Sparkles,
+  ChevronRight,
+  ChevronLeft
 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfmModule from "remark-gfm";
@@ -189,7 +204,54 @@ function saveSessions(sessions: ChatSession[]) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(sessions));
 }
 
-// Left Column: Sessions Panel (Chat History)
+// Far Left: Main Navigation Sidebar (Anara Style)
+function MainNav({ activeTab, onTabChange }: { activeTab: string; onTabChange: (tab: string) => void }) {
+  const items = [
+    { id: "home", icon: Home, label: "Home" },
+    { id: "library", icon: Library, label: "Library" },
+    { id: "models", icon: BrainCircuit, label: "Models" },
+    { id: "settings", icon: Settings, label: "Settings" },
+  ];
+
+  return (
+    <nav className="w-16 flex flex-col items-center py-6 bg-background border-r border-border/50 h-full gap-8 z-20">
+      <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center mb-2 shadow-lg shadow-primary/20">
+        <Sparkles className="h-6 w-6 text-primary-foreground" />
+      </div>
+      
+      <div className="flex-1 flex flex-col gap-4">
+        {items.map(({ id, icon: Icon, label }) => (
+          <button
+            key={id}
+            onClick={() => onTabChange(id)}
+            className={`p-3 rounded-xl transition-all duration-200 group relative ${
+              activeTab === id 
+                ? "bg-primary/10 text-primary" 
+                : "text-muted-foreground hover:bg-muted"
+            }`}
+            title={label}
+          >
+            <Icon className="h-6 w-6" />
+            <span className="absolute left-14 bg-foreground text-background text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-50 pointer-events-none">
+              {label}
+            </span>
+          </button>
+        ))}
+      </div>
+      
+      <div className="mt-auto">
+        <Button variant="ghost" size="icon" className="rounded-full h-10 w-10">
+          <div className="h-2 w-2 rounded-full bg-green-500 absolute bottom-2 right-2 border-2 border-background" />
+          <div className="h-8 w-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-[10px] text-white font-bold">
+            JD
+          </div>
+        </Button>
+      </div>
+    </nav>
+  );
+}
+
+// Left Column: Sources Panel (matches reference UI)
 function SessionsPanel({ 
   activeSessionId, 
   onSelectSession, 
@@ -203,6 +265,7 @@ function SessionsPanel({
   onDeleteSession: (sessionId: string) => void;
   autoSelectNew?: boolean;
 }) {
+  const [searchSources, setSearchSources] = useState("");
   const { data: items, refetch: refetchItems } = useQuery<ContentItem[]>({ 
     queryKey: ["/api/content"],
     queryFn: async () => {
@@ -210,10 +273,10 @@ function SessionsPanel({
       if (!res.ok) throw new Error("Failed to fetch content");
       return res.json();
     },
-    refetchInterval: (data) => {
-      // Poll every 3 seconds if any item is processing
+    refetchInterval: (query) => {
+      const data = query.state.data as any[] | undefined;
       if (!data || !Array.isArray(data)) return false;
-      return data.some(item => item.status === "processing" || item.status === "pending") ? 3000 : false;
+      return data.some((item: any) => item.status === "processing" || item.status === "pending") ? 3000 : false;
     }
   });
 
@@ -274,110 +337,100 @@ function SessionsPanel({
     onDeleteSession(sessionId);
   };
 
+  const filteredSessions = searchSources.trim()
+    ? sessions.filter(s => s.title.toLowerCase().includes(searchSources.toLowerCase()))
+    : sessions;
+  const byDate = filteredSessions.reduce<Record<string, ChatSession[]>>((acc, s) => {
+    const key = s.updatedAt.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' });
+    if (!acc[key]) acc[key] = [];
+    acc[key].push(s);
+    return acc;
+  }, {});
+  const dateKeys = Object.keys(byDate).sort((a, b) => new Date(b).getTime() - new Date(a).getTime());
+
   return (
-    <aside className="w-72 bg-background border-r border-border/50 flex flex-col h-full">
+    <aside className="w-72 glass-card rounded-none border-r border-border/50 flex flex-col h-full border-t-0 border-b-0 border-l-0">
       <div className="p-4 border-b border-border/50">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-base font-semibold text-foreground">Sessions</h2>
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="text-base font-bold text-foreground">Sources</h2>
           <Button
             onClick={onNewChat}
             size="sm"
             variant="ghost"
-            className="h-8 w-8 p-0 rounded-full hover:bg-muted"
+            className="h-8 w-8 p-0 rounded-lg hover:bg-white/10 text-foreground"
+            aria-label="Add source"
           >
-            <Plus className="h-4 w-4" />
+            <UploadCloud className="h-4 w-4" />
           </Button>
+        </div>
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="Search sources"
+            value={searchSources}
+            onChange={(e) => setSearchSources(e.target.value)}
+            className="pl-9 h-9 rounded-xl bg-white/5 border-border/50 text-foreground placeholder:text-muted-foreground"
+          />
         </div>
       </div>
 
       <ScrollArea className="flex-1">
-        <div className="p-2 space-y-2">
+        <div className="p-3 space-y-4">
           {sessions.length === 0 ? (
             <div className="text-center py-12 px-4">
-              <MessageSquare className="h-10 w-10 text-muted-foreground mx-auto mb-3 opacity-50" />
-              <p className="text-sm text-muted-foreground mb-1">No chat sessions yet</p>
-              <p className="text-xs text-muted-foreground">
-                Click the + button to start a new chat session
-              </p>
+              <FileText className="h-10 w-10 text-muted-foreground mx-auto mb-3 opacity-50" />
+              <p className="text-sm text-muted-foreground mb-1">No sources yet</p>
+              <p className="text-xs text-muted-foreground">Upload a document or add a video URL to get started</p>
             </div>
+          ) : dateKeys.length === 0 ? (
+            <p className="text-sm text-muted-foreground px-2">No matching sources</p>
           ) : (
-            sessions.map((session) => {
-              const isActive = activeSessionId === session.id;
-              const progress = session.progress || 0;
-              
-              return (
-                <div
-                  key={session.id}
-                  onClick={() => onSelectSession(session)}
-                  className={`group relative rounded-lg p-3 border transition-all cursor-pointer ${
-                    isActive
-                      ? "border-primary/50 bg-primary/5 shadow-sm"
-                      : "border-border/50 bg-card/50 hover:border-primary/30 hover:bg-card"
-                  }`}
-                >
-                  <div className="flex items-start justify-between gap-2 mb-2">
-                    <div className="flex items-center gap-2 flex-1 min-w-0">
-                      <Clock className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0 mt-0.5" />
-                      <span className="text-xs text-muted-foreground whitespace-nowrap">
-                        {session.updatedAt.toLocaleDateString('en-US', { 
-                          month: '2-digit', 
-                          day: '2-digit', 
-                          year: 'numeric' 
-                        })}, {session.updatedAt.toLocaleTimeString('en-US', { 
-                          hour: '2-digit', 
-                          minute: '2-digit',
-                          hour12: true
-                        })}
-                      </span>
-                    </div>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
-                        >
-                          <MoreVertical className="h-3.5 w-3.5" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleDelete(session.id, e);
-                          }}
-                          className="text-destructive"
-                        >
-                          <Trash2 className="h-4 w-4 mr-2" />
-                          Delete
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </div>
-                  
-                  <h3 className={`text-sm font-medium mb-2 truncate ${
-                    isActive ? "text-foreground" : "text-foreground/90"
-                  }`} title={session.title}>
-                    {session.title}
-                  </h3>
-                  
-                  <div className="mt-2">
-                    <div className="h-1.5 bg-muted rounded-full overflow-hidden">
-                      <div 
-                        className={`h-full transition-all ${
-                          progress === 100 
-                            ? "bg-green-500" 
-                            : progress > 0 
-                            ? "bg-primary" 
-                            : "bg-muted"
+            dateKeys.map((dateKey) => (
+              <div key={dateKey}>
+                <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider px-2 mb-2">{dateKey}</p>
+                <div className="space-y-1">
+                  {byDate[dateKey].map((session) => {
+                    const isActive = activeSessionId === session.id;
+                    const progress = session.progress || 0;
+                    return (
+                      <div
+                        key={session.id}
+                        onClick={() => onSelectSession(session)}
+                        className={`group relative rounded-xl p-3 transition-all cursor-pointer border ${
+                          isActive ? "bg-white/5 border-primary/30 source-item-active" : "border-transparent hover:bg-white/5"
                         }`}
-                        style={{ width: `${progress}%` }}
-                      />
-                    </div>
-                  </div>
+                      >
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="flex-1 min-w-0">
+                            <h3 className={`text-sm font-medium truncate ${isActive ? "text-foreground" : "text-foreground/90"}`} title={session.title}>
+                              {session.title}
+                            </h3>
+                            <div className="mt-1.5 h-1 bg-white/10 rounded-full overflow-hidden">
+                              <div
+                                className={`h-full transition-all ${progress === 100 ? "bg-primary" : progress > 0 ? "bg-primary/80" : "bg-transparent"}`}
+                                style={{ width: `${progress}%` }}
+                              />
+                            </div>
+                          </div>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
+                              <Button variant="ghost" size="sm" className="h-7 w-7 p-0 opacity-0 group-hover:opacity-100 rounded-lg">
+                                <MoreVertical className="h-3.5 w-3.5" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuItem onClick={(e) => { e.stopPropagation(); handleDelete(session.id, e); }} className="text-destructive">
+                                <Trash2 className="h-4 w-4 mr-2" /> Delete
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
-              );
-            })
+              </div>
+            ))
           )}
         </div>
       </ScrollArea>
@@ -459,32 +512,99 @@ function CenterColumn({
     textareaRef.current?.focus();
   };
 
+  // ── Regenerate Mind Map button ─────────────────────────────────────────────
+  function RegenerateMindMapButton({ contentId, onDone, primary }: { contentId: string; onDone: () => void; primary?: boolean }) {
+    const [loading, setLoading] = useState(false);
+    const [done, setDone] = useState(false);
+    const { toast } = useToast();
+
+    const handleRegenerate = async () => {
+      setLoading(true);
+      setDone(false);
+      try {
+        const res = await fetch(`/api/content/${contentId}/regenerate-mindmap`, { method: 'POST' });
+        if (!res.ok) {
+          const err = await res.json();
+          throw new Error(err.message || 'Failed to regenerate');
+        }
+        setDone(true);
+        onDone();
+        toast({ title: 'Mind Map Ready!', description: 'Your document has been mapped into an interactive concept graph.' });
+      } catch (e: any) {
+        toast({ title: 'Generation failed', description: e.message, variant: 'destructive' });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (primary) {
+      return (
+        <button
+          onClick={handleRegenerate}
+          disabled={loading}
+          className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-primary text-white font-bold hover:bg-primary/80 transition-all disabled:opacity-60 shadow-lg shadow-primary/20"
+        >
+          {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <BrainCircuit className="w-4 h-4" />}
+          {loading ? 'Generating…' : 'Generate Mind Map'}
+        </button>
+      );
+    }
+
+    return (
+      <button
+        onClick={handleRegenerate}
+        disabled={loading}
+        className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold border border-primary/30 text-primary hover:bg-primary/10 transition-all disabled:opacity-50"
+      >
+        {loading ? <Loader2 className="w-3 h-3 animate-spin" /> : <Sparkles className="w-3 h-3" />}
+        {loading ? 'Generating…' : done ? '✓ Regenerated' : 'Regenerate'}
+      </button>
+    );
+  }
+
   if (!session || !contentItem) {
     return (
-      <div className="flex-1 flex flex-col bg-background h-full">
-        <div className="p-6 border-b border-border/50">
-          <div className="flex items-center gap-2">
-            <MessageSquare className="h-5 w-5 text-foreground" />
-            <h2 className="text-base font-semibold text-foreground">Chat</h2>
-          </div>
+      <div className="flex-1 flex flex-col bg-background h-full relative overflow-hidden">
+        {/* Ambient background */}
+        <div className="absolute inset-0 pointer-events-none overflow-hidden">
+          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/4 blur-[120px] rounded-full" />
+          <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-blue-500/3 blur-[100px] rounded-full" />
         </div>
-        
-        <div className="flex-1 flex items-center justify-center p-6">
-          <div className="text-center max-w-md">
-            <div className="w-16 h-16 rounded-full bg-muted/50 flex items-center justify-center mx-auto mb-4">
-              <ArrowUp className="h-8 w-8 text-muted-foreground" />
+
+        <div className="flex-1 flex items-center justify-center p-12 relative z-10">
+          <div className="max-w-lg w-full text-center space-y-10">
+            <div className="space-y-4">
+              <div className="w-20 h-20 rounded-3xl bg-primary/10 border border-primary/20 flex items-center justify-center mx-auto shadow-2xl shadow-primary/10">
+                <Sparkles className="h-10 w-10 text-primary" />
+              </div>
+              <div className="space-y-2">
+                <h3 className="text-2xl font-black text-foreground font-serif">Ready to learn?</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed max-w-sm mx-auto">
+                  Upload any document or add a video URL. Vidya AI will instantly generate summaries, mind maps, flashcards, and a podcast.
+                </p>
+              </div>
             </div>
-            <h3 className="text-lg font-semibold text-foreground mb-2">Add a source to get started</h3>
-            <p className="text-sm text-muted-foreground mb-6">
-              Upload a document to begin chatting and exploring your content
-            </p>
-            <Button 
-              onClick={onUpload} 
-              className="bg-foreground text-background hover:bg-foreground/90 h-10 px-6"
+
+            {/* Feature Pills */}
+            <div className="flex flex-wrap gap-2 justify-center">
+              {["AI Summary", "Mind Map", "Flashcards", "Quiz", "AI Podcast", "Chat"].map((f) => (
+                <div key={f} className="px-3 py-1.5 rounded-full bg-white/5 border border-white/8 text-[11px] font-bold text-white/50 uppercase tracking-wider">
+                  {f}
+                </div>
+              ))}
+            </div>
+
+            <Button
+              onClick={onUpload}
+              className="h-14 px-10 text-base font-black rounded-2xl bg-primary hover:bg-primary/90 text-white shadow-2xl shadow-primary/20 hover:shadow-primary/40 hover:scale-105 active:scale-95 transition-all gap-3"
             >
-              <UploadCloud className="h-4 w-4 mr-2" />
-              Upload a source
+              <UploadCloud className="h-5 w-5" />
+              Upload Your First Source
             </Button>
+
+            <p className="text-[11px] text-white/20">
+              Supports PDF, DOCX, TXT, and YouTube / video URLs
+            </p>
           </div>
         </div>
       </div>
@@ -498,17 +618,60 @@ function CenterColumn({
   if (selectedView === "summary") {
     return (
       <div className="flex-1 flex flex-col bg-background overflow-hidden h-full">
-        <div className="p-4 border-b border-border/50 bg-card/30">
-          <h2 className="text-base font-semibold text-foreground">Summary</h2>
+        <div className="p-4 border-b border-border/50 bg-card/30 flex items-center justify-between">
+          <h2 className="text-base font-bold text-foreground">Study Summary</h2>
+          <div className="flex items-center gap-1">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 text-muted-foreground hover:text-foreground"
+              onClick={() => {
+                const parsed = parseSummary(contentItem.summary as any);
+                const text = parsed.text || "";
+                if (text) {
+                  navigator.clipboard.writeText(text);
+                  toast({ title: "Copied", description: "Summary copied to clipboard." });
+                }
+              }}
+            >
+              <Copy className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 text-muted-foreground hover:text-foreground"
+              onClick={() => {
+                const parsed = parseSummary(contentItem.summary as any);
+                const text = parsed.text || "";
+                if (text) {
+                  const blob = new Blob([text], { type: "text/plain" });
+                  const url = URL.createObjectURL(blob);
+                  const a = document.createElement("a");
+                  a.href = url;
+                  a.download = `${(contentItem.title || "summary").replace(/\s+/g, "-")}-summary.txt`;
+                  a.click();
+                  URL.revokeObjectURL(url);
+                  toast({ title: "Downloaded", description: "Summary saved." });
+                }
+              }}
+            >
+              <Download className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
         <ScrollArea className="flex-1">
           <div className="p-6 max-w-4xl mx-auto">
-            {isReady && contentItem.summary ? (
+            {isReady && (contentItem.summary || contentItem.extractedText) ? (
               <div className="space-y-6">
                 {(() => {
                   try {
-                    const parsed = parseSummary(contentItem.summary as any);
+                    const rawSummary = contentItem.summary as string | undefined;
+                    const parsed = parseSummary(rawSummary ?? null);
                     let summaryText = parsed.text || '';
+                    if (!summaryText && contentItem.extractedText) {
+                      summaryText = (contentItem.extractedText as string).slice(0, 3000);
+                      if ((contentItem.extractedText as string).length > 3000) summaryText += "\n\n…";
+                    }
 
                     summaryText = summaryText
                       .replace(/^\{?\s*["']?summary_markdown["']?\s*[:=]\s*["']?/i, '')
@@ -520,7 +683,12 @@ function CenterColumn({
                     summaryText = transformSummaryMarkdown(summaryText);
 
                     if (!summaryText || summaryText.length < 10) {
-                      return <p className="text-muted-foreground">Summary is being generated...</p>;
+                      return (
+                        <div className="text-center py-12">
+                          <Loader2 className="h-8 w-8 text-muted-foreground animate-spin mx-auto mb-3" />
+                          <p className="text-muted-foreground">Summary is being generated...</p>
+                        </div>
+                      );
                     }
 
                     const { heroTitle, heroDescription, body } = prepareSummaryContent(summaryText, contentItem.title);
@@ -609,10 +777,47 @@ function CenterColumn({
               </div>
             ) : (
               <div className="text-center py-12">
-                <Loader2 className="h-8 w-8 text-muted-foreground animate-spin mx-auto mb-3" />
-                <p className="text-sm text-muted-foreground">Summary is being generated...</p>
+                {isReady ? (
+                  <>
+                    <FileText className="h-8 w-8 text-muted-foreground mx-auto mb-3 opacity-50" />
+                    <p className="text-sm text-muted-foreground">No summary available. Enable “Create Summary & Flashcards” when uploading to generate one.</p>
+                  </>
+                ) : (
+                  <>
+                    <Loader2 className="h-8 w-8 text-muted-foreground animate-spin mx-auto mb-3" />
+                    <p className="text-sm text-muted-foreground">Summary is being generated...</p>
+                  </>
+                )}
               </div>
             )}
+          </div>
+        </ScrollArea>
+      </div>
+    );
+  }
+
+  if (selectedView === "preview") {
+    return (
+      <div className="flex-1 flex flex-col bg-background overflow-hidden h-full">
+        <div className="p-4 border-b border-border/50 bg-card/30 flex items-center justify-between">
+          <h2 className="text-base font-semibold text-foreground">Source Content Preview</h2>
+           <div className="flex items-center gap-2">
+            <span className="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full font-bold uppercase tracking-wider border border-primary/20">
+              Raw Extraction
+            </span>
+          </div>
+        </div>
+        <ScrollArea className="flex-1">
+          <div className="p-8 max-w-4xl mx-auto space-y-6">
+            <Card className="glass-card border-white/5 bg-black/40">
+              <CardContent className="p-8">
+                 <div className="prose prose-sm prose-invert max-w-none prose-p:text-white/70 prose-p:leading-relaxed selection:bg-primary/30">
+                  <pre className="whitespace-pre-wrap font-sans text-sm leading-relaxed">
+                    {contentItem.extractedText || "No text could be extracted from this source."}
+                  </pre>
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </ScrollArea>
       </div>
@@ -664,30 +869,54 @@ function CenterColumn({
   }
 
   if (selectedView === "audio") {
-    // Use Web Speech API as fallback if no audio file exists
-    const hasAudioFile = isReady && contentItem.audioUrl;
-    const hasTextForTTS = isReady && (contentItem.summary || contentItem.extractedText);
+    const hasPodcastAudio = isReady && contentItem.podcastAudioUrl;
+    const hasDocumentAudio = isReady && contentItem.audioUrl;
+    
+    // The podcast SCRIPT is always the spoken content (it is pre-cleaned plain text).
+    // Fall back to extractedText only if no script exists.
+    // NEVER use the markdown summary as spoken content — it reads symbols aloud.
+    const podcastScript = contentItem.podcastScript as string | undefined;
+    const hasScript = isReady && !!podcastScript;
+    const hasAnyAudio = hasPodcastAudio || hasDocumentAudio;
+    const hasAnyText = isReady && (hasScript || !!(contentItem.extractedText as string));
+    
+    const audioUrlToUse = hasPodcastAudio
+      ? `/api/content/${contentItem.id}/podcast-audio`
+      : hasDocumentAudio
+        ? `/api/content/${contentItem.id}/audio`
+        : "";
+
+    // For Web Speech: prefer the clean podcast script; use extracted text as last resort
+    const spokenText = podcastScript || (contentItem.extractedText as string) || "";
+    // Summary is shown in the script panel, but NOT spoken aloud
+    const summaryForDisplay = (contentItem.summary as string) || "";
     
     return (
       <div className="flex-1 flex flex-col bg-background overflow-hidden h-full">
-        <div className="p-4 border-b border-border/50 bg-card/30">
-          <h2 className="text-base font-semibold text-foreground">Audio Podcast</h2>
+        <div className="p-4 border-b border-border/50 bg-card/30 flex items-center gap-3">
+          <Headphones className="h-4 w-4 text-primary" />
+          <h2 className="text-base font-semibold text-foreground">AI Podcast</h2>
+          {hasScript && (
+            <span className="text-[10px] px-2 py-0.5 rounded-full bg-primary/10 border border-primary/20 text-primary font-bold uppercase tracking-wider">
+              Script Ready
+            </span>
+          )}
         </div>
         <ScrollArea className="flex-1">
           <div className="p-6 max-w-4xl mx-auto">
-            {hasAudioFile ? (
+            {audioUrlToUse ? (
               <PodcastPlayer
-                audioUrl={`/api/content/${contentItem.id}/audio`}
+                audioUrl={audioUrlToUse}
                 title={contentItem.title || "Document Podcast"}
-                transcript={contentItem.extractedText as string}
-                summary={contentItem.summary as string}
+                transcript={spokenText}
+                summary={summaryForDisplay}
               />
-            ) : hasTextForTTS ? (
+            ) : hasAnyText ? (
               <PodcastPlayer
-                audioUrl="" // Empty URL means use Web Speech API
+                audioUrl=""
                 title={contentItem.title || "Document Podcast"}
-                transcript={contentItem.extractedText as string}
-                summary={contentItem.summary as string}
+                transcript={spokenText}
+                summary={summaryForDisplay}
                 useWebSpeech={true}
               />
             ) : (
@@ -708,6 +937,24 @@ function CenterColumn({
   }
 
   if (selectedView === "quiz") {
+    let quizList: Array<{ question: string; options?: string[]; correctAnswer?: number }> = [];
+    if (contentItem.quizData) {
+      try {
+        if (Array.isArray(contentItem.quizData)) {
+          quizList = contentItem.quizData;
+        } else if (typeof contentItem.quizData === "string") {
+          const parsed = JSON.parse(contentItem.quizData);
+          quizList = Array.isArray(parsed) ? parsed : [];
+        } else if (typeof contentItem.quizData === "object" && contentItem.quizData !== null) {
+          quizList = Array.isArray((contentItem.quizData as any).questions)
+            ? (contentItem.quizData as any).questions
+            : [contentItem.quizData as any];
+        }
+      } catch (_) {
+        quizList = [];
+      }
+    }
+    const hasQuiz = isReady && quizList.length > 0;
     return (
       <div className="flex-1 flex flex-col bg-background overflow-hidden h-full">
         <div className="p-4 border-b border-border/50 bg-card/30">
@@ -715,9 +962,9 @@ function CenterColumn({
         </div>
         <ScrollArea className="flex-1">
           <div className="p-6 max-w-4xl mx-auto">
-            {isReady && contentItem.quizData && Array.isArray(contentItem.quizData) && contentItem.quizData.length > 0 ? (
+            {hasQuiz ? (
               <div className="space-y-4">
-                {contentItem.quizData.map((q: any, i: number) => (
+                {quizList.map((q: any, i: number) => (
                   <Card key={i} className="p-4 border-border/50">
                     <p className="text-sm font-medium mb-3">{q.question}</p>
                     {q.options && (
@@ -726,7 +973,7 @@ function CenterColumn({
                           <li 
                             key={idx} 
                             className={`p-2 rounded-lg border ${
-                              idx === q.correctAnswer 
+                              Number(q.correctAnswer) === idx 
                                 ? "border-primary bg-primary/5 text-primary font-medium" 
                                 : "border-border/50 bg-card/50"
                             }`}
@@ -742,7 +989,10 @@ function CenterColumn({
             ) : (
               <div className="text-center py-12">
                 <Grid className="h-8 w-8 text-muted-foreground mx-auto mb-3 opacity-50" />
-                <p className="text-sm text-muted-foreground">No quiz available yet</p>
+                <p className="text-sm text-muted-foreground">
+                  {isReady ? "No quiz available yet. Enable “Create Quiz” when uploading to generate one." : "Quiz is being generated..."}
+                </p>
+                {!isReady && <Loader2 className="h-6 w-6 text-muted-foreground animate-spin mx-auto mt-3" />}
               </div>
             )}
           </div>
@@ -751,316 +1001,311 @@ function CenterColumn({
     );
   }
 
-  // Default: Chat view
-  return (
-    <div className="flex-1 flex flex-col bg-background overflow-hidden" style={{ height: 'calc(100vh - 4rem)' }}>
-      {/* Header */}
-      <div className="p-4 border-b border-border/50 bg-card/30">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <MessageSquare className="h-5 w-5 text-foreground" />
-            <h2 className="text-base font-semibold text-foreground">Chat</h2>
-            <Badge variant="secondary" className="ml-2 text-xs">
-              1 source
-            </Badge>
-          </div>
-        </div>
-      </div>
+  if (selectedView === "mindmap") {
+    const hasMindMap = isReady && contentItem.mindMap;
+    const canRegenerate = isReady && !!(contentItem.extractedText as string);
 
-      {/* Content Area */}
-      <ScrollArea className="flex-1">
-        <div className="p-6 max-w-4xl mx-auto">
-          {isReady && messages.length === 0 && (
-            <div className="mb-6 p-6 rounded-xl bg-card/50 border border-border/50">
-              <div className="flex items-start gap-3">
-                <div className="flex-1">
-                  <h3 className="text-lg font-semibold text-foreground mb-2">
-                    Welcome! 👋
-                  </h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed">
-                    Your notes are processed and ready. You can ask anything about the material, concepts, or details—just type your question below.
+    return (
+      <div className="flex-1 flex flex-col bg-background overflow-hidden h-full">
+        <div className="p-4 border-b border-border/50 bg-card/30 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <BrainCircuit className="h-4 w-4 text-primary" />
+            <h2 className="text-base font-semibold text-foreground">Mind Map</h2>
+            {hasMindMap && (
+              <span className="text-[10px] px-2 py-0.5 rounded-full bg-primary/10 border border-primary/20 text-primary font-bold uppercase tracking-wider">
+                Interactive
+              </span>
+            )}
+          </div>
+          {canRegenerate && (
+            <RegenerateMindMapButton contentId={contentItem.id} onDone={() => queryClient.invalidateQueries({ queryKey: ["/api/content"] })} />
+          )}
+        </div>
+        <ScrollArea className="flex-1">
+          <div className="p-6 max-w-5xl mx-auto">
+            {hasMindMap ? (
+              <MermaidChart data={contentItem.mindMap as any} />
+            ) : (
+              <div className="flex flex-col items-center justify-center py-20 gap-6 text-center">
+                <div className="w-20 h-20 rounded-3xl bg-primary/10 border border-primary/20 flex items-center justify-center">
+                  <BrainCircuit className="h-10 w-10 text-primary/40" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold text-white mb-2">No Mind Map Yet</h3>
+                  <p className="text-sm text-muted-foreground max-w-sm">
+                    {isReady
+                      ? "Click \"Generate Mind Map\" to create an interactive knowledge map from your document."
+                      : "Mind map is being generated from your document…"}
                   </p>
                 </div>
+                {isReady && !hasMindMap && canRegenerate && (
+                  <RegenerateMindMapButton contentId={contentItem.id} onDone={() => queryClient.invalidateQueries({ queryKey: ["/api/content"] })} primary />
+                )}
+                {!isReady && <Loader2 className="h-6 w-6 text-primary animate-spin" />}
               </div>
-            </div>
-          )}
+            )}
+          </div>
+        </ScrollArea>
+      </div>
+    );
+  }
 
-          {/* Messages */}
-          {messages.length > 0 && (
-            <div className="space-y-4 mb-6">
-              {messages.map((msg, index) => (
-                <div
-                  key={index}
-                  className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
-                >
-                  <div
-                    className={`max-w-[80%] rounded-2xl px-4 py-3 ${
-                      msg.role === "user"
-                        ? "bg-primary text-primary-foreground"
-                        : "bg-card/50 border border-border/50"
-                    }`}
-                  >
-                    {msg.role === "assistant" ? (
-                      <div className="prose prose-sm dark:prose-invert max-w-none">
-                        <ReactMarkdown 
-                          remarkPlugins={[remarkGfmPlugin, remarkMathPlugin]}
-                          rehypePlugins={[rehypeKatexPlugin]}
-                          components={{
-                            h1: ({node, ...props}: any) => <h1 className="text-2xl font-bold text-foreground mb-4 mt-6 leading-tight border-b border-border/30 pb-2" {...props} />,
-                            h2: ({node, ...props}: any) => <h2 className="text-xl font-bold text-foreground mb-3 mt-5 leading-tight border-l-4 border-primary/50 pl-3" {...props} />,
-                            h3: ({node, ...props}: any) => <h3 className="text-lg font-semibold text-foreground mb-2 mt-4 leading-tight" {...props} />,
-                            h4: ({node, ...props}: any) => <h4 className="text-base font-semibold text-foreground mb-2 mt-3 leading-tight" {...props} />,
-                            p: ({node, ...props}: any) => <p className="mb-4 leading-7 text-foreground text-sm" {...props} />,
-                            strong: ({node, ...props}: any) => <strong className="font-bold text-foreground" {...props} />,
-                            em: ({node, ...props}: any) => <em className="italic text-foreground" {...props} />,
-                            ul: ({node, ...props}: any) => <ul className="list-disc list-outside mb-4 ml-6 space-y-2 text-foreground text-sm" {...props} />,
-                            ol: ({node, ordered, ...props}: any) => <ol className="list-decimal list-outside mb-4 ml-6 space-y-2 text-foreground text-sm" {...props} />,
-                            li: ({node, ...props}: any) => <li className="leading-7 mb-1" {...props} />,
-                            code: ({node, inline, ...props}: any) => 
-                              inline ? (
-                                <code className="bg-muted/80 px-1.5 py-0.5 rounded text-xs font-mono text-foreground border border-border/50" {...props} />
-                              ) : (
-                                <code className="block bg-muted/80 px-1.5 py-0.5 rounded text-xs font-mono text-foreground border border-border/50" {...props} />
-                              ),
-                            pre: ({node, ...props}: any) => <pre className="bg-muted/80 p-4 rounded-lg overflow-x-auto mb-4 text-xs font-mono border border-border/50" {...props} />,
-                            blockquote: ({node, ...props}: any) => <blockquote className="border-l-4 border-primary/50 pl-4 italic text-muted-foreground mb-4 bg-muted/30 py-2 rounded-r" {...props} />,
-                            hr: ({node, ...props}: any) => <hr className="my-6 border-border" {...props} />,
-                            a: ({node, ...props}: any) => <a className="text-primary hover:underline font-medium" {...props} />,
-                          }}
-                        >
-                          {(() => {
-                            let content = String(msg.content || "");
-                            
-                            // Remove any flashcard JSON that might have leaked in
-                            content = content
-                              .replace(/["']?flashcards?["']?\s*[:=]\s*\[[\s\S]*?\]/gi, '')
-                              .replace(/["']?question["']?\s*[:=]\s*["'][^"']*["']/gi, '')
-                              .replace(/["']?answer["']?\s*[:=]\s*["'][^"']*["']/gi, '')
-                              .replace(/\{[^}]*"flashcards?"[^}]*\}/gi, '')
-                              .trim();
-                            
-                            // Unescape common escape sequences
-                            content = content
-                              .replace(/\\n/g, '\n')
-                              .replace(/\\t/g, '\t')
-                              .replace(/\\"/g, '"')
-                              .replace(/\\'/g, "'")
-                              .replace(/\\\\/g, '\\');
-                            
-                            // Remove any remaining JSON artifacts and unwanted prefixes
-                            content = content
-                              .replace(/^Here's what I found in the notes:\s*/i, '')
-                              .replace(/^Here's what I found:\s*/i, '')
-                              .replace(/```json[\s\S]*?```/g, '') // Remove JSON code blocks
-                              .replace(/```[\s\S]*?```/g, (match: string) => {
-                                // Keep code blocks that aren't JSON
-                                if (match.includes('"flashcards"') || match.includes('"question"') || match.includes('"answer"')) {
-                                  return '';
-                                }
-                                return match;
-                              })
-                              .trim();
-                            
-                            // Fix: If content starts with a heading but is the entire response, convert to paragraph
-                            // Check if the entire content is just one heading
-                            const headingMatch = content.match(/^(#{1,6})\s+(.+)$/m);
-                            if (headingMatch && content.split('\n').length <= 3) {
-                              // If it's mostly just a heading, convert it to a paragraph
-                              content = content.replace(/^(#{1,6})\s+/gm, '**').replace(/\n/g, ' ') + '**';
-                            } else {
-                              // If content starts with heading but should be paragraph, fix it
-                              const firstLine = content.split('\n')[0];
-                              if (firstLine.match(/^#{1,6}\s+/) && !content.includes('\n\n')) {
-                                // Single heading without proper structure - convert to paragraph
-                                content = content.replace(/^#{1,6}\s+/, '**').replace(/\n/g, ' ') + '**';
-                              }
-                            }
-                            
-                            // Ensure content starts with a paragraph if it doesn't have proper structure
-                            if (content.trim().match(/^#{1,6}\s+/) && !content.includes('\n\n')) {
-                              // Convert heading to bold paragraph
-                              content = content.replace(/^#{1,6}\s+/, '**').replace(/\n/g, ' ') + '**';
-                            }
-                            
-                            // Clean up multiple newlines
-                            content = content.replace(/\n{3,}/g, '\n\n');
-                            
-                            return content;
-                          })()}
-                        </ReactMarkdown>
-                      </div>
-                    ) : (
-                      <p className="text-sm whitespace-pre-wrap leading-relaxed">{msg.content}</p>
-                    )}
-                    {msg.timestamp && (
-                      <p className={`text-xs mt-2 ${
-                        msg.role === "user" ? "text-primary-foreground/70" : "text-muted-foreground"
-                      }`}>
-                        {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                      </p>
-                    )}
-                  </div>
-                </div>
-              ))}
-              <div ref={messagesEndRef} />
-            </div>
-          )}
-
-          {/* Suggested Prompts */}
-          {suggestedPrompts.length > 0 && messages.length === 0 && (
-            <div className="space-y-2 mb-6">
-              <p className="text-sm text-muted-foreground mb-2">Suggested prompts:</p>
-              <div className="flex flex-wrap gap-2">
-                {suggestedPrompts.map((prompt, index) => (
-                  <button
-                    key={index}
-                    onClick={() => handlePromptClick(prompt)}
-                    className="text-sm px-4 py-2 rounded-lg border border-border/50 bg-card/50 hover:bg-card hover:border-primary/50 transition-colors text-left"
-                  >
-                    {prompt}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
+  if (selectedView === "reports") {
+    return (
+      <div className="flex-1 flex flex-col bg-background overflow-hidden h-full">
+        <div className="p-4 border-b border-border/50">
+          <h2 className="text-base font-bold text-foreground">Reports</h2>
         </div>
-      </ScrollArea>
-
-      {/* Input Area */}
-      <div className="p-4 border-t border-border/50 bg-card/30">
-        <div className="max-w-4xl mx-auto">
-          <div className="flex items-end gap-2">
-            <div className="flex-1 relative">
-              <Textarea
-                ref={textareaRef}
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                onKeyDown={handleKeyDown}
-                placeholder="Start typing..."
-                className="min-h-[60px] max-h-[200px] resize-none bg-background border-border/50 pr-12 focus:border-primary/50"
-                disabled={!isReady}
-              />
-              <Button
-                onClick={handleSend}
-                disabled={!input.trim() || !isReady}
-                size="sm"
-                className="absolute right-2 bottom-2 h-8 w-8 p-0 bg-foreground text-background hover:bg-foreground/90 disabled:opacity-50"
-              >
-                <ArrowUp className="h-4 w-4" />
+        <ScrollArea className="flex-1">
+          <div className="p-6 max-w-2xl mx-auto">
+            <div className="glass-card rounded-2xl p-6 border border-border/50">
+              <BarChart3 className="h-10 w-10 text-primary mb-4" />
+              <h3 className="text-lg font-semibold text-foreground mb-2">Your content history</h3>
+              <p className="text-sm text-muted-foreground mb-4">View and manage all your uploaded documents, summaries, and progress in one place.</p>
+              <Button asChild className="bg-primary hover:bg-primary/90 text-primary-foreground">
+                <Link href="/history">Open History</Link>
               </Button>
-            </div>
-            <div className="flex flex-col items-center gap-1">
-              <Button
-                type="button"
-                variant={listening ? "destructive" : "outline"}
-                size="icon"
-                onClick={toggleListening}
-                disabled={!isReady || !browserSupportsSpeech || microphoneAccess === false}
-                className={`h-10 w-10 ${listening ? "animate-pulse" : ""}`}
-                title={
-                  !browserSupportsSpeech
-                    ? "Speech recognition not supported in this browser"
-                    : microphoneAccess === false
-                    ? "Microphone access denied. Enable it in browser settings."
-                    : listening
-                    ? "Stop voice input"
-                    : "Speak your question"
-                }
-              >
-                {listening ? <MicOff className="h-5 w-5" /> : <Mic className="h-5 w-5" />}
-              </Button>
-              <span className="text-[10px] text-muted-foreground">
-                {listening ? "Listening" : "Voice"}
-              </span>
             </div>
           </div>
-          {listening && (
-            <div className="mt-2 flex items-center text-xs text-destructive">
-              <span className="inline-flex h-2 w-2 rounded-full bg-destructive mr-2 animate-ping" />
-              Recording… Speak now
-            </div>
-          )}
-          {!isReady && (
-            <p className="text-xs text-muted-foreground mt-2">
-              Document is still processing. Chat will be available soon.
-            </p>
-          )}
-        </div>
+        </ScrollArea>
       </div>
+    );
+  }
+
+  // No longer needed: selectedView === "chat" is handled by the persistent ChatPanel
+  // Removed input, suggestedPrompts, and chat-related hooks from this component
+  // to reduce redundancy.
+
+  return (
+    <div className="flex-1 flex flex-col items-center justify-center p-6 text-center bg-background">
+      <Sparkles className="h-12 w-12 text-primary/10 mb-4" />
+      <h3 className="text-lg font-semibold text-foreground mb-2">Select a tool to explore content</h3>
+      <p className="text-sm text-muted-foreground max-w-sm">
+        Use the tools on the right to generate a summary, flashcards, or take a quiz based on your source.
+      </p>
     </div>
   );
 }
 
-// Right Column: Navigation Menu
+// Right Side: Persistent AI Chat Panel
+function ChatPanel({ 
+  session, 
+  contentItem,
+  onSendMessage,
+}: { 
+  session?: ChatSession;
+  contentItem?: ContentItem;
+  onSendMessage: (message: string) => void;
+}) {
+  const [input, setInput] = useState("");
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const { toast } = useToast();
+
+  const {
+    listening,
+    browserSupportsSpeech,
+    microphoneAccess,
+    toggleListening,
+    error: speechError,
+  } = useSpeechRecognition({
+    onTranscript: (transcript) => {
+      setInput((prev) => (prev ? `${prev} ${transcript}` : transcript));
+      toast({ title: "Voice input captured", description: "Transcription added to the chat box." });
+    },
+  });
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [session?.messages]);
+
+  const handleSend = () => {
+    if (!input.trim() || !contentItem) return;
+    onSendMessage(input.trim());
+    setInput("");
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleSend();
+    }
+  };
+
+  if (!session || !contentItem) {
+    return (
+      <aside className="w-80 flex flex-col bg-background border-l border-border/50 h-full">
+        <div className="p-4 border-b border-border/50">
+          <h2 className="text-sm font-bold text-foreground">AI Assistant</h2>
+        </div>
+        <div className="flex-1 flex flex-col items-center justify-center p-6 text-center">
+          <Sparkles className="h-8 w-8 text-muted-foreground/30 mb-2" />
+          <p className="text-xs text-muted-foreground">Select a source to start chatting</p>
+        </div>
+      </aside>
+    );
+  }
+
+  const isReady = contentItem.status === "completed";
+  const messages = session.messages || [];
+
+  return (
+    <aside className="w-[400px] flex flex-col bg-background border-l border-border/50 h-full relative">
+      <div className="p-4 border-b border-border/50 flex items-center justify-between bg-card/10">
+        <div className="flex items-center gap-2">
+          <Sparkles className="h-4 w-4 text-primary" />
+          <h2 className="text-sm font-bold text-foreground">AI Assistant</h2>
+        </div>
+        <div className="flex items-center gap-2">
+          <Badge variant="outline" className="text-[10px] font-normal py-0">GPT-4o</Badge>
+        </div>
+      </div>
+
+      <ScrollArea className="flex-1">
+        <div className="p-4 space-y-4">
+          {messages.length === 0 ? (
+            <div className="text-center py-8">
+              <div className="w-12 h-12 rounded-2xl bg-primary/5 flex items-center justify-center mx-auto mb-4">
+                <MessageSquare className="h-6 w-6 text-primary/40" />
+              </div>
+              <h3 className="text-sm font-semibold text-foreground mb-1">Ask anything about this source</h3>
+              <p className="text-xs text-muted-foreground max-w-[200px] mx-auto">
+                Get summaries, definitions, or clarify complex topics from your notes.
+              </p>
+            </div>
+          ) : (
+            messages.map((msg, idx) => (
+              <div
+                key={idx}
+                className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
+              >
+                <div
+                  className={`max-w-[85%] rounded-2xl p-3 text-sm ${
+                    msg.role === "user"
+                      ? "bg-primary text-primary-foreground shadow-sm"
+                      : "bg-muted/50 text-foreground border border-border/50"
+                  }`}
+                >
+                  <ReactMarkdown
+                    remarkPlugins={[remarkGfmPlugin]}
+                    components={{
+                      p: ({ node, ...props }: any) => <p className="mb-2 last:mb-0 leading-relaxed" {...props} />,
+                      ul: ({ node, ...props }: any) => <ul className="list-disc ml-4 mb-2" {...props} />,
+                      li: ({ node, ...props }: any) => <li className="mb-1" {...props} />,
+                      h1: ({ node, ...props }: any) => <h4 className="text-base font-bold mt-2 mb-1" {...props} />,
+                      h2: ({ node, ...props }: any) => <h4 className="text-sm font-bold mt-2 mb-1" {...props} />,
+                    }}
+                  >
+                    {msg.content}
+                  </ReactMarkdown>
+                </div>
+              </div>
+            ))
+          )}
+          <div ref={messagesEndRef} />
+        </div>
+      </ScrollArea>
+
+      <div className="p-4 bg-background border-t border-border/50">
+        <div className="relative bg-muted/30 rounded-2xl border border-border/50 p-2 focus-within:border-primary/50 transition-colors">
+          <Textarea
+            ref={textareaRef}
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder="Ask Anara..."
+            className="min-h-[40px] max-h-[150px] resize-none bg-transparent border-none focus:ring-0 text-sm py-2 pr-10"
+            disabled={!isReady}
+          />
+          <div className="absolute right-2 bottom-2 flex items-center gap-1">
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              onClick={toggleListening}
+              className={`h-8 w-8 rounded-lg ${listening ? "text-destructive animate-pulse" : "text-muted-foreground"}`}
+            >
+              <Mic className="h-4 w-4" />
+            </Button>
+            <Button
+              onClick={handleSend}
+              disabled={!input.trim() || !isReady}
+              size="icon"
+              className="h-8 w-8 rounded-lg bg-primary text-primary-foreground"
+            >
+              <ArrowUp className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+      </div>
+    </aside>
+  );
+}
+
+// Learning Tools grid + AI Productivity Tip
+// Side Toolbar: Learning Tools (Icons only for slimness)
 function RightColumn({ contentItem, selectedView, onSelectView }: { 
   contentItem?: ContentItem; 
   selectedView: string;
   onSelectView: (view: string) => void;
 }) {
-  const audio = useAudio();
-
-  const menuOptions = [
-    { id: "chat", label: "AI Chatbot", icon: MessageSquare, color: "bg-blue-500" },
-    { id: "summary", label: "Summary", icon: FileText, color: "bg-green-500" },
-    { id: "audio", label: "Audio/Podcast", icon: Headphones, color: "bg-purple-500" },
-    { id: "flashcards", label: "Flashcards", icon: BookOpen, color: "bg-pink-500" },
-    { id: "quiz", label: "Quiz", icon: Grid, color: "bg-yellow-500" },
-  ];
-
   const isReady = contentItem?.status === "completed";
+  const tools = [
+    { id: "summary", label: "General", icon: FileText },
+    { id: "preview", label: "Source", icon: Search },
+    { id: "flashcards", label: "Review", icon: BookOpen },
+    { id: "mindmap", label: "Map", icon: Layers },
+    { id: "quiz", label: "Practice", icon: Grid },
+    { id: "audio", label: "Listen", icon: Headphones },
+    { id: "reports", label: "Stats", icon: BarChart3 },
+  ] as const;
 
   return (
-    <aside className="w-80 bg-background border-l border-border/50 flex flex-col h-full">
-      <div className="p-4 border-b border-border/50">
-        <h2 className="text-base font-semibold text-foreground">Studio</h2>
-      </div>
-
-      <ScrollArea className="flex-1">
-        <div className="p-4 space-y-2">
-          {!contentItem ? (
-            <div className="text-center py-12">
-              <FileText className="h-10 w-10 text-muted-foreground mx-auto mb-3 opacity-50" />
-              <p className="text-sm text-muted-foreground">
-                Select a document to view options
-              </p>
+    <aside className="w-16 bg-card/10 border-l border-border/50 flex flex-col h-full py-4 items-center gap-4">
+      {!contentItem || !isReady ? (
+        <div className="flex flex-col items-center gap-4 opacity-20 pointer-events-none">
+          {tools.map(({ id, icon: Icon }) => (
+            <div key={id} className="p-3 rounded-xl border border-transparent">
+              <Icon className="h-5 w-5" />
             </div>
-          ) : !isReady ? (
-            <div className="text-center py-12">
-              <Loader2 className="h-10 w-10 text-primary animate-spin mx-auto mb-3" />
-              <p className="text-sm text-muted-foreground">Processing document...</p>
-              <p className="text-xs text-muted-foreground mt-1">Options will be available soon</p>
-            </div>
-          ) : (
-            menuOptions.map((option) => {
-              const Icon = option.icon;
-              const isSelected = selectedView === option.id;
-              
-              return (
-                <button
-                  key={option.id}
-                  onClick={() => {
-                    onSelectView(option.id);
-                  }}
-                  className={`w-full flex items-center gap-3 p-3 rounded-lg border text-left transition-all ${
-                    isSelected
-                      ? "border-primary/50 bg-primary/5"
-                      : "border-border/50 bg-card/50 hover:border-primary/30 hover:bg-card"
-                  }`}
-                >
-                  <div className={`w-10 h-10 rounded-lg ${option.color} flex items-center justify-center flex-shrink-0`}>
-                    <Icon className="h-5 w-5 text-white" />
-                  </div>
-                  <span className={`text-sm font-medium ${
-                    isSelected ? "text-foreground" : "text-foreground/90"
-                  }`}>
-                    {option.label}
-                  </span>
-                </button>
-              );
-            })
-          )}
+          ))}
         </div>
-      </ScrollArea>
+      ) : (
+        <>
+          {tools.map(({ id, label, icon: Icon }) => {
+            const isSelected = selectedView === id;
+            return (
+              <button
+                key={id}
+                onClick={() => onSelectView(id)}
+                className={`p-3 rounded-xl transition-all duration-200 group relative ${
+                  isSelected 
+                    ? "bg-primary text-primary-foreground shadow-md shadow-primary/20" 
+                    : "text-muted-foreground hover:bg-muted"
+                }`}
+                title={label}
+              >
+                <Icon className="h-5 w-5" />
+                <span className="absolute right-14 bg-foreground text-background text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-50 pointer-events-none">
+                  {label}
+                </span>
+              </button>
+            );
+          })}
+          
+          <div className="mt-auto pt-4 border-t border-border/50 w-full flex flex-col items-center gap-4">
+            <button
+              onClick={() => onSelectView("canvas")}
+              className={`p-3 rounded-xl transition-all duration-200 group relative ${
+                selectedView === "canvas" ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-muted"
+              }`}
+              title="Canvas"
+            >
+              <SquarePen className="h-5 w-5" />
+            </button>
+          </div>
+        </>
+      )}
     </aside>
   );
 }
@@ -1073,6 +1318,7 @@ function VideoUploadWrapper({ onSuccess }: { onSuccess: (contentItem: { id: stri
   const [title, setTitle] = useState("");
   const [generateAudio, setGenerateAudio] = useState(true);
   const [generateSummary, setGenerateSummary] = useState(true);
+  const [generateMindMap, setGenerateMindMap] = useState(true);
   const [generateQuiz, setGenerateQuiz] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
 
@@ -1110,6 +1356,7 @@ function VideoUploadWrapper({ onSuccess }: { onSuccess: (contentItem: { id: stri
           processingOptions: {
             generateAudio,
             generateSummary,
+            generateMindMap,
             generateQuiz,
           },
         }),
@@ -1209,6 +1456,20 @@ function VideoUploadWrapper({ onSuccess }: { onSuccess: (contentItem: { id: stri
                 <Label htmlFor="summary-video" className="font-medium">Create Summary & Flashcards</Label>
                 <p className="text-sm text-muted-foreground">
                   Receive structured highlights plus flashcards from the transcript
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center space-x-3">
+              <Checkbox
+                id="mindmap-video"
+                checked={generateMindMap}
+                onCheckedChange={(checked) => setGenerateMindMap(!!checked)}
+              />
+              <div>
+                <Label htmlFor="mindmap-video" className="font-medium">Generate Mind Map</Label>
+                <p className="text-sm text-muted-foreground">
+                  Create an interactive concept map with Mermaid.js
                 </p>
               </div>
             </div>
@@ -1379,20 +1640,133 @@ function buildAssistantReply(summary: string, extractedText: string, question: s
   return answer;
 }
 
-export default function Workspace() {
-  const [location, navigate] = useLocation();
+// Dashboard View (Anara Home Style)
+function Dashboard({ onUpload, onSelectSource }: { onUpload: () => void; onSelectSource: (session: ChatSession) => void }) {
+  const sessions = getStoredSessions();
+  const recentSessions = sessions.slice(0, 4);
+
+  return (
+    <div className="flex-1 overflow-y-auto bg-[#F9FAFB] dark:bg-[#0A0A0A] p-8">
+      <div className="max-w-5xl mx-auto">
+        <header className="mb-12">
+          <h1 className="text-3xl font-bold text-foreground mb-2">Welcome back, Student</h1>
+          <p className="text-muted-foreground">What would you like to research today?</p>
+        </header>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+          {[
+            { title: "New Project", description: "Upload sources and start researching", icon: Plus, action: onUpload, color: "bg-primary" },
+            { title: "Continue Reading", description: "Pick up where you left off", icon: BookOpen, action: () => {}, color: "bg-indigo-500" },
+            { title: "Practice Mode", description: "Review flashcards and quizzes", icon: Grid, action: () => {}, color: "bg-emerald-500" },
+          ].map((card, i) => (
+            <button
+              key={i}
+              onClick={card.action}
+              className="group bg-white dark:bg-zinc-900 rounded-2xl p-6 border border-border/50 hover:border-primary/50 transition-all text-left shadow-sm hover:shadow-md"
+            >
+              <div className={`w-12 h-12 rounded-xl ${card.color} flex items-center justify-center mb-4 text-white shadow-lg`}>
+                <card.icon className="h-6 w-6" />
+              </div>
+              <h3 className="text-lg font-bold text-foreground mb-1">{card.title}</h3>
+              <p className="text-sm text-muted-foreground">{card.description}</p>
+            </button>
+          ))}
+        </div>
+
+        <section>
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-xl font-bold text-foreground">Recent Sources</h2>
+            <Button variant="ghost" size="sm" className="text-primary hover:text-primary/80">View Library</Button>
+          </div>
+
+          {recentSessions.length === 0 ? (
+            <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-dashed border-border p-12 text-center">
+              <FileText className="h-12 w-12 text-muted-foreground/20 mx-auto mb-4" />
+              <p className="text-muted-foreground mb-4">You haven't uploaded any sources yet.</p>
+              <Button onClick={onUpload}>Upload your first source</Button>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {recentSessions.map((session) => (
+                <div
+                  key={session.id}
+                  onClick={() => onSelectSource(session)}
+                  className="bg-white dark:bg-zinc-900 border border-border/50 rounded-2xl p-4 flex items-center gap-4 hover:border-primary/30 cursor-pointer group shadow-sm"
+                >
+                  <div className="w-10 h-10 rounded-lg bg-primary/5 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+                    <FileText className="h-5 w-5" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h4 className="font-semibold text-foreground truncate">{session.title}</h4>
+                    <p className="text-xs text-muted-foreground">{new Date(session.updatedAt).toLocaleDateString()}</p>
+                  </div>
+                  <ChevronRight className="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
+      </div>
+    </div>
+  );
+}
+
+// Middle Left: Canvas/Editor for note taking
+function Canvas({ initialContent, title }: { initialContent?: string; title: string }) {
+  const [content, setContent] = useState(initialContent || "");
+  const [isSaved, setIsSaved] = useState(true);
+
   useEffect(() => {
-    fetch('/api/auth/user', { credentials: 'include' })
-      .then((r) => r.json())
-      .then((d) => {
-        if (!d.user) navigate('/');
-      })
-      .catch(() => navigate('/'));
-  }, [navigate]);
+    setContent(initialContent || "");
+  }, [initialContent]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setContent(e.target.value);
+    setIsSaved(false);
+  };
+
+  const handleSave = () => {
+    // In a real app, this would save to the database
+    setIsSaved(true);
+  };
+
+  return (
+    <div className="flex-1 flex flex-col bg-background h-full overflow-hidden">
+      <div className="p-4 border-b border-border/50 flex items-center justify-between bg-card/10">
+        <div className="flex items-center gap-2">
+          <SquarePen className="h-4 w-4 text-primary" />
+          <h2 className="text-sm font-semibold text-foreground truncate max-w-[200px]">{title} Notes</h2>
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="text-[10px] text-muted-foreground">
+            {isSaved ? "Saved" : "Unsaved changes"}
+          </span>
+          <Button size="sm" variant="ghost" className="h-8 px-3 text-xs" onClick={handleSave} disabled={isSaved}>
+            Save
+          </Button>
+        </div>
+      </div>
+      <div className="flex-1 p-8 overflow-y-auto">
+        <div className="max-w-3xl mx-auto h-full">
+          <textarea
+            value={content}
+            onChange={handleChange}
+            placeholder="Start writing your research notes here..."
+            className="w-full h-full resize-none bg-transparent border-none focus:outline-none text-base leading-relaxed text-foreground placeholder:text-muted-foreground/30 font-serif"
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default function Workspace() {
+  const [activeMainNavTab, setActiveMainNavTab] = useState("library");
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [selectedSession, setSelectedSession] = useState<ChatSession | undefined>();
-  const [selectedView, setSelectedView] = useState<string>("chat"); // Default to chat
+  const [selectedView, setSelectedView] = useState<string>("summary");
   const [showUpload, setShowUpload] = useState(false);
-  const [uploadType, setUploadType] = useState<"document" | "video">("document"); // Track upload type
+  const [uploadType, setUploadType] = useState<"document" | "video">("document");
   const [autoSelectNew, setAutoSelectNew] = useState(false);
   const queryClient = useQueryClient();
   const { toast } = useToast();
@@ -1422,16 +1796,16 @@ export default function Workspace() {
     return () => clearInterval(interval);
   }, [contentItem?.status, refetch]);
 
-  // Reset to chat view when session changes
+  // Reset to summary view when session changes
   useEffect(() => {
     if (selectedSession) {
-      setSelectedView("chat");
+      setSelectedView("summary");
     }
   }, [selectedSession?.id]);
 
   const handleSelectSession = (session: ChatSession) => {
     setSelectedSession(session);
-    setSelectedView("chat"); // Always start with chat when selecting a session
+    setSelectedView("summary"); // Always start with summary when selecting a session
   };
 
   const handleSendMessage = async (message: string) => {
@@ -1838,31 +2212,136 @@ export default function Workspace() {
   }
 
   return (
-    <div className="h-screen bg-background flex flex-col overflow-hidden">
-      <Header />
+    <div className="h-screen bg-background flex overflow-hidden text-foreground">
+      {/* 1. Main Navigation Sidebar */}
+      <MainNav activeTab={activeMainNavTab} onTabChange={setActiveMainNavTab} />
       
-      <div className="flex-1 flex overflow-hidden">
-        <SessionsPanel 
-          activeSessionId={selectedSession?.id} 
-          onSelectSession={handleSelectSession}
-          onNewChat={handleNewChat}
-          onDeleteSession={handleDeleteSession}
-          autoSelectNew={autoSelectNew}
-        />
-        
-        <CenterColumn 
-          session={selectedSession}
-          contentItem={contentItem || undefined}
-          selectedView={selectedView}
-          onSendMessage={handleSendMessage}
-          onUpload={handleNewChat}
-        />
-        
-        <RightColumn 
-          contentItem={contentItem || undefined}
-          selectedView={selectedView}
-          onSelectView={setSelectedView}
-        />
+      <div className="flex-1 flex overflow-hidden relative">
+        {activeMainNavTab === "home" ? (
+          <Dashboard 
+            onUpload={handleNewChat} 
+            onSelectSource={(session) => {
+              setActiveMainNavTab("library");
+              handleSelectSession(session);
+            }} 
+          />
+        ) : activeMainNavTab === "library" ? (
+          <>
+            {/* 2. Secondary Sidebar (Library/Sources) */}
+            {isSidebarOpen && (
+              <SessionsPanel 
+                activeSessionId={selectedSession?.id} 
+                onSelectSession={handleSelectSession}
+                onNewChat={handleNewChat}
+                onDeleteSession={handleDeleteSession}
+                autoSelectNew={autoSelectNew}
+              />
+            )}
+            
+            {/* Sidebar Toggle Button */}
+            <button 
+              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+              className={`absolute z-10 top-1/2 -track-y-1/2 flex items-center justify-center w-5 h-10 bg-background border border-border/50 rounded-r-lg hover:bg-muted transition-all shadow-sm ${
+                isSidebarOpen ? "left-[288px]" : "left-0"
+              }`}
+            >
+              {isSidebarOpen ? <ChevronLeft className="h-3 w-3" /> : <ChevronRight className="h-3 w-3" />}
+            </button>
+
+            {/* 3. Main Stage (Content + AI Tools) */}
+            <div className="flex-1 flex flex-col overflow-hidden min-w-0">
+              {/* Main Stage Header */}
+              <div className="h-16 border-b border-border/50 flex items-center justify-between px-6 bg-navbar/5 backdrop-blur-sm">
+                <div className="flex items-center gap-4">
+                  {selectedSession ? (
+                    <>
+                      <Folder className="h-4 w-4 text-muted-foreground" />
+                      <h1 className="text-sm font-bold text-foreground truncate max-w-[300px]">{selectedSession.title}</h1>
+                      <Badge variant="secondary" className="bg-primary/5 text-primary border-primary/10 text-[10px] h-5">Selected</Badge>
+                    </>
+                  ) : (
+                    <h1 className="text-sm font-bold text-foreground">Select a source</h1>
+                  )}
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="h-6 w-[1px] bg-border/50 mx-2" />
+                  <div className="flex items-center gap-1 bg-muted/50 p-1 rounded-lg">
+                    <Button 
+                      variant={selectedView === "summary" ? "secondary" : "ghost"} 
+                      size="sm" 
+                      className="h-7 px-3 text-[11px] font-medium"
+                      onClick={() => setSelectedView("summary")}
+                    >
+                      Summary
+                    </Button>
+                    <Button 
+                      variant={selectedView === "canvas" ? "secondary" : "ghost"} 
+                      size="sm" 
+                      className="h-7 px-3 text-[11px] font-medium"
+                      onClick={() => setSelectedView("canvas")}
+                    >
+                      Canvas
+                    </Button>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex-1 flex overflow-hidden">
+                {/* Left part of Main Stage: Content Viewer */}
+                <div className="flex-1 flex flex-col overflow-hidden border-r border-border/50">
+                  {selectedView === "canvas" ? (
+                    <Canvas 
+                      title={selectedSession?.title || "Draft"} 
+                      initialContent={contentItem?.summary as string || ""} 
+                    />
+                  ) : (
+                    <CenterColumn 
+                      session={selectedSession}
+                      contentItem={contentItem || undefined}
+                      selectedView={selectedView}
+                      onSendMessage={handleSendMessage}
+                      onUpload={handleNewChat}
+                    />
+                  )}
+                </div>
+
+                {/* Right part: Learning Tools Sidebar */}
+                <RightColumn 
+                  contentItem={contentItem || undefined}
+                  selectedView={selectedView}
+                  onSelectView={setSelectedView}
+                />
+              </div>
+            </div>
+
+            {/* 4. Far Right: Persistent AI Chat Panel */}
+            <ChatPanel 
+              session={selectedSession}
+              contentItem={contentItem || undefined}
+              onSendMessage={handleSendMessage}
+            />
+          </>
+        ) : activeMainNavTab === "models" ? (
+          <div className="flex-1 flex flex-col items-center justify-center p-12 text-center">
+            <BrainCircuit className="h-16 w-16 text-primary/20 mb-6" />
+            <h2 className="text-2xl font-bold mb-2">Model Settings</h2>
+            <p className="text-muted-foreground max-w-sm">Manage which AI models power your research assistant.</p>
+            <div className="mt-8 grid grid-cols-1 gap-4 max-w-md w-full">
+              {['GPT-4o (Default)', 'Claude 3.5 Sonnet', 'Gemini 1.5 Pro'].map((model) => (
+                <div key={model} className="p-4 rounded-xl border border-border/50 bg-card/50 flex items-center justify-between">
+                  <span className="font-medium">{model}</span>
+                  <Badge variant={model.includes('Default') ? 'default' : 'outline'}>{model.includes('Default') ? 'Active' : 'Unused'}</Badge>
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <div className="flex-1 flex flex-col items-center justify-center p-12 text-center">
+            <Settings className="h-16 w-16 text-primary/20 mb-6" />
+            <h2 className="text-2xl font-bold mb-2">Settings</h2>
+            <p className="text-muted-foreground">General application settings and profile management.</p>
+          </div>
+        )}
       </div>
     </div>
   );

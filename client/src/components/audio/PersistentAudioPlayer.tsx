@@ -1,15 +1,12 @@
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
-import { Play, Pause, Volume2, Download } from "lucide-react";
+import { Play, Pause, Volume2, Download, Music, X } from "lucide-react";
 import { useAudio } from "@/lib/AudioContext";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function PersistentAudioPlayer() {
   const audio = useAudio();
-
-  useEffect(() => {
-    // nothing for now
-  }, [audio.audioUrl]);
 
   const format = (t: number) => {
     const m = Math.floor(t / 60);
@@ -29,30 +26,62 @@ export default function PersistentAudioPlayer() {
   };
 
   return (
-    <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50 w-11/12 md:w-3/4 bg-card/80 border border-border/40 rounded-2xl p-3 shadow-lg">
-      <div className="flex items-center gap-4">
-        <Button variant="outline" size="sm" onClick={() => audio.togglePlay()} aria-label="Toggle play">
-          {audio.isPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
-        </Button>
+    <AnimatePresence>
+      <motion.div 
+        initial={{ y: 100, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        exit={{ y: 100, opacity: 0 }}
+        className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[100] w-[calc(100%-3rem)] md:w-[600px]"
+      >
+        <div className="glass-card rounded-3xl p-4 shadow-2xl border-white/10">
+          <div className="flex items-center gap-5">
+            <button 
+              onClick={() => audio.togglePlay()} 
+              className="w-12 h-12 rounded-2xl bg-primary flex items-center justify-center text-primary-foreground shadow-lg shadow-primary/20 hover:scale-105 active:scale-95 transition-all"
+            >
+              {audio.isPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5 ml-0.5" />}
+            </button>
 
-        <div className="flex-1">
-          <div className="flex items-center justify-between text-xs text-muted-foreground">
-            <span>{format(audio.currentTime)}</span>
-            <span className="font-medium truncate mx-2">{audio.title}</span>
-            <span>{format(audio.duration)}</span>
+            <div className="flex-1 min-w-0">
+               <div className="flex items-center gap-2 mb-1.5 overflow-hidden">
+                  <Music className="w-3 h-3 text-primary animate-pulse shrink-0" />
+                  <span className="text-sm font-medium text-white truncate">{audio.title || "Study Session"}</span>
+               </div>
+               
+               <div className="relative pt-1">
+                  <Slider 
+                    value={[audio.currentTime]} 
+                    max={audio.duration || 100} 
+                    step={1} 
+                    onValueChange={(v) => audio.seek(v[0])} 
+                    className="cursor-pointer"
+                  />
+                  <div className="flex justify-between items-center mt-2">
+                    <span className="text-[10px] font-mono text-white/30">{format(audio.currentTime)}</span>
+                    <span className="text-[10px] font-mono text-white/30">{format(audio.duration)}</span>
+                  </div>
+               </div>
+            </div>
+
+            <div className="hidden sm:flex items-center gap-3 ml-2 border-l border-white/5 pl-5">
+              <Volume2 className="w-4 h-4 text-white/30" />
+              <Slider 
+                value={[audio.volume]} 
+                max={1} 
+                step={0.05} 
+                onValueChange={(v) => audio.setVolume(v[0])} 
+                className="w-20" 
+              />
+            </div>
+
+            <div className="flex items-center gap-2">
+               <button onClick={handleDownload} className="p-2 hover:bg-white/5 rounded-xl text-white/30 hover:text-white transition-colors">
+                  <Download className="w-5 h-5" />
+               </button>
+            </div>
           </div>
-          <Slider value={[audio.currentTime]} max={audio.duration || 100} step={1} onValueChange={(v) => audio.seek(v[0])} aria-label="Player progress" />
         </div>
-
-        <div className="flex items-center gap-2">
-          <Volume2 className="h-4 w-4 text-muted-foreground" />
-          <Slider value={[audio.volume]} max={1} step={0.05} onValueChange={(v) => audio.setVolume(v[0])} className="w-24" aria-label="Volume" />
-        </div>
-
-        <Button variant="ghost" size="sm" onClick={handleDownload} aria-label="Download audio">
-          <Download className="h-4 w-4" />
-        </Button>
-      </div>
-    </div>
+      </motion.div>
+    </AnimatePresence>
   );
 }

@@ -176,7 +176,7 @@ export default function History() {
               placeholder="Search materials"
               value={search}
               onChange={(e) => setSearch((e.target as HTMLInputElement).value)}
-              className="w-64"
+              className="w-64 rounded-xl bg-white/5 border-border/50"
               data-testid="input-search-history"
             />
             <div className="flex items-center gap-2">
@@ -216,7 +216,7 @@ export default function History() {
               const quizGenerated = hasQuizQuestions(item.quizData);
 
               return (
-                <Card key={item.id} className="hover:shadow-lg transition-shadow">
+                <Card key={item.id} className="glass-card rounded-2xl border border-border hover:border-primary/20 transition-colors">
                   <CardContent className="p-4">
                     <div className="flex items-center justify-between gap-4">
                       <div className="flex items-center gap-3 flex-1 min-w-0">

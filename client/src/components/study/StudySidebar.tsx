@@ -15,6 +15,7 @@ interface Flashcard {
 }
 
 interface StudySidebarProps {
+  id: string;
   summary?: string;
   extractedText?: string;
   title: string;
@@ -58,7 +59,7 @@ function FlashcardList({ flashcards }: { flashcards?: Flashcard[] }) {
   );
 }
 
-export default function StudySidebar({ summary, extractedText, title, flashcards, audioUrl, selectedSection, onSelectSection, collapsed, onToggleCollapsed }: StudySidebarProps) {
+export default function StudySidebar({ id, summary, extractedText, title, flashcards, audioUrl, selectedSection, onSelectSection, collapsed, onToggleCollapsed }: StudySidebarProps) {
   const audio = useAudio();
   const sections = [
     { id: "summary", label: "Summary", icon: FileText },
@@ -135,7 +136,9 @@ export default function StudySidebar({ summary, extractedText, title, flashcards
             </div>
           ) : summary ? (
             <div className="text-xs text-muted-foreground max-h-36 overflow-hidden">
-              <ReactMarkdown remarkPlugins={[remarkGfm]} className="prose prose-sm dark:prose-invert">{summary.substring(0, 600)}</ReactMarkdown>
+              <div className="prose prose-sm dark:prose-invert">
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>{summary?.substring(0, 600) || ""}</ReactMarkdown>
+              </div>
             </div>
           ) : (
             <p className="text-xs text-muted-foreground">Add a source and generate study outputs to view previews here.</p>
@@ -152,7 +155,7 @@ export default function StudySidebar({ summary, extractedText, title, flashcards
         </div>
 
         <div className="rounded-2xl border border-border/30 bg-background/80 px-3 py-2">
-          <NotesChatbot summary={""} extractedText={""} />
+          <NotesChatbot id={id} summary={summary} extractedText={extractedText} />
         </div>
       </div>
     </div>

@@ -130,6 +130,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         parsedOptions = {
           generateAudio: processingOptions?.generateAudio !== false,
           generateSummary: processingOptions?.generateSummary !== false,
+          generateMindMap: processingOptions?.generateMindMap !== false,
           generateQuiz: processingOptions?.generateQuiz === true,
         };
       }
@@ -192,6 +193,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(item);
     } catch (error: any) {
       res.status(500).json({ message: error?.message || 'Failed to get content item' });
+    }
+  });
+
+  // Regenerate mind map for an existing content item
+  app.post("/api/content/:id/regenerate-mindmap", async (req, res) => {
+    try {
+      const item = await storage.getContentItem(req.params.id);
+      if (!item) return res.status(404).json({ message: "Content not found" });
+
+      const text = (item.extractedText as string) || "";
+      if (!text || text.length < 20) {
+        return res.status(400).json({ message: "No extracted text available to generate mind map from." });
+      }
+
+      // Import here to avoid circular issues
+      const { generateMindMap } = await import("./services/openai");
+      const mindMapData = await generateMindMap(text);
+
+      const updated = await storage.updateContentItem(item.id, { mindMap: mindMapData as any });
+      res.json({ success: true, mindMap: mindMapData, item: updated });
+    } catch (error: any) {
+      console.error("Regenerate mindmap error:", error);
+      res.status(500).json({ message: error?.message || "Failed to regenerate mind map" });
     }
   });
 
@@ -308,6 +332,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get original file (PDF/Image)
+  app.get("/api/content/:id/original", async (req, res) => {
+    try {
+      const item = await storage.getContentItem(req.params.id);
+      if (!item) return res.status(404).json({ message: "Content not found" });
+      
+      if (item.type === "video") {
+        if (item.originalUrl) return res.redirect(item.originalUrl);
+        return res.status(404).json({ message: "Original URL not found" });
+      }
+
+      // Look for original file in uploads
+      const files = fs.readdirSync("uploads").filter(f => f.startsWith(`original_${item.id}`));
+      if (files.length === 0) return res.status(404).json({ message: "Original file not found" });
+
+      const filePath = path.join("uploads", files[0]);
+      res.sendFile(path.resolve(filePath));
+    } catch (error: any) {
+      res.status(500).json({ message: error?.message || 'Failed to get original file' });
+    }
+  });
+
   // Delete content item
   app.delete("/api/content/:id", async (req, res) => {
     try {
@@ -387,21 +433,29 @@ async function processContentAsync(
       fs.writeFileSync(podcastAudioPath, result.podcastAudioBuffer);
     }
 
-    // Update with results
-    await storage.updateContentItem(contentId, {
+    // Update with results (only set fields that were generated so we don't overwrite with undefined)
+    const updates: Record<string, unknown> = {
       status: "completed",
       extractedText: result.extractedText,
-      summary: result.summary,
-      audioUrl,
-      podcastScript: result.podcastScript,
-      podcastAudioUrl,
-      quizData: result.quizData,
-      flashcards: result.flashcards,
-    });
+    };
+    if (result.summary !== undefined) updates.summary = result.summary;
+    if (audioUrl !== undefined) updates.audioUrl = audioUrl;
+    if (result.podcastScript !== undefined) updates.podcastScript = result.podcastScript;
+    if (podcastAudioUrl !== undefined) updates.podcastAudioUrl = podcastAudioUrl;
+    if (result.quizData !== undefined) updates.quizData = result.quizData;
+    if (result.flashcards !== undefined) updates.flashcards = result.flashcards;
+    if ((result as any).mindMap !== undefined) updates.mindMap = (result as any).mindMap;
+    await storage.updateContentItem(contentId, updates as any);
 
-    // Clean up uploaded file
+    // Clean up or rename uploaded file
     if (filePath && fs.existsSync(filePath)) {
-      fs.unlinkSync(filePath);
+      if (contentType === "document" || contentType === "image") {
+        const ext = path.extname(originalFileName || filePath);
+        const permanentPath = path.join("uploads", `original_${contentId}${ext}`);
+        fs.renameSync(filePath, permanentPath);
+      } else {
+        fs.unlinkSync(filePath);
+      }
     }
   } catch (error: any) {
     console.error("Processing failed:", error);
@@ -486,19 +540,22 @@ async function processAudioFileAsync(
       fs.writeFileSync(audioPath, result.audioBuffer);
     }
 
-    // Update with results
-    await storage.updateContentItem(contentId, {
+    // Update with results (only set fields that were generated)
+    const updates: Record<string, unknown> = {
       status: "completed",
       extractedText: result.extractedText,
-      summary: result.summary,
-      audioUrl,
-      quizData: result.quizData,
-      flashcards: result.flashcards,
-    });
+    };
+    if (result.summary !== undefined) updates.summary = result.summary;
+    if (audioUrl !== undefined) updates.audioUrl = audioUrl;
+    if (result.quizData !== undefined) updates.quizData = result.quizData;
+    if (result.flashcards !== undefined) updates.flashcards = result.flashcards;
+    await storage.updateContentItem(contentId, updates as any);
 
-    // Clean up uploaded file
+    // Clean up or rename uploaded file
     if (filePath && fs.existsSync(filePath)) {
-      fs.unlinkSync(filePath);
+      const ext = path.extname(originalFileName || filePath);
+      const permanentPath = path.join("uploads", `original_${contentId}${ext}`);
+      fs.renameSync(filePath, permanentPath);
     }
   } catch (error: any) {
     console.error("Audio processing failed:", error);

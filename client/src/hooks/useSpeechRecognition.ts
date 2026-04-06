@@ -38,6 +38,13 @@ interface SpeechRecognitionInstance {
 
 type SpeechRecognitionConstructor = new () => SpeechRecognitionInstance;
 
+declare global {
+  interface Window {
+    SpeechRecognition?: SpeechRecognitionConstructor;
+    webkitSpeechRecognition?: SpeechRecognitionConstructor;
+  }
+}
+
 interface UseSpeechRecognitionOptions {
   lang?: string;
   continuous?: boolean;
@@ -81,7 +88,7 @@ export function useSpeechRecognition(
       return;
     }
 
-    const SpeechRecognitionCtor = (window.SpeechRecognition || window.webkitSpeechRecognition) as
+    const SpeechRecognitionCtor = ((window as any).SpeechRecognition || (window as any).webkitSpeechRecognition) as
       | SpeechRecognitionConstructor
       | undefined;
 

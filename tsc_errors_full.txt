@@ -1,0 +1,3 @@
+﻿client/src/components/study/StudySidebar.tsx(157,12): error TS2741: Property 'id' is missing in type '{ summary: string; extractedText: string; }' but required in type 'NotesChatbotProps'.
+server/auth.ts(3,53): error TS2307: Cannot find module 'passport-google-oauth20' or its corresponding type declarations.
+server/auth.ts(36,79): error TS7006: Parameter 'done' implicitly has an 'any' type.

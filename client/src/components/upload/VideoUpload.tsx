@@ -9,7 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Loader2, Video, Link } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 
-export default function VideoUpload() {
+export default function VideoUpload({ onSuccess }: { onSuccess?: () => void }) {
   const [url, setUrl] = useState("");
   const [title, setTitle] = useState("");
   const [generateAudio, setGenerateAudio] = useState(true);
@@ -32,6 +32,7 @@ export default function VideoUpload() {
       setUrl("");
       setTitle("");
       queryClient.invalidateQueries({ queryKey: ["/api/content"] });
+      if (onSuccess) onSuccess();
     },
     onError: (error: any) => {
       toast({
