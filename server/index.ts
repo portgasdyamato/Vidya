@@ -1,17 +1,17 @@
 import "dotenv/config";
 import express, { type Request, Response, NextFunction } from "express";
-import { registerRoutes } from "./routes.js";
+import { registerRoutes } from "./routes";
 import session from "express-session";
-import { setupGoogleAuth } from "./auth.js";
-import { ensureSchema } from "./db.js";
-import { setupVite, serveStatic, log } from "./vite.js";
+import { setupGoogleAuth } from "./auth";
+import { ensureSchema } from "./db";
+import { setupVite, serveStatic, log } from "./vite";
 import path from "path";
 import * as fs from "fs";
+import os from "os";
 
 const app = express();
 
 // Ensure uploads directory exists - use os.tmpdir on Vercel/Serverless
-import os from "os";
 const isVercel = !!process.env.VERCEL || !!process.env.LAMBDA_TASK_ROOT;
 const uploadsDir = isVercel 
   ? path.join(os.tmpdir(), "uploads") 
@@ -94,7 +94,7 @@ export async function initApp() {
     log("✅ Database schema ready");
     
     // Create default user for guest flow
-    const { storage } = await import("./storage.js");
+    const { storage } = await import("./storage");
     await storage.ensureDefaultUser();
     log("👤 Default user verified");
   } catch (err) {
@@ -134,6 +134,12 @@ if (!process.env.VERCEL && !process.env.LAMBDA_TASK_ROOT) {
   });
 }
 
-export default app;
+// Vercel serverless handler
+export default async (req: Request, res: Response) => {
+  const { app } = await initApp();
+  return (app as any)(req, res);
+};
+
+export { app };
 
 

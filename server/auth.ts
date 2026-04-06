@@ -1,7 +1,7 @@
 import type { Express, Request, Response } from "express";
 import passport from "passport";
 import { Strategy as GoogleStrategy, Profile } from "passport-google-oauth20";
-import { storage } from "./storage.js";
+import { storage } from "./storage";
 
 export function setupGoogleAuth(app: Express) {
   const { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, BASE_URL: ENV_BASE_URL, PORT } = process.env;

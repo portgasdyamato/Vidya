@@ -1,12 +1,12 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
-import { storage } from "./storage.js";
-import { insertContentItemSchema, processingOptionsSchema } from "../shared/schema.js";
+import { storage } from "./storage";
+import { insertContentItemSchema, processingOptionsSchema } from "@shared/schema";
 import multer from "multer";
 import * as path from "path";
 import * as fs from "fs";
-import { processContent } from "./services/fileProcessor.js";
-import { generateChatAnswer, transcribeAudio } from "./services/openai.js";
+import { processContent } from "./services/fileProcessor";
+import { generateChatAnswer, transcribeAudio } from "./services/openai";
 
 import os from "os";
 const isVercel = !!process.env.VERCEL || !!process.env.LAMBDA_TASK_ROOT;
@@ -509,7 +509,7 @@ async function processAudioFileAsync(
     }
 
     // Import functions needed for processing
-    const { generateFormattedSummaryAndFlashcards, summarizeContent, generateQuiz, generateSpeech } = await import("./services/openai.js");
+    const { generateFormattedSummaryAndFlashcards, summarizeContent, generateQuiz, generateSpeech } = await import("./services/openai");
 
     const result: {
       extractedText: string;
