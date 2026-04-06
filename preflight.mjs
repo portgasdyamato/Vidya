@@ -61,8 +61,9 @@ if (!envExists) {
   console.log('\n🤖 AI Configuration (at least one required):');
   const hasOpenAI = checkEnvVar('OPENAI_API_KEY', false, 'OpenAI API for GPT-4, Whisper, TTS');
   const hasGemini = checkEnvVar('GEMINI_API_KEY', false, 'Google Gemini API');
+  const hasOpenRouter = checkEnvVar('OPENROUTER_API_KEY', false, 'OpenRouter (Omni AI)');
   
-  if (!hasOpenAI && !hasGemini) {
+  if (!hasOpenAI && !hasGemini && !hasOpenRouter) {
     hasErrors = true;
     checks.push({
       status: '❌',

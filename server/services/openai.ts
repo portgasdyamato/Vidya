@@ -20,6 +20,19 @@ const googleAI = GEMINI_API_KEY ? new GoogleGenAI({ apiKey: GEMINI_API_KEY }) : 
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY || "";
 const openai = OPENAI_API_KEY ? new OpenAI({ apiKey: OPENAI_API_KEY }) : null;
 
+// 4. OpenRouter — alternative provider (OpenAI-compatible)
+const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY || "";
+const openrouter = OPENROUTER_API_KEY
+  ? new OpenAI({
+      apiKey: OPENROUTER_API_KEY,
+      baseURL: "https://openrouter.ai/api/v1",
+      defaultHeaders: {
+        "HTTP-Referer": "https://vidya-study.vercel.app", // Optional, for OpenRouter rankings
+        "X-Title": "Vidya Study AI", // Optional, for OpenRouter rankings
+      },
+    })
+  : null;
+
 // ── DeepSeek helpers ──────────────────────────────────────────────────────────
 
 /**
@@ -162,6 +175,21 @@ export async function summarizeContent(text: string): Promise<string> {
       } catch (err) { console.warn("Gemini summarize failed:", describeError(err)); }
     }
 
+    // 3. OpenRouter (fallback)
+    if (openrouter) {
+      try {
+        const res = await openrouter.chat.completions.create({
+          model: "deepseek/deepseek-chat", // Default to deepseek via openrouter
+          messages: [
+            { role: "system", content: sysprompt },
+            { role: "user", content: userprompt },
+          ],
+        });
+        const result = res.choices?.[0]?.message?.content;
+        if (result) return result;
+      } catch (err) { console.warn("OpenRouter summarize failed:", describeError(err)); }
+    }
+
     return localSummarize(text);
   } catch (error: any) {
     console.warn("summarizeContent fallback to local:", error?.message || error);
@@ -251,6 +279,25 @@ IMPORTANT: Return ONLY the JSON object. No preamble, no explanation.`;
         if (parsed) return parsed;
       } catch (err) {
         console.warn("Google flashcard generation failed:", describeError(err));
+      }
+    }
+
+    // 3. Try OpenRouter if available
+    if (openrouter) {
+      try {
+        const res = await openrouter.chat.completions.create({
+          model: "deepseek/deepseek-chat",
+          messages: [
+            { role: "system", content: "You are an expert educational content creator. Return ONLY a valid JSON object." },
+            { role: "user", content: prompt },
+          ],
+          response_format: { type: "json_object" },
+        });
+        const jsonText = res.choices?.[0]?.message?.content || "{}";
+        const parsed = parseFlashcardsResponse(jsonText);
+        if (parsed) return parsed;
+      } catch (err) {
+        console.warn("OpenRouter flashcard generation failed:", describeError(err));
       }
     }
 
@@ -422,21 +469,21 @@ ${text}`;
       }
     }
 
-    if (openai) {
+    if (openrouter) {
       try {
-        const chatResp = await openai.chat.completions.create({
-          model: "gpt-3.5-turbo",
+        const res = await openrouter.chat.completions.create({
+          model: "deepseek/deepseek-chat",
           messages: [
             { role: "system", content: "You are an educational quiz generator. Respond with JSON: { \"questions\": [...] }" },
             { role: "user", content: prompt },
           ],
-          max_tokens: 800,
+          response_format: { type: "json_object" },
         });
-        const jsonText = chatResp.choices?.[0]?.message?.content || "{}";
+        const jsonText = res.choices?.[0]?.message?.content || "{}";
         const parsed = parseQuizResponse(jsonText);
         if (parsed) return parsed;
       } catch (err) {
-        console.warn("OpenAI quiz generation failed:", describeError(err));
+        console.warn("OpenRouter quiz generation failed:", describeError(err));
       }
     }
 
@@ -567,6 +614,25 @@ Write the podcast script now. Begin directly with the opening hook. Output nothi
         script = await geminiGenerate(prompt, "gemini-1.5-pro");
       } catch (err: any) {
         console.warn("Gemini podcast script generation failed:", describeError(err));
+      }
+    }
+
+    // 3. Try OpenRouter
+    if (!script && openrouter) {
+      try {
+        const res = await openrouter.chat.completions.create({
+          model: "deepseek/deepseek-chat",
+          messages: [
+            {
+              role: "system",
+              content: "You are a professional podcast script writer. You write ONLY clean, natural spoken English."
+            },
+            { role: "user", content: prompt },
+          ],
+        });
+        script = res.choices?.[0]?.message?.content || "";
+      } catch (err: any) {
+        console.warn("OpenRouter podcast script generation failed:", describeError(err));
       }
     }
 
@@ -762,6 +828,23 @@ VIDYA AI RESPONSE:`;
         return result || "";
       } catch (err: any) {
         console.warn("Google Gemini chat answer failed:", describeError(err));
+      }
+    }
+
+    // 3. Try OpenRouter if available
+    if (openrouter) {
+      try {
+        const res = await openrouter.chat.completions.create({
+          model: "deepseek/deepseek-chat",
+          messages: [
+            { role: "system", content: "You are Vidya AI, a world-class educational tutor." },
+            { role: "user", content: prompt },
+          ],
+        });
+        const result = res.choices?.[0]?.message?.content;
+        if (result) return result;
+      } catch (err: any) {
+        console.warn("OpenRouter chat answer failed:", describeError(err));
       }
     }
 
@@ -1222,6 +1305,28 @@ Respond with ONLY the JSON object. No markdown fences, no extra text.`;
         console.warn("Gemini mindmap returned invalid structure, trying fallback...");
       } catch (err) {
         console.warn("Google mindmap generation failed:", describeError(err));
+      }
+    }
+
+    // 3. Try OpenRouter
+    if (openrouter) {
+      try {
+        const res = await openrouter.chat.completions.create({
+          model: "deepseek/deepseek-chat",
+          messages: [
+            {
+               role: "system",
+               content: "You are a Mermaid.js expert and educational content designer. You return ONLY valid JSON with 'chart' and 'explanations' keys."
+            },
+            { role: "user", content: prompt },
+          ],
+          response_format: { type: "json_object" },
+        });
+        const content = res.choices?.[0]?.message?.content || "";
+        const parsed = parseResponse(content);
+        if (parsed) return parsed;
+      } catch (err) {
+        console.warn("OpenRouter mindmap generation failed:", describeError(err));
       }
     }
 
