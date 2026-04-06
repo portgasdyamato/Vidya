@@ -10,10 +10,11 @@ import * as fs from "fs";
 
 const app = express();
 
-// Ensure uploads directory exists - use /tmp on Vercel/Serverless
+// Ensure uploads directory exists - use os.tmpdir on Vercel/Serverless
+import os from "os";
 const isVercel = !!process.env.VERCEL || !!process.env.LAMBDA_TASK_ROOT;
 const uploadsDir = isVercel 
-  ? path.join("/tmp", "uploads") 
+  ? path.join(os.tmpdir(), "uploads") 
   : path.join(process.cwd(), "uploads");
 
 if (!fs.existsSync(uploadsDir)) {
@@ -24,7 +25,7 @@ if (!fs.existsSync(uploadsDir)) {
   }
 }
 
-// Make the uploads dir accessible globally if needed, or stick to convention
+// Make the uploads dir accessible globally
 process.env.APP_UPLOADS_DIR = uploadsDir;
 app.set("etag", false);
 app.use(express.json());

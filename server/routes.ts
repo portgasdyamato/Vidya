@@ -8,8 +8,9 @@ import * as fs from "fs";
 import { processContent } from "./services/fileProcessor";
 import { generateChatAnswer, transcribeAudio } from "./services/openai";
 
+import os from "os";
 const isVercel = !!process.env.VERCEL || !!process.env.LAMBDA_TASK_ROOT;
-const uploadDir = isVercel ? "/tmp/uploads" : "uploads/";
+const uploadDir = isVercel ? path.join(os.tmpdir(), "uploads") : "uploads/";
 const upload = multer({ dest: uploadDir });
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -51,7 +52,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const { title, processingOptions } = req.body;
-      const parsedOptions = processingOptionsSchema.parse(JSON.parse(processingOptions));
+      let parsedOptions;
+      try {
+        parsedOptions = processingOptionsSchema.parse(typeof processingOptions === 'string' ? JSON.parse(processingOptions) : (processingOptions || {}));
+      } catch (e) {
+        console.warn("Processing options fallthrough:", e);
+        parsedOptions = { generateAudio: true, generateSummary: true, generateMindMap: true, generateQuiz: false };
+      }
 
       // Create content item
       const contentItem = await storage.createContentItem({
@@ -79,7 +86,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const { title, processingOptions } = req.body;
-      const parsedOptions = processingOptionsSchema.parse(JSON.parse(processingOptions));
+      let parsedOptions;
+      try {
+        parsedOptions = processingOptionsSchema.parse(typeof processingOptions === 'string' ? JSON.parse(processingOptions) : (processingOptions || {}));
+      } catch (e) {
+        console.warn("Processing options image fallthrough:", e);
+        parsedOptions = { generateAudio: true, generateSummary: true, generateMindMap: true, generateQuiz: false };
+      }
 
       const contentItem = await storage.createContentItem({
         userId: defaultUserId || "default-user",
@@ -454,7 +467,9 @@ async function processContentAsync(
       if (contentType === "document" || contentType === "image") {
         const ext = path.extname(originalFileName || filePath);
         const permanentPath = path.join(uploadDir, `original_${contentId}${ext}`);
-        fs.renameSync(filePath, permanentPath);
+        // copyFileSync + unlinkSync is safer across potential different mount points (/tmp)
+        fs.copyFileSync(filePath, permanentPath);
+        fs.unlinkSync(filePath);
       } else {
         fs.unlinkSync(filePath);
       }
@@ -557,7 +572,8 @@ async function processAudioFileAsync(
     if (filePath && fs.existsSync(filePath)) {
       const ext = path.extname(originalFileName || filePath);
       const permanentPath = path.join(uploadDir, `original_${contentId}${ext}`);
-      fs.renameSync(filePath, permanentPath);
+      fs.copyFileSync(filePath, permanentPath);
+      fs.unlinkSync(filePath);
     }
   } catch (error: any) {
     console.error("Audio processing failed:", error);
