@@ -10,11 +10,22 @@ import * as fs from "fs";
 
 const app = express();
 
-// Ensure uploads directory exists
-const uploadsDir = path.join(process.cwd(), "uploads");
+// Ensure uploads directory exists - use /tmp on Vercel/Serverless
+const isVercel = !!process.env.VERCEL || !!process.env.LAMBDA_TASK_ROOT;
+const uploadsDir = isVercel 
+  ? path.join("/tmp", "uploads") 
+  : path.join(process.cwd(), "uploads");
+
 if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir, { recursive: true });
+  try {
+    fs.mkdirSync(uploadsDir, { recursive: true });
+  } catch (err) {
+    log(`Warning: Failed to create uploads directory at ${uploadsDir}: ${err}`);
+  }
 }
+
+// Make the uploads dir accessible globally if needed, or stick to convention
+process.env.APP_UPLOADS_DIR = uploadsDir;
 app.set("etag", false);
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));

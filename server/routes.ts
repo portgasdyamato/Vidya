@@ -8,7 +8,9 @@ import * as fs from "fs";
 import { processContent } from "./services/fileProcessor";
 import { generateChatAnswer, transcribeAudio } from "./services/openai";
 
-const upload = multer({ dest: "uploads/" });
+const isVercel = !!process.env.VERCEL || !!process.env.LAMBDA_TASK_ROOT;
+const uploadDir = isVercel ? "/tmp/uploads" : "uploads/";
+const upload = multer({ dest: uploadDir });
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Ensure a default user exists for demo uploads and capture its id
@@ -344,10 +346,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       // Look for original file in uploads
-      const files = fs.readdirSync("uploads").filter(f => f.startsWith(`original_${item.id}`));
+      const files = fs.readdirSync(uploadDir).filter(f => f.startsWith(`original_${item.id}`));
       if (files.length === 0) return res.status(404).json({ message: "Original file not found" });
 
-      const filePath = path.join("uploads", files[0]);
+      const filePath = path.join(uploadDir, files[0]);
       res.sendFile(path.resolve(filePath));
     } catch (error: any) {
       res.status(500).json({ message: error?.message || 'Failed to get original file' });
@@ -421,7 +423,7 @@ async function processContentAsync(
     let audioUrl: string | undefined;
     if (result.audioBuffer && result.audioBuffer.length > 0) {
       audioUrl = `audio_${contentId}.mp3`;
-      const audioPath = path.join("uploads", audioUrl);
+      const audioPath = path.join(uploadDir, audioUrl);
       fs.writeFileSync(audioPath, result.audioBuffer);
     }
 
@@ -429,7 +431,7 @@ async function processContentAsync(
     let podcastAudioUrl: string | undefined;
     if (result.podcastAudioBuffer && result.podcastAudioBuffer.length > 0) {
       podcastAudioUrl = `podcast_audio_${contentId}.mp3`;
-      const podcastAudioPath = path.join("uploads", podcastAudioUrl);
+      const podcastAudioPath = path.join(uploadDir, podcastAudioUrl);
       fs.writeFileSync(podcastAudioPath, result.podcastAudioBuffer);
     }
 
@@ -451,7 +453,7 @@ async function processContentAsync(
     if (filePath && fs.existsSync(filePath)) {
       if (contentType === "document" || contentType === "image") {
         const ext = path.extname(originalFileName || filePath);
-        const permanentPath = path.join("uploads", `original_${contentId}${ext}`);
+        const permanentPath = path.join(uploadDir, `original_${contentId}${ext}`);
         fs.renameSync(filePath, permanentPath);
       } else {
         fs.unlinkSync(filePath);
@@ -536,7 +538,7 @@ async function processAudioFileAsync(
     let audioUrl: string | undefined;
     if (result.audioBuffer && result.audioBuffer.length > 0) {
       audioUrl = `audio_${contentId}.mp3`;
-      const audioPath = path.join("uploads", audioUrl);
+      const audioPath = path.join(uploadDir, audioUrl);
       fs.writeFileSync(audioPath, result.audioBuffer);
     }
 
@@ -554,7 +556,7 @@ async function processAudioFileAsync(
     // Clean up or rename uploaded file
     if (filePath && fs.existsSync(filePath)) {
       const ext = path.extname(originalFileName || filePath);
-      const permanentPath = path.join("uploads", `original_${contentId}${ext}`);
+      const permanentPath = path.join(uploadDir, `original_${contentId}${ext}`);
       fs.renameSync(filePath, permanentPath);
     }
   } catch (error: any) {

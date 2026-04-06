@@ -143,11 +143,12 @@ export async function downloadAndTranscribeVideo(videoUrl: string): Promise<stri
         });
 
         // Save audio to temporary file
-        const tempAudioPath = path.join("uploads", `youtube_audio_${Date.now()}_${Math.random().toString(36).substring(7)}.mp3`);
+        const uploadsDir = process.env.APP_UPLOADS_DIR || "uploads";
+        const tempAudioPath = path.join(uploadsDir, `youtube_audio_${Date.now()}_${Math.random().toString(36).substring(7)}.mp3`);
         
         // Ensure uploads directory exists
-        if (!fs.existsSync("uploads")) {
-          fs.mkdirSync("uploads", { recursive: true });
+        if (!fs.existsSync(uploadsDir)) {
+          fs.mkdirSync(uploadsDir, { recursive: true });
         }
         
         return new Promise((resolve, reject) => {
