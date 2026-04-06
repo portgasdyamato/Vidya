@@ -88,43 +88,53 @@ app.use((req, res, next) => {
   next();
 });
 
-// Initialize app - top level await ensures this is ready for Vercel before the first request
-try {
-  log("📊 Initializing server components...");
-  await ensureSchema();
-  const { storage } = await import("./storage");
-  await storage.ensureDefaultUser();
-  await registerRoutes(app);
+// Health check endpoint for diagnostics
+app.get("/api/health", async (req, res) => {
+  const dbSet = !!process.env.DATABASE_URL;
+  const orSet = !!process.env.OPENROUTER_API_KEY;
+  const uploadsDir = process.env.APP_UPLOADS_DIR;
   
-  if (app.get("env") === "development") {
-    // Vite setup only for local dev
-  } else {
-    serveStatic(app);
+  res.json({
+    status: "ok",
+    env: {
+      DATABASE_URL: dbSet ? "Set (hiding value)" : "MISSING",
+      OPENROUTER_API_KEY: orSet ? "Set (hiding value)" : "MISSING",
+      APP_UPLOADS_DIR: uploadsDir || "Not set"
+    }
+  });
+});
+
+let initializedApp: any = null;
+
+// Vercel serverless handler with lazy initialization
+export default async (req: Request, res: Response) => {
+  try {
+    if (!initializedApp) {
+      log("📊 Lazy-initializing server...");
+      await ensureSchema();
+      const { storage } = await import("./storage");
+      await storage.ensureDefaultUser();
+      await registerRoutes(app);
+      
+      if (app.get("env") !== "development") {
+        serveStatic(app);
+      }
+      
+      app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
+        const status = err.status || err.statusCode || 500;
+        res.status(status).json({ message: err.message || "Internal Server Error" });
+      });
+      
+      initializedApp = app;
+      log("✅ Lazy-initialization complete");
+    }
+    return (initializedApp as any)(req, res);
+  } catch (error: any) {
+    console.error("Vercel handler crash:", error);
+    res.status(500).json({ error: "Initialization Failed", detail: error?.message });
   }
-  
-  // Final error handler
-  app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
-    const status = err.status || err.statusCode || 500;
-    const message = err.message || "Internal Server Error";
-    console.error("Error:", message, err);
-    res.status(status).json({ message });
-  });
+};
 
-  log("✅ Server components initialized");
-} catch (err) {
-  console.error("❌ Critical server initialization failure:", err);
-}
-
-// Auto-start if not on Vercel
-if (!isVercel) {
-  const port = parseInt(process.env.PORT || "5000", 10);
-  app.listen(port, "0.0.0.0", () => {
-    log(`✨ Server running at: http://localhost:${port}`);
-  });
-}
-
-// Export the app as the default handler for Vercel
-export default app;
 export { app };
 
 
