@@ -1,5 +1,5 @@
-import { contentItems, users, type User, type InsertUser, type ContentItem, type InsertContentItem } from "@shared/schema";
-import { db } from "./db";
+import { contentItems, users, type User, type InsertUser, type ContentItem, type InsertContentItem } from "../shared/schema.js";
+import { db } from "./db.js";
 import { eq, desc } from "drizzle-orm";
 
 export interface IStorage {

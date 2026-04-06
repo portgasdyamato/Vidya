@@ -1,10 +1,10 @@
 import "dotenv/config";
 import express, { type Request, Response, NextFunction } from "express";
-import { registerRoutes } from "./routes";
+import { registerRoutes } from "./routes.js";
 import session from "express-session";
-import { setupGoogleAuth } from "./auth";
-import { ensureSchema } from "./db";
-import { setupVite, serveStatic, log } from "./vite";
+import { setupGoogleAuth } from "./auth.js";
+import { ensureSchema } from "./db.js";
+import { setupVite, serveStatic, log } from "./vite.js";
 import path from "path";
 import * as fs from "fs";
 
@@ -94,7 +94,7 @@ export async function initApp() {
     log("✅ Database schema ready");
     
     // Create default user for guest flow
-    const { storage } = await import("./storage");
+    const { storage } = await import("./storage.js");
     await storage.ensureDefaultUser();
     log("👤 Default user verified");
   } catch (err) {
