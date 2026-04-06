@@ -20,18 +20,37 @@ function normalizeDatabaseUrl(value?: string | null): string {
   return normalized;
 }
 
-const DATABASE_URL = normalizeDatabaseUrl(process.env.DATABASE_URL);
+let dbInstance: any = null;
+let poolInstance: any = null;
 
-if (!DATABASE_URL) {
-  throw new Error(
-    "DATABASE_URL must be set. Did you forget to provision a database?",
-  );
+function getDb() {
+  if (dbInstance) return { db: dbInstance, pool: poolInstance };
+
+  const DATABASE_URL = normalizeDatabaseUrl(process.env.DATABASE_URL);
+  if (!DATABASE_URL) {
+    console.error("❌ DATABASE_URL is missing! Requests will fail.");
+    throw new Error("DATABASE_URL is not configured.");
+  }
+
+  poolInstance = new Pool({ connectionString: DATABASE_URL });
+  dbInstance = drizzle(poolInstance, { schema });
+  return { db: dbInstance, pool: poolInstance };
 }
 
-process.env.DATABASE_URL = DATABASE_URL;
+// Export getters instead of raw constants
+export const db = new Proxy({}, {
+  get(_, prop) {
+    const { db } = getDb();
+    return db[prop];
+  }
+}) as any;
 
-export const pool = new Pool({ connectionString: DATABASE_URL });
-export const db = drizzle({ client: pool, schema });
+export const pool = new Proxy({}, {
+  get(_, prop) {
+    const { pool } = getDb();
+    return pool[prop];
+  }
+}) as any;
 
 export async function ensureSchema(): Promise<void> {
   // Create enum types and tables if they don't exist. This is a lightweight
