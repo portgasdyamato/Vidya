@@ -116,8 +116,13 @@ export default async (req: Request, res: Response) => {
       await storage.ensureDefaultUser();
       await registerRoutes(app);
       
-      if (app.get("env") !== "development") {
+      if (app.get("env") !== "development" || process.env.VERCEL) {
         serveStatic(app);
+      } else {
+        // Only call setupVite for true local development
+        const { createServer: createHttpServer } = await import("http");
+        const server = createHttpServer(app);
+        await setupVite(app, server);
       }
       
       app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
