@@ -136,8 +136,13 @@ if (!process.env.VERCEL && !process.env.LAMBDA_TASK_ROOT) {
 
 // Vercel serverless handler
 export default async (req: Request, res: Response) => {
-  const { app } = await initApp();
-  return (app as any)(req, res);
+  try {
+    const { app } = await initApp();
+    return (app as any)(req, res);
+  } catch (error: any) {
+    console.error("Vercel handler crashed:", error);
+    res.status(500).json({ error: "Server Initialization Failed", details: error?.message });
+  }
 };
 
 export { app };
