@@ -88,37 +88,21 @@ app.use((req, res, next) => {
   next();
 });
 
-let initialized = false;
-let serverInstance: any = null;
-
-export async function initApp() {
-  if (initialized) return { app, server: serverInstance };
-
-  // Ensure database schema and default user
-  try {
-    log("📊 Setting up database schema...");
-    await ensureSchema();
-    log("✅ Database schema ready");
-    
-    // Create default user for guest flow
-    const { storage } = await import("./storage");
-    await storage.ensureDefaultUser();
-    log("👤 Default user verified");
-  } catch (err) {
-    console.error("❌ Failed to initialize database:", err);
-  }
-
-  // Register API routes
-  serverInstance = await registerRoutes(app);
-
-  // Setup Vite in development or static serving in production
+// Initialize app - top level await ensures this is ready for Vercel before the first request
+try {
+  log("📊 Initializing server components...");
+  await ensureSchema();
+  const { storage } = await import("./storage");
+  await storage.ensureDefaultUser();
+  await registerRoutes(app);
+  
   if (app.get("env") === "development") {
-    await setupVite(app, serverInstance);
+    // Vite setup only for local dev
   } else {
     serveStatic(app);
   }
-
-  // Error handler
+  
+  // Final error handler
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;
     const message = err.message || "Internal Server Error";
@@ -126,32 +110,21 @@ export async function initApp() {
     res.status(status).json({ message });
   });
 
-  initialized = true;
-  return { app, server: serverInstance };
+  log("✅ Server components initialized");
+} catch (err) {
+  console.error("❌ Critical server initialization failure:", err);
 }
 
-// Auto-start if not being imported as a module (simplified check)
-if (!process.env.VERCEL && !process.env.LAMBDA_TASK_ROOT) {
-  initApp().then(({ server }) => {
-    const port = parseInt(process.env.PORT || "5000", 10);
-    server.listen(port, "0.0.0.0", () => {
-      log(`✨ Server running at: http://localhost:${port}`);
-      log(`📱 Environment: ${app.get("env")}`);
-    });
+// Auto-start if not on Vercel
+if (!isVercel) {
+  const port = parseInt(process.env.PORT || "5000", 10);
+  app.listen(port, "0.0.0.0", () => {
+    log(`✨ Server running at: http://localhost:${port}`);
   });
 }
 
-// Vercel serverless handler
-export default async (req: Request, res: Response) => {
-  try {
-    const { app } = await initApp();
-    return (app as any)(req, res);
-  } catch (error: any) {
-    console.error("Vercel handler crashed:", error);
-    res.status(500).json({ error: "Server Initialization Failed", details: error?.message });
-  }
-};
-
+// Export the app as the default handler for Vercel
+export default app;
 export { app };
 
 
