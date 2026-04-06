@@ -135,6 +135,14 @@ export default async (req: Request, res: Response) => {
   }
 };
 
+// Auto-start for local development
+if (!isVercel) {
+  const port = parseInt(process.env.PORT || "5000", 10);
+  app.listen(port, "0.0.0.0", () => {
+    log(`✨ Local server running at: http://localhost:${port}`);
+  });
+}
+
 export { app };
 
 
