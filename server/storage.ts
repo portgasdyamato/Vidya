@@ -1,4 +1,4 @@
-import { contentItems, users, type User, type InsertUser, type ContentItem, type InsertContentItem } from "@shared/schema";
+import { contentItems, users, type User, type InsertUser, type ContentItem, type InsertContentItem } from "../shared/schema";
 import { db } from "./db";
 import { eq, desc } from "drizzle-orm";
 

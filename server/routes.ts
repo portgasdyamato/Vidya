@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertContentItemSchema, processingOptionsSchema } from "@shared/schema";
+import { insertContentItemSchema, processingOptionsSchema } from "../shared/schema";
 import multer from "multer";
 import * as path from "path";
 import * as fs from "fs";
