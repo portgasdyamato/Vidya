@@ -3,7 +3,9 @@ import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import session from "express-session";
 import { setupGoogleAuth } from "./auth";
-import { ensureSchema } from "./db";
+import { ensureSchema, pool } from "./db";
+import pgSession from "connect-pg-simple";
+const PostgresStore = pgSession(session);
 import { setupVite, serveStatic, log } from "./vite";
 import path from "path";
 import * as fs from "fs";
@@ -42,9 +44,14 @@ app.get("/stop.gif", (_req, res) => {
 // Session middleware
 app.use(
   session({
+    store: new PostgresStore({ pool, tableName: "session" }),
     secret: process.env.SESSION_SECRET || "vidya_secret",
     resave: false,
     saveUninitialized: false,
+    cookie: {
+      maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+      secure: process.env.NODE_ENV === "production",
+    },
   })
 );
 
