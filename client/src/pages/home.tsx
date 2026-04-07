@@ -92,13 +92,13 @@ export default function Home() {
 
             {/* AI Visual Right Panel */}
             <div className="flex flex-col items-end gap-6 relative">
-              <div className="w-full max-w-sm aspect-square bg-transparent rounded-2xl flex items-center justify-center overflow-hidden relative group">
+              <div className="w-full max-w-sm aspect-square bg-[#00a3b6]/5 rounded-[2.5rem] border border-white/5 flex items-center justify-center overflow-hidden relative group transition-all hover:bg-[#00a3b6]/10 shadow-[0_20px_50px_rgba(0,163,182,0.05)]">
                 <img 
                   src="/talk.gif" 
                   alt="AI Assistant Visualization" 
-                  className="w-full h-full object-cover transition-all duration-700"
+                  className="w-4/5 h-4/5 object-contain opacity-70 group-hover:opacity-100 transition-all duration-700"
                 />
-                <div className="absolute inset-0 bg-gradient-to-tr from-black/20 to-transparent pointer-events-none" />
+                <div className="absolute inset-0 bg-gradient-to-tr from-black/10 to-transparent pointer-events-none" />
                 
                 {/* Visual Accent */}
                 <div className="absolute bottom-4 left-4 bg-black/40 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/10 flex items-center gap-2">

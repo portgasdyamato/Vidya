@@ -1927,12 +1927,40 @@ export default function Workspace() {
     }
   };
 
-  const handleDeleteSession = (sessionId: string) => {
+  const handleDeleteSession = async (sessionId: string) => {
     if (selectedSession?.id === sessionId) {
       setSelectedSession(undefined);
-      setSelectedView("chat");
+      setSelectedView("summary");
     }
-    queryClient.invalidateQueries({ queryKey: ["/api/content"] });
+
+    try {
+      // Extract original content item ID from our session ID prefix
+      const contentId = sessionId.replace('session-', '');
+      
+      const res = await fetch(`/api/content/${contentId}`, {
+        method: "DELETE",
+        credentials: "include"
+      });
+
+      if (!res.ok) {
+        throw new Error("Failed to delete from server");
+      }
+
+      toast({
+        title: "Source deleted",
+        description: "The source has been removed from your workspace.",
+      });
+
+      // Refresh the query to update the UI
+      queryClient.invalidateQueries({ queryKey: ["/api/content"] });
+    } catch (err) {
+      console.error("Failed to delete session:", err);
+      toast({
+        title: "Error",
+        description: "Could not delete the source. Please try again.",
+        variant: "destructive"
+      });
+    }
   };
 
   const [uploadedItemId, setUploadedItemId] = useState<string | null>(null);

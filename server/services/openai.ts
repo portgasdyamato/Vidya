@@ -829,17 +829,35 @@ VIDYA AI RESPONSE:`;
     // 3. Try OpenRouter if available
     if (openrouter) {
       try {
+        console.log("Using OpenRouter for chat answer...");
         const res = await openrouter.chat.completions.create({
-          model: "deepseek/deepseek-chat",
+          model: "deepseek/deepseek-chat", // Primary model
           messages: [
-            { role: "system", content: "You are Vidya AI, a world-class educational tutor." },
+            { role: "system", content: "You are Vidya AI, a world-class educational tutor. Synthesize knowledge instead of copying." },
             { role: "user", content: prompt },
           ],
+          temperature: 0.7,
         });
         const result = res.choices?.[0]?.message?.content;
         if (result) return result;
       } catch (err: any) {
-        console.warn("OpenRouter chat answer failed:", describeError(err));
+        console.warn("OpenRouter (Primary) failed:", describeError(err));
+        
+        // Secondary OpenRouter fallback to ensure functionality
+        try {
+          console.log("Trying OpenRouter fallback model...");
+          const res = await openrouter.chat.completions.create({
+            model: "google/gemini-2.0-flash-lite-preview-02-05:free", 
+            messages: [
+              { role: "system", content: "You are Vidya AI." },
+              { role: "user", content: prompt },
+            ],
+          });
+          const result = res.choices?.[0]?.message?.content;
+          if (result) return result;
+        } catch (innerErr) {
+          console.error("OpenRouter fallback failed:", innerErr);
+        }
       }
     }
 
