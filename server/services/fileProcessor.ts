@@ -9,10 +9,15 @@ import type { ProcessingOptions } from "../../shared/schema.js";
 
 export async function processPDF(filePath: string): Promise<string> {
   try {
-    const { default: pdfParse } = await import("pdf-parse");
-    const dataBuffer = fs.readFileSync(filePath);
-    const data = await pdfParse(dataBuffer);
-    return data.text;
+    const { PdfReader } = await import("pdfreader");
+    return new Promise((resolve, reject) => {
+      let text = "";
+      new PdfReader({}).parseFile(filePath, (err: any, item: any) => {
+        if (err) reject(err);
+        else if (!item) resolve(text);
+        else if (item.text) text += item.text + " ";
+      });
+    });
   } catch (error: any) {
     throw new Error(`Failed to process PDF: ${error?.message || 'Unknown error'}`);
   }
