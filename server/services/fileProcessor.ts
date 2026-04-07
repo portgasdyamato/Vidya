@@ -27,12 +27,10 @@ import type { ProcessingOptions } from "../../shared/schema.js";
 // before this module is ever imported, so the library loads cleanly.
 export async function processPDF(filePath: string): Promise<string> {
   try {
-    // Use createRequire to safely load the module as CommonJS without ESM export headaches
-    const require = createRequire(import.meta.url);
-    const pdfParse = require("pdf-parse");
-    
+    const { PDFParse } = await import("pdf-parse");
     const dataBuffer = fs.readFileSync(filePath);
-    const data = await pdfParse(dataBuffer);
+    const parser = new PDFParse({ data: dataBuffer });
+    const data = await parser.getText();
     const text = data.text?.replace(/\0/g, "").trim();
     if (!text) throw new Error("PDF contained no extractable text.");
     return text;
