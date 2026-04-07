@@ -14,10 +14,13 @@ import os from "os";
 const app = express();
 
 // Ensure uploads directory exists - use os.tmpdir on Vercel/Serverless
-const isVercel = !!process.env.VERCEL || !!process.env.LAMBDA_TASK_ROOT;
+const isVercel = !!process.env.VERCEL || !!process.env.LAMBDA_TASK_ROOT || !!process.env.VERCEL_URL;
 const uploadsDir = isVercel 
   ? path.join(os.tmpdir(), "uploads") 
   : path.join(process.cwd(), "uploads");
+
+log(`🚀 Environment: ${isVercel ? "Vercel/Serverless" : "Local"}`);
+log(`📂 Uploads directory: ${uploadsDir}`);
 
 if (!fs.existsSync(uploadsDir)) {
   try {
