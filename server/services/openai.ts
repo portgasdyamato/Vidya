@@ -223,14 +223,17 @@ Formatting Rules:
 - No JSON artifacts or code syntax in the body text
 
 PHASE 2 - ELITE FLASHCARDS (JSON):
-Generate EXACTLY 12 world-class flashcards:
-- 4 Conceptual: "What is X and why does it matter?" - test core understanding
-- 3 Reasoning: "Explain WHY X leads to Y" - test causal reasoning
-- 2 Application: "In a real-world scenario where [Z occurs], how would you apply X?" - test practical use
-- 2 Critical Analysis: "Contrast X with Y" or "What is the fundamental limitation of X?" - test depth
-- 1 Synthesis: A question requiring connecting multiple concepts
+Generate EXACTLY 10 highly distinct, world-class flashcards:
+- 4 Conceptual: "What is X and why does it matter?"
+- 3 Reasoning: "Explain WHY X leads to Y"
+- 2 Application: "In a practical scenario where [Z occurs], how do you apply X?"
+- 1 Limitations: "What are the limitations or alternatives to X?"
 
-Rules: Questions must be precise and unambiguous. Answers must be 2-4 comprehensive sentences.
+CRITICAL FLASHCARD RULES:
+- NEVER blindly copy-paste text from the document. You MUST rewrite and synthesize the answer beautifully.
+- Questions must be precise and pedagogical.
+- Answers must be 1-3 crisp, comprehensible sentences.
+- Use simple markdown (**bold**, $inline$) in the answers.
 
 RETURN FORMAT - Respond ONLY with valid JSON:
 {"summary_markdown": "## Title\n\n**TL;DR**: ...\n\n### Key Takeaways\n\n- ...", "flashcards": [{"question": "...", "answer": "..."}]}
@@ -798,14 +801,15 @@ ${context.substring(0, 6000)}
 Use these notes as primary truth for document-specific questions. Cite details naturally.` : 'You are answering from your vast general knowledge.'}
 
 RESPONSE RULES:
-1. Answer DIRECTLY and COMPLETELY. No filler phrases like "Great question!" or "Certainly!"
-2. Structure: Start with a clear, direct 1-2 sentence answer. Then elaborate.
-3. Use **bold** for key terms, bullet points for lists, \`code formatting\` for technical expressions
-4. Mathematical expressions: use $inline$ or $$block$$ LaTeX notation
-5. Match depth to complexity: simple questions get crisp answers; complex ones get rich coverage
-6. NEVER say: "the document says", "based on the text", "as an AI", "I cannot", "the provided content"
-7. If notes lack info on a general question, use your expert knowledge without mentioning the gap
-8. When useful, add one golden insight that connects the concept to a bigger idea
+1. NEVER copy-paste verbatim chunks from the document. You MUST rewrite, synthesize, and explain the concept in your own conversational tutoring voice.
+2. Answer DIRECTLY and COMPLETELY. No filler phrases like "Great question!" or "Certainly!"
+3. Structure: Start with a clear, direct 1-2 sentence answer. Then elaborate.
+4. Use **bold** for key terms, bullet points for lists, \`code formatting\` for technical expressions
+5. Mathematical expressions: use $inline$ or $$block$$ LaTeX notation
+6. Match depth to complexity: simple questions get crisp answers; complex ones get rich coverage
+7. NEVER say: "the document says", "based on the text", "as an AI", "I cannot", "the provided content"
+8. If notes lack info on a general question, use your expert knowledge without mentioning the gap
+9. When useful, add one golden insight that connects the concept to a bigger idea
 
 STUDENT QUESTION: "${question}"
 
