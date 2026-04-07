@@ -223,7 +223,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       // Import here to avoid circular issues
-      const { generateMindMap } = await import("./services/openai");
+      const { generateMindMap } = await import("./services/openai.js");
       const mindMapData = await generateMindMap(text);
 
       const updated = await storage.updateContentItem(item.id, { mindMap: mindMapData as any });
