@@ -175,6 +175,9 @@ export async function processContent(
     throw new Error("Could not extract any text from the provided file.");
   }
 
+  // Sanitize: PostgreSQL rejects null bytes (0x00) in UTF-8 text columns
+  extractedText = extractedText.replace(/\0/g, "").trim();
+
   const result: ProcessResult = { extractedText };
 
   // ── 2. Run all AI generation in parallel (failures are non-fatal) ────────────
