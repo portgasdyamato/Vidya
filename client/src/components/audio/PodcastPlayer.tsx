@@ -81,9 +81,13 @@ export default function PodcastPlayer({ audioUrl, title, transcript, summary, us
     audio.addEventListener("pause", () => setStatus(false));
     audio.addEventListener("ended", () => setStatus(false));
 
+    // Handle initial volume / rate
+    audio.volume = volume;
+    audio.playbackRate = playbackRate;
+
     if (textToSpeak && showSubtitles) {
       const interval = setInterval(() => {
-        if (audio.duration) {
+        if (audio.duration && !audio.paused) {
           const words = textToSpeak.split(/\s+/);
           const currentIdx = Math.floor((audio.currentTime / audio.duration) * words.length);
           setCurrentSubtitle(words.slice(Math.max(0, currentIdx - 8), currentIdx + 8).join(" "));
@@ -92,13 +96,28 @@ export default function PodcastPlayer({ audioUrl, title, transcript, summary, us
       return () => {
         clearInterval(interval);
         audio.removeEventListener("timeupdate", updateTime);
+        audio.removeEventListener("loadedmetadata", updateDuration);
+        audio.removeEventListener("play", () => setStatus(true));
+        audio.removeEventListener("pause", () => setStatus(false));
+        audio.removeEventListener("ended", () => setStatus(false));
       }
     }
     return () => {
       audio.removeEventListener("timeupdate", updateTime);
       audio.removeEventListener("loadedmetadata", updateDuration);
+      audio.removeEventListener("play", () => setStatus(true));
+      audio.removeEventListener("pause", () => setStatus(false));
+      audio.removeEventListener("ended", () => setStatus(false));
     };
-  }, [transcript, showSubtitles, audioUrl, useWebSpeech]);
+  }, [transcript, showSubtitles, audioUrl, useWebSpeech, textToSpeak]);
+
+  // Live Sync volume and playback rate to the audio element when they change
+  useEffect(() => {
+    if (audioRef.current && !useWebSpeech) {
+      audioRef.current.volume = volume;
+      audioRef.current.playbackRate = playbackRate;
+    }
+  }, [volume, playbackRate, useWebSpeech]);
 
   const togglePlay = () => {
     if (useWebSpeech) {
@@ -117,6 +136,13 @@ export default function PodcastPlayer({ audioUrl, title, transcript, summary, us
           if (e.charIndex !== undefined) {
              setSpeechProgress((e.charIndex / textToSpeak.length) * 100);
              setCurrentTime((e.charIndex / textToSpeak.length) * duration);
+             
+             // Update subtitles for Web Speech
+             if (showSubtitles) {
+               const words = textToSpeak.split(/\s+/);
+               const currentWordIdx = textToSpeak.substring(0, e.charIndex).split(/\s+/).length;
+               setCurrentSubtitle(words.slice(Math.max(0, currentWordIdx - 8), currentWordIdx + 8).join(" "));
+             }
           }
         };
         window.speechSynthesis.speak(utterance);

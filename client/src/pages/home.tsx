@@ -96,7 +96,7 @@ export default function Home() {
                 <img 
                   src="/talk.gif" 
                   alt="AI Assistant Visualization" 
-                  className="w-4/5 h-4/5 object-contain opacity-70 group-hover:opacity-100 transition-all duration-700"
+                  className="w-full h-full object-cover opacity-70 group-hover:opacity-100 transition-all duration-700"
                 />
                 <div className="absolute inset-0 bg-gradient-to-tr from-black/10 to-transparent pointer-events-none" />
                 
