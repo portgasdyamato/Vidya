@@ -5,15 +5,12 @@ import session from "express-session";
 import { setupGoogleAuth } from "./auth.js";
 import { ensureSchema, pool } from "./db.js";
 import pgSession from "connect-pg-simple";
-const PostgresStore = pgSession(session);
 import { setupVite, serveStatic, log } from "./vite.js";
 import path from "path";
 import * as fs from "fs";
 import os from "os";
 
 const app = express();
-
-// Ensure uploads directory exists - use os.tmpdir on Vercel/Serverless
 const isVercel = !!process.env.VERCEL || !!process.env.LAMBDA_TASK_ROOT || !!process.env.VERCEL_URL;
 const uploadsDir = isVercel 
   ? path.join(os.tmpdir(), "uploads") 
@@ -26,17 +23,16 @@ if (!fs.existsSync(uploadsDir)) {
   try {
     fs.mkdirSync(uploadsDir, { recursive: true });
   } catch (err) {
-    log(`Warning: Failed to create uploads directory at ${uploadsDir}: ${err}`);
+    log(`⚠️ Could not create uploads dir: ${err}`);
   }
 }
 
-// Make the uploads dir accessible globally
 process.env.APP_UPLOADS_DIR = uploadsDir;
 app.set("etag", false);
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-// Serve GIF assets
+// Serve static GIFs
 app.get("/talk.gif", (_req, res) => {
   res.sendFile(path.join(process.cwd(), "talk.gif"));
 });
@@ -44,64 +40,44 @@ app.get("/stop.gif", (_req, res) => {
   res.sendFile(path.join(process.cwd(), "stop.gif"));
 });
 
-// Session middleware
+// Polyfill for PDF libraries on Vercel
+if (isVercel && typeof (global as any).DOMMatrix === 'undefined') {
+  (global as any).DOMMatrix = class {};
+}
+
+// Session middleware with Vercel-specific optimizations
+const PostgresStore = pgSession(session);
 app.use(
   session({
+    store: new PostgresStore({ 
+      pool, 
+      tableName: "session",
+      pruneSessionInterval: false // CRITICAL for serverless
+    }),
     secret: process.env.SESSION_SECRET || "vidya_secret",
     resave: false,
     saveUninitialized: false,
     cookie: {
-      maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
-      secure: process.env.NODE_ENV === "production" && !isVercel, // Secure only on non-Vercel prod
+      maxAge: 30 * 24 * 60 * 60 * 1000,
+      secure: process.env.NODE_ENV === "production" && !isVercel,
     },
   })
 );
 
-// Passport + Google OAuth
 setupGoogleAuth(app);
 
-// Cache control for API routes
-app.use((req, res, next) => {
-  if (req.path.startsWith("/api")) {
-    res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate");
-    res.setHeader("Pragma", "no-cache");
-    res.setHeader("Expires", "0");
-    res.setHeader("Surrogate-Control", "no-store");
-  }
-  next();
-});
-
-// Request logging
-app.use((req, res, next) => {
-  const start = Date.now();
-  const path = req.path;
-
-  res.on("finish", () => {
-    const duration = Date.now() - start;
-    if (path.startsWith("/api")) {
-      let logLine = `${req.method} ${path} ${res.statusCode} in ${duration}ms`;
-      if (res.get("X-Response-Time")) {
-        logLine += ` (real: ${res.get("X-Response-Time")}ms)`;
-      }
-      log(logLine);
-    }
-  });
-
-  next();
-});
-
-// Health check endpoint for diagnostics
-app.get("/api/health", async (req, res) => {
+// Diagnostic Health Check
+app.get("/api/health", (req, res) => {
   const dbSet = !!process.env.DATABASE_URL;
   const orSet = !!process.env.OPENROUTER_API_KEY;
-  const uploadsDir = process.env.APP_UPLOADS_DIR;
-  
-  res.json({
-    status: "ok",
-    env: {
-      DATABASE_URL: dbSet ? "Set (hiding value)" : "MISSING",
-      OPENROUTER_API_KEY: orSet ? "Set (hiding value)" : "MISSING",
-      APP_UPLOADS_DIR: uploadsDir || "Not set"
+  res.json({ 
+    status: "ok", 
+    isVercel,
+    region: process.env.VERCEL_REGION || "local",
+    checks: {
+      DATABASE_URL: dbSet ? "Set" : "MISSING",
+      OPENROUTER_API_KEY: orSet ? "Set" : "MISSING",
+      UPLOADS: uploadsDir
     }
   });
 });
@@ -118,10 +94,9 @@ export default async (req: Request, res: Response) => {
       await storage.ensureDefaultUser();
       await registerRoutes(app);
       
-      if (app.get("env") !== "development" || process.env.VERCEL) {
+      if (app.get("env") !== "development" || isVercel) {
         serveStatic(app);
       } else {
-        // Only call setupVite for true local development
         const { createServer: createHttpServer } = await import("http");
         const server = createHttpServer(app);
         await setupVite(app, server);
@@ -135,14 +110,15 @@ export default async (req: Request, res: Response) => {
       initializedApp = app;
       log("✅ Lazy-initialization complete");
     }
-    return (initializedApp as any)(req, res);
+    
+    return initializedApp(req, res);
   } catch (error: any) {
     console.error("Vercel handler crash:", error);
     res.status(500).json({ error: "Initialization Failed", detail: error?.message });
   }
 };
 
-// Auto-start for local development
+// Local startup
 if (!isVercel) {
   const port = parseInt(process.env.PORT || "5000", 10);
   app.listen(port, "0.0.0.0", () => {
@@ -151,5 +127,3 @@ if (!isVercel) {
 }
 
 export { app };
-
-
