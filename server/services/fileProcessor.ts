@@ -1,6 +1,5 @@
 import * as fs from "fs";
 import * as path from "path";
-import pdfParse from "pdf-parse";
 import mammoth from "mammoth";
 import ytdl from "ytdl-core";
 // Note: youtube-transcript removed - using audio download + Whisper as primary method
@@ -10,6 +9,7 @@ import type { ProcessingOptions } from "../../shared/schema.js";
 
 export async function processPDF(filePath: string): Promise<string> {
   try {
+    const { default: pdfParse } = await import("pdf-parse");
     const dataBuffer = fs.readFileSync(filePath);
     const data = await pdfParse(dataBuffer);
     return data.text;

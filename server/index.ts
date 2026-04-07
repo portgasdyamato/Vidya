@@ -47,13 +47,12 @@ app.get("/stop.gif", (_req, res) => {
 // Session middleware
 app.use(
   session({
-    store: new PostgresStore({ pool, tableName: "session" }),
     secret: process.env.SESSION_SECRET || "vidya_secret",
     resave: false,
     saveUninitialized: false,
     cookie: {
       maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
-      secure: process.env.NODE_ENV === "production",
+      secure: process.env.NODE_ENV === "production" && !isVercel, // Secure only on non-Vercel prod
     },
   })
 );
