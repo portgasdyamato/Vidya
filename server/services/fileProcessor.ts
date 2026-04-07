@@ -20,59 +20,23 @@ import {
 } from "./openai.js";
 import type { ProcessingOptions } from "../../shared/schema.js";
 
-// ── Browser global polyfills (must run before any pdf import) ──────────────────
-function applyPolyfills() {
-  const g = global as any;
-  if (!g.DOMMatrix)       g.DOMMatrix       = class { setMatrixValue() { return this; } };
-  if (!g.Path2D)          g.Path2D          = class {};
-  if (!g.ImageData)       g.ImageData       = class {};
-  if (!g.OffscreenCanvas) g.OffscreenCanvas = class { getContext() { return null; } };
-}
-
 // ── PDF Extraction ─────────────────────────────────────────────────────────────
+// pdf-parse handles font encoding / ToUnicode maps correctly.
+// DOMMatrix and other browser globals are polyfilled in server/index.ts
+// before this module is ever imported, so the library loads cleanly.
 export async function processPDF(filePath: string): Promise<string> {
-  applyPolyfills();
-
   try {
-    // Using the legacy CommonJS build which does not require a separate worker
-    const pdfjs = await import("pdfjs-dist/legacy/build/pdf.mjs" as any);
-    const fileData = new Uint8Array(fs.readFileSync(filePath));
-    const loadingTask = pdfjs.getDocument({
-      data: fileData,
-      disableFontFace: true,
-      useSystemFonts: true,
-      isEvalSupported: false,
-    });
-    const doc = await loadingTask.promise;
-
-    const parts: string[] = [];
-    for (let i = 1; i <= doc.numPages; i++) {
-      const page = await doc.getPage(i);
-      const content = await page.getTextContent();
-      const pageText = content.items
-        .filter((it: any) => typeof it.str === "string")
-        .map((it: any) => it.str)
-        .join(" ");
-      parts.push(pageText);
-    }
-
-    const text = parts.join("\n\n").trim();
+    // pdf-parse ESM build does not have a .default — import the namespace directly
+    const pdfParseModule = await import("pdf-parse");
+    const pdfParse = (pdfParseModule as any).default ?? pdfParseModule;
+    const dataBuffer = fs.readFileSync(filePath);
+    const data = await pdfParse(dataBuffer);
+    const text = data.text?.replace(/\0/g, "").trim();
     if (!text) throw new Error("PDF contained no extractable text.");
     return text;
   } catch (err: any) {
-    // Graceful fallback: scrape raw string literals from the PDF bytes
-    console.warn("[processPDF] Primary parse failed, using raw-text fallback:", err.message);
-    const raw = fs.readFileSync(filePath, "latin1");
-    const matches: string[] = [];
-    const re = /\(([^)]{3,})\)/g;
-    let m: RegExpExecArray | null;
-    while ((m = re.exec(raw)) !== null) {
-      const s = m[1].replace(/\\[nrt]/g, " ").trim();
-      if (s.length > 2) matches.push(s);
-    }
-    const fallback = matches.join(" ").trim();
-    if (fallback.length > 100) return fallback;
-    throw new Error(`PDF text extraction failed: ${err.message}`);
+    console.error("[processPDF] pdf-parse failed:", err.message);
+    throw new Error(`Failed to process PDF: ${err.message}`);
   }
 }
 

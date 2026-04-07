@@ -44,7 +44,7 @@ function SessionsList({ activeId }: { activeId?: string }) {
   const { data: items } = useQuery<any[]>({ queryKey: ["/api/content"] });
 
   return (
-    <aside className="w-80 hidden lg:flex flex-col border-r border-white/5 h-[calc(100vh-64px)] overflow-y-auto">
+    <aside className="w-80 hidden lg:flex flex-col border-r border-white/5 h-[calc(100vh-64px)] overflow-y-auto overflow-x-hidden">
       <div className="p-6">
         <div className="flex items-center justify-between mb-6">
           <h3 className="text-xl font-serif text-white">Sources</h3>
@@ -67,15 +67,15 @@ function SessionsList({ activeId }: { activeId?: string }) {
           {items && items.length > 0 ? (
             items.map((it) => (
               <Link key={it.id} href={`/study/${it.id}`}>
-                <motion.a 
-                  whileHover={{ x: 4 }}
-                  className={`block rounded-2xl p-4 transition-all border ${
+                <motion.div
+                  whileHover={{ x: 2 }}
+                  className={`block w-full rounded-2xl p-4 transition-all border cursor-pointer ${
                     activeId === it.id 
                       ? 'glass-card border-primary/30 bg-primary/5' 
                       : 'border-transparent hover:bg-white/5'
                   }`}
                 >
-                  <div className="flex justify-between items-start mb-1">
+                  <div className="flex justify-between items-center mb-2">
                     <span className="text-[10px] text-white/30 font-medium uppercase tracking-wider">
                       {new Date(it.createdAt).toLocaleDateString()}
                     </span>
@@ -86,17 +86,28 @@ function SessionsList({ activeId }: { activeId?: string }) {
                       </div>
                     )}
                   </div>
-                  <div className="font-medium text-sm text-white truncate">{it.title}</div>
+                  <div
+                    className="font-medium text-sm text-white"
+                    style={{
+                      display: "-webkit-box",
+                      WebkitLineClamp: 2,
+                      WebkitBoxOrient: "vertical",
+                      overflow: "hidden",
+                      wordBreak: "break-word",
+                    }}
+                  >
+                    {it.title}
+                  </div>
                   <div className="mt-3">
-                    <div className="h-1 bg-white/5 rounded-full overflow-hidden">
+                    <div className="h-0.5 w-full bg-white/5 rounded-full overflow-hidden">
                       <motion.div 
                         initial={{ width: 0 }}
                         animate={{ width: `${typeof it.progress === 'number' ? it.progress : (it.status === 'completed' ? 100 : 20)}%` }}
-                        className="h-1 bg-primary" 
+                        className="h-0.5 bg-primary rounded-full" 
                       />
                     </div>
                   </div>
-                </motion.a>
+                </motion.div>
               </Link>
             ))
           ) : (
