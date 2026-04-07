@@ -1,4 +1,4 @@
-import { GoogleGenAI } from "@google/genai";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import OpenAI from "openai";
 import * as fs from "fs";
 import * as path from "path";
@@ -14,7 +14,7 @@ const deepseek = DEEPSEEK_API_KEY
 
 // 2. Google Gemini — fallback
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY || "";
-const googleAI = GEMINI_API_KEY ? new GoogleGenAI({ apiKey: GEMINI_API_KEY }) : null;
+const googleAI = GEMINI_API_KEY ? new GoogleGenerativeAI(GEMINI_API_KEY) : null;
 
 // 3. OpenAI — fallback (mainly for TTS audio)
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY || "";
@@ -85,25 +85,23 @@ async function deepseekJSON(
 
 // ── Gemini helpers ────────────────────────────────────────────────────────────
 
-/** Text generation via Gemini v1 SDK */
-async function geminiGenerate(prompt: string, model = "gemini-1.5-flash"): Promise<string> {
+/** Text generation via Gemini SDK */
+async function geminiGenerate(prompt: string, modelStr = "gemini-1.5-flash"): Promise<string> {
   if (!googleAI) throw new Error("Gemini not configured");
-  const response = await googleAI.models.generateContent({
-    model,
-    contents: [{ role: "user", parts: [{ text: prompt }] }],
-  });
-  return response.candidates?.[0]?.content?.parts?.[0]?.text || "";
+  const model = googleAI.getGenerativeModel({ model: modelStr });
+  const result = await model.generateContent(prompt);
+  return result.response.text();
 }
 
-/** JSON generation via Gemini v1 SDK */
-async function geminiGenerateJSON(prompt: string, model = "gemini-1.5-pro"): Promise<string> {
+/** JSON generation via Gemini SDK */
+async function geminiGenerateJSON(prompt: string, modelStr = "gemini-1.5-pro"): Promise<string> {
   if (!googleAI) throw new Error("Gemini not configured");
-  const response = await googleAI.models.generateContent({
-    model,
-    contents: [{ role: "user", parts: [{ text: prompt }] }],
-    config: { responseMimeType: "application/json" },
+  const model = googleAI.getGenerativeModel({ 
+    model: modelStr,
+    generationConfig: { responseMimeType: "application/json" }
   });
-  return response.candidates?.[0]?.content?.parts?.[0]?.text || "";
+  const result = await model.generateContent(prompt);
+  return result.response.text();
 }
 
 // ── Utility ───────────────────────────────────────────────────────────────────
@@ -130,17 +128,12 @@ export async function extractTextFromImage(base64Image: string): Promise<string>
     if (googleAI) {
       try {
         // Use vision-capable model with inline image
-        const response = await googleAI.models.generateContent({
-          model: "gemini-1.5-flash",
-          contents: [{
-            role: "user",
-            parts: [
-              { text: prompt },
-              { inlineData: { data: base64Image, mimeType: "image/jpeg" } }
-            ]
-          }],
-        });
-        const txt = response.candidates?.[0]?.content?.parts?.[0]?.text || "";
+        const model = googleAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+        const result = await model.generateContent([
+          prompt,
+          { inlineData: { data: base64Image, mimeType: "image/jpeg" } }
+        ]);
+        const txt = result.response.text();
         return txt;
       } catch (err) {
         console.warn("Google Gemini extractTextFromImage failed:", describeError(err));
