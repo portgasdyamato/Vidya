@@ -468,6 +468,7 @@ function CenterColumn({
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const { toast } = useToast();
+  const queryClient = useQueryClient();
 
   const {
     listening,
@@ -622,8 +623,8 @@ function CenterColumn({
     );
   }
 
-  const isReady = contentItem.status === "completed";
-  const messages = session.messages || [];
+  const isReady = contentItem?.status === "completed";
+  const messages = session?.messages || [];
 
   // Render different views based on selectedView
   if (selectedView === "summary") {
