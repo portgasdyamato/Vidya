@@ -1,12 +1,12 @@
 import "dotenv/config";
 import express, { type Request, Response, NextFunction } from "express";
-import { registerRoutes } from "./routes";
+import { registerRoutes } from "./routes.js";
 import session from "express-session";
-import { setupGoogleAuth } from "./auth";
-import { ensureSchema, pool } from "./db";
+import { setupGoogleAuth } from "./auth.js";
+import { ensureSchema, pool } from "./db.js";
 import pgSession from "connect-pg-simple";
 const PostgresStore = pgSession(session);
-import { setupVite, serveStatic, log } from "./vite";
+import { setupVite, serveStatic, log } from "./vite.js";
 import path from "path";
 import * as fs from "fs";
 import os from "os";
@@ -115,7 +115,7 @@ export default async (req: Request, res: Response) => {
     if (!initializedApp) {
       log("📊 Lazy-initializing server...");
       await ensureSchema();
-      const { storage } = await import("./storage");
+      const { storage } = await import("./storage.js");
       await storage.ensureDefaultUser();
       await registerRoutes(app);
       
