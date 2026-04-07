@@ -8,13 +8,11 @@ import * as path from "path";
 
 // 1. DeepSeek — primary provider (OpenAI-compatible API)
 const DEEPSEEK_API_KEY = process.env.DEEPSEEK_API_KEY || "";
-const deepseek = DEEPSEEK_API_KEY
-  ? new OpenAI({ apiKey: DEEPSEEK_API_KEY, baseURL: "https://api.deepseek.com/v1" })
-  : null;
+const deepseek: OpenAI | null = null; // Force disabled to use OpenRouter
 
 // 2. Google Gemini — fallback
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY || "";
-const googleAI = GEMINI_API_KEY ? new GoogleGenerativeAI(GEMINI_API_KEY) : null;
+const googleAI: GoogleGenerativeAI | null = null; // Force disabled to use OpenRouter
 
 // 3. OpenAI — fallback (mainly for TTS audio)
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY || "";
