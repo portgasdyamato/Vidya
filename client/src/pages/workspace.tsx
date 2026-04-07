@@ -402,7 +402,18 @@ function SessionsPanel({
                       >
                         <div className="flex items-start justify-between gap-2">
                           <div className="flex-1 min-w-0">
-                            <h3 className={`text-sm font-medium truncate ${isActive ? "text-foreground" : "text-foreground/90"}`} title={session.title}>
+                            <h3 
+                              className={`text-sm font-medium ${isActive ? "text-foreground" : "text-foreground/90"}`} 
+                              title={session.title}
+                              style={{
+                                display: "-webkit-box",
+                                WebkitLineClamp: 2,
+                                WebkitBoxOrient: "vertical",
+                                overflow: "hidden",
+                                whiteSpace: "normal",
+                                wordBreak: "break-word"
+                              }}
+                            >
                               {session.title}
                             </h3>
                             <div className="mt-1.5 h-1 bg-white/10 rounded-full overflow-hidden">

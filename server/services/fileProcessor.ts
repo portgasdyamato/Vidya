@@ -7,6 +7,7 @@
 
 import * as fs from "fs";
 import * as path from "path";
+import { createRequire } from "module";
 import mammoth from "mammoth";
 import {
   extractTextFromImage,
@@ -26,9 +27,10 @@ import type { ProcessingOptions } from "../../shared/schema.js";
 // before this module is ever imported, so the library loads cleanly.
 export async function processPDF(filePath: string): Promise<string> {
   try {
-    // pdf-parse ESM build does not have a .default — import the namespace directly
-    const pdfParseModule = await import("pdf-parse");
-    const pdfParse = (pdfParseModule as any).default ?? pdfParseModule;
+    // Use createRequire to safely load the module as CommonJS without ESM export headaches
+    const require = createRequire(import.meta.url);
+    const pdfParse = require("pdf-parse");
+    
     const dataBuffer = fs.readFileSync(filePath);
     const data = await pdfParse(dataBuffer);
     const text = data.text?.replace(/\0/g, "").trim();
