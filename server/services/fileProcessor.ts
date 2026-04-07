@@ -1,6 +1,6 @@
 import * as fs from "fs";
 import * as path from "path";
-import { PDFExtract } from "pdf.js-extract";
+import pdfParse from "pdf-parse";
 import mammoth from "mammoth";
 import ytdl from "ytdl-core";
 // Note: youtube-transcript removed - using audio download + Whisper as primary method
@@ -8,26 +8,11 @@ import ytdl from "ytdl-core";
 import { extractTextFromImage, summarizeContent, generateQuiz, generateSpeech, transcribeAudio, generateFormattedSummaryAndFlashcards, generatePodcastScript, generateMindMap } from "./openai.js";
 import type { ProcessingOptions } from "../../shared/schema.js";
 
-const pdfExtract = new PDFExtract();
-
 export async function processPDF(filePath: string): Promise<string> {
   try {
-    const data = await new Promise<any>((resolve, reject) => {
-      pdfExtract.extract(filePath, {}, (err, data) => {
-        if (err) reject(err);
-        else resolve(data);
-      });
-    });
-
-    const text = data.pages
-      .map((page: any) => 
-        page.content
-          .map((item: any) => item.str)
-          .join(" ")
-      )
-      .join("\n\n");
-
-    return text;
+    const dataBuffer = fs.readFileSync(filePath);
+    const data = await pdfParse(dataBuffer);
+    return data.text;
   } catch (error: any) {
     throw new Error(`Failed to process PDF: ${error?.message || 'Unknown error'}`);
   }
