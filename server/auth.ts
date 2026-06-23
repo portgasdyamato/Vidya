@@ -20,8 +20,7 @@ export function setupGoogleAuth(app: Express) {
   });
 
   if (GOOGLE_CLIENT_ID && GOOGLE_CLIENT_SECRET) {
-    const BASE_URL = ENV_BASE_URL || `http://localhost:${PORT || 5000}`;
-    const callbackURL = `${BASE_URL.replace(/\/$/, "")}/api/auth/google/callback`;
+    const callbackURL = "/api/auth/google/callback";
     
     console.log(`Setting up Google Auth with callback: ${callbackURL}`);
 

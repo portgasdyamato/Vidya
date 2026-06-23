@@ -291,7 +291,7 @@ function MainNav({ activeTab, onTabChange }: { activeTab: string; onTabChange: (
                 </div>
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" side="right" sideOffset={16} className="w-60 p-2 bg-[#1C1C1E]/90 backdrop-blur-3xl border border-white/10 text-white rounded-[24px] shadow-2xl">
+            <DropdownMenuContent align="start" side="right" sideOffset={16} className="w-60 p-2 bg-white/[0.05] backdrop-blur-[80px] border border-white/10 text-white rounded-[24px] shadow-[0_8px_32px_rgba(0,0,0,0.5)]">
               <div className="px-3 py-3 mb-2 border-b border-white/10 flex flex-col gap-0.5">
                 <p className="text-[14px] font-bold tracking-tight truncate text-white">{user?.name || user?.displayName || user?.username}</p>
                 <p className="text-[11px] font-medium tracking-wide text-white/40 uppercase truncate">Student Account</p>
@@ -316,7 +316,7 @@ function MainNav({ activeTab, onTabChange }: { activeTab: string; onTabChange: (
       </nav>
 
       <Dialog open={isProfileModalOpen} onOpenChange={setIsProfileModalOpen}>
-        <DialogContent className="bg-[#1C1C1E]/95 backdrop-blur-3xl border border-white/10 text-white sm:rounded-[32px] sm:max-w-md p-8 shadow-2xl">
+        <DialogContent className="bg-white/[0.05] backdrop-blur-[120px] border border-white/10 text-white sm:rounded-[32px] sm:max-w-md p-8 shadow-[0_16px_64px_rgba(0,0,0,0.5)]">
           <DialogHeader className="space-y-3 mb-6">
             <div className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center mb-2 shadow-inner">
               <UserCircle className="w-6 h-6 text-white/70" />
