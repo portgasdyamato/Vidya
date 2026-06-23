@@ -35,8 +35,8 @@ export default function Home() {
       <header className="w-full max-w-6xl flex justify-between items-center py-6 absolute top-0 px-6">
         <Link href="/">
           <div className="flex items-center gap-3 cursor-pointer transition-transform hover:scale-105 active:scale-95 group">
-            <div className="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center group-hover:bg-primary/30 transition-colors">
-              <img src="/logo.png" alt="Vidya Logo" className="w-5 h-5 object-contain" />
+            <div className="flex items-center justify-center group-hover:scale-105 transition-transform">
+              <img src="/logo.png" alt="Vidya Logo" className="w-8 h-8 object-contain" />
             </div>
             <h1 className="text-2xl font-bold font-serif">Vidya</h1>
           </div>
@@ -57,7 +57,7 @@ export default function Home() {
         </div>
       </header>
 
-      <main className="w-full max-w-6xl flex flex-col items-center gap-12 mt-20 mb-12">
+      <main className="w-full max-w-6xl flex flex-col items-center gap-8 mt-16 mb-8">
         
         {/* Hero Section */}
         <div className="text-center space-y-4">
@@ -71,7 +71,7 @@ export default function Home() {
         </div>
 
         {/* Main Interface Card */}
-        <div className="w-full max-w-5xl glass-card rounded-[2.5rem] border border-white/10 p-8 md:p-12 relative shadow-[0_32px_64px_-16px_rgba(0,0,0,0.6)]">
+        <div className="w-full max-w-5xl glass-card rounded-[2.5rem] border border-white/10 p-6 md:p-10 relative shadow-[0_32px_64px_-16px_rgba(0,0,0,0.6)]">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             
             {/* Steps Left Panel */}
