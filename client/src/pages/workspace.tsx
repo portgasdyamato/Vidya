@@ -3,7 +3,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link } from "wouter";
 import Header from "@/components/Header";
 import DocumentUpload from "@/components/upload/DocumentUpload";
-import ImageUpload from "@/components/upload/ImageUpload";
+
 import FlashcardDrill from "@/components/study/FlashcardDrill";
 import SummaryPanel from "@/components/summary/SummaryPanel";
 import PodcastPlayer from "@/components/audio/PodcastPlayer";
@@ -30,7 +30,7 @@ import {
   Pin, ThumbsUp, ThumbsDown, Plus, CheckCircle2, AlertCircle, Trash2, Clock, 
   MoreVertical, Mic, MicOff, Copy, Download, ShieldCheck, Home, SquarePen, 
   Folder, Library, ChevronRight, ChevronLeft, UploadCloud, UserCircle, LogOut,
-  Highlighter, CheckSquare, ImageIcon
+  Highlighter, CheckSquare
 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfmModule from "remark-gfm";
@@ -492,7 +492,7 @@ function SessionsPanel({
             <div className="text-center py-12 px-4">
               <FileText className="h-10 w-10 text-muted-foreground mx-auto mb-3 opacity-50" />
               <p className="text-sm text-muted-foreground mb-1">No sources yet</p>
-              <p className="text-xs text-muted-foreground">Upload a document or an image to get started</p>
+              <p className="text-xs text-muted-foreground">Upload a document to get started</p>
             </div>
           ) : dateKeys.length === 0 ? (
             <p className="text-sm text-muted-foreground px-2">No matching sources</p>
@@ -706,7 +706,7 @@ function CenterColumn({
               <div className="space-y-2">
                 <h3 className="text-2xl font-black text-foreground font-serif">Ready to learn?</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed max-w-sm mx-auto">
-                  Upload any document or image. Vidya AI will instantly generate summaries, mind maps, flashcards, and a podcast.
+                  Upload any document. Vidya AI will instantly generate summaries, mind maps, flashcards, and a podcast.
                 </p>
               </div>
             </div>
@@ -729,7 +729,7 @@ function CenterColumn({
             </Button>
 
             <p className="text-[11px] text-white/20">
-              Supports PDF, DOCX, TXT, PNG, JPG, WEBP
+              Supports PDF, DOCX, TXT
             </p>
           </div>
         </div>
@@ -995,13 +995,13 @@ function CenterColumn({
           <h2 className="text-base font-semibold text-foreground">Original Document</h2>
            <div className="flex items-center gap-2">
             <span className="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full font-bold uppercase tracking-wider border border-primary/20">
-              {contentItem.type === "image" ? "Original Image" : "Original PDF"}
+              {"Original PDF"}
             </span>
           </div>
         </div>
         <div className="flex-1 w-full h-full p-4">
           <div className="w-full h-full rounded-2xl overflow-hidden shadow-2xl">
-            {contentItem.type === "document" || contentItem.type === "image" ? (
+            {contentItem.type === "document" ? (
               <PdfViewer url={`/api/content/${contentItem.id}/original`} contentItemId={contentItem.id.toString()} />
             ) : (
               <div className="p-8 prose prose-sm prose-invert max-w-none border border-border/50 bg-black/40 h-full rounded-2xl">
@@ -1949,93 +1949,7 @@ function RightColumn({ contentItem, selectedView, onSelectView }: {
   );
 }
 
-// Wrapper component for ImageUpload to integrate with workspace
-function ImageUploadWrapper({ onSuccess }: { onSuccess: (contentItem: { id: string; title: string; status: string }) => void }) {
-  const queryClient = useQueryClient();
-  const { toast } = useToast();
-  const [generateAudio, setGenerateAudio] = useState(true);
-  const [generateSummary, setGenerateSummary] = useState(true);
-  const [generateMindMap, setGenerateMindMap] = useState(true);
-  const [generateQuiz, setGenerateQuiz] = useState(false);
-  const [isProcessing, setIsProcessing] = useState(false);
 
-  return (
-    <Card className="border border-white/10 bg-white/[0.03] backdrop-blur-3xl shadow-lg">
-      <CardContent className="p-8">
-        <h3 className="text-2xl font-semibold text-foreground mb-6">Process Image Content</h3>
-        
-        <ImageUpload 
-          onSuccess={(contentItem) => {
-            onSuccess(contentItem);
-            queryClient.invalidateQueries({ queryKey: ["/api/content"] });
-          }}
-          hideProgress={true}
-        />
-
-        <div className="mt-8">
-          <h4 className="text-lg font-semibold text-foreground mb-4">Processing Options</h4>
-          <div className="space-y-4">
-            <div className="flex items-center space-x-3">
-              <Checkbox
-                id="audio-image"
-                checked={generateAudio}
-                onCheckedChange={(checked) => setGenerateAudio(!!checked)}
-              />
-              <div>
-                <Label htmlFor="audio-image" className="font-medium">Generate Podcast Audio</Label>
-                <p className="text-sm text-muted-foreground">
-                  Create audio version of the podcast script
-                </p>
-              </div>
-            </div>
-            
-            <div className="flex items-center space-x-3">
-              <Checkbox
-                id="summary-image"
-                checked={generateSummary}
-                onCheckedChange={(checked) => setGenerateSummary(!!checked)}
-              />
-              <div>
-                <Label htmlFor="summary-image" className="font-medium">Create Summary & Flashcards</Label>
-                <p className="text-sm text-muted-foreground">
-                  Receive structured highlights plus flashcards from the image
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-center space-x-3">
-              <Checkbox
-                id="mindmap-image"
-                checked={generateMindMap}
-                onCheckedChange={(checked) => setGenerateMindMap(!!checked)}
-              />
-              <div>
-                <Label htmlFor="mindmap-image" className="font-medium">Generate Mind Map</Label>
-                <p className="text-sm text-muted-foreground">
-                  Create an interactive concept map with Mermaid.js
-                </p>
-              </div>
-            </div>
-            
-            <div className="flex items-center space-x-3">
-              <Checkbox
-                id="quiz-image"
-                checked={generateQuiz}
-                onCheckedChange={(checked) => setGenerateQuiz(!!checked)}
-              />
-              <div>
-                <Label htmlFor="quiz-image" className="font-medium">Generate Quiz</Label>
-                <p className="text-sm text-muted-foreground">
-                  Create questions based on the image content
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
-  );
-}
 
 // Helper function for chat replies - returns clean markdown without flashcards
 function buildAssistantReply(summary: string, extractedText: string, question: string): string {
@@ -2326,7 +2240,7 @@ export default function Workspace() {
   const [selectedSession, setSelectedSession] = useState<ChatSession | undefined>();
   const [selectedView, setSelectedView] = useState<string>("summary");
   const [showUpload, setShowUpload] = useState(false);
-  const [uploadType, setUploadType] = useState<"document" | "image">("document");
+
   const [autoSelectNew, setAutoSelectNew] = useState(false);
   const queryClient = useQueryClient();
   const { toast } = useToast();
@@ -2759,45 +2673,17 @@ export default function Workspace() {
             </Card>
           )}
           
-          <Tabs value={uploadType} onValueChange={(value) => setUploadType(value as "document" | "image")} className="w-full">
-            <TabsList className="grid w-full grid-cols-2 mb-6">
-              <TabsTrigger value="document" className="flex items-center gap-2">
-                <FileText className="h-4 w-4" />
-                Upload Document
-              </TabsTrigger>
-              <TabsTrigger value="image" className="flex items-center gap-2">
-                <ImageIcon className="h-4 w-4" />
-                Upload Image
-              </TabsTrigger>
-            </TabsList>
-            
-            <TabsContent value="document">
-              <DocumentUpload 
-                onSuccess={(contentItem) => {
-                  setUploadedItemId(contentItem.id);
-                  queryClient.invalidateQueries({ queryKey: ["/api/content"] });
-                  toast({
-                    title: "Upload successful",
-                    description: "Your document is being processed. Please wait...",
-                  });
-                }}
-                hideProgress={true}
-              />
-            </TabsContent>
-            
-            <TabsContent value="image">
-              <ImageUploadWrapper
-                onSuccess={(contentItem) => {
-                  setUploadedItemId(contentItem.id);
-                  queryClient.invalidateQueries({ queryKey: ["/api/content"] });
-                  toast({
-                    title: "Processing started",
-                    description: "Your image is being processed. Please wait...",
-                  });
-                }}
-              />
-            </TabsContent>
-          </Tabs>
+          <DocumentUpload 
+            onSuccess={(contentItem) => {
+              setUploadedItemId(contentItem.id);
+              queryClient.invalidateQueries({ queryKey: ["/api/content"] });
+              toast({
+                title: "Upload successful",
+                description: "Your document is being processed. Please wait...",
+              });
+            }}
+            hideProgress={true}
+          />
         </div>
       </div>
     );

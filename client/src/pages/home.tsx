@@ -79,7 +79,7 @@ export default function Home() {
               <h3 className="text-2xl font-semibold font-serif text-white/90">Steps to start learning</h3>
               <ul className="space-y-6">
                 {[
-                  { text: "Choose your material type (Document or Image)" },
+                  { text: "Choose your material type (Document)" },
                   { text: "Upload your files" },
                   { text: "Advanced AI processes and transforms content" },
                   { text: "Receive accessible audio and interactive study material" },
