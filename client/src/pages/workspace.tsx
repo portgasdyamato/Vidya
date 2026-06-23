@@ -248,9 +248,9 @@ function MainNav({ activeTab, onTabChange }: { activeTab: string; onTabChange: (
 
   return (
     <>
-      <nav className="w-[76px] flex flex-col items-center py-6 bg-black/[0.03] backdrop-blur-[80px] border border-black/5 rounded-[32px] h-full gap-8 z-20 shadow-sm relative shrink-0">
+      <nav className="w-[76px] flex flex-col items-center py-6 bg-white/[0.03] backdrop-blur-[80px] border border-white/10 rounded-[32px] h-full gap-8 z-20 shadow-[0_8px_32px_rgba(0,0,0,0.4)] relative shrink-0">
         <div className="absolute inset-0 pointer-events-none opacity-20 rounded-[32px] overflow-hidden">
-          <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-black/5 to-transparent" />
+          <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-white/10 to-transparent" />
         </div>
 
         <div className="w-11 h-11 rounded-2xl bg-primary flex items-center justify-center mb-4 shadow-[0_0_20px_rgba(var(--primary),0.3)] relative z-10">
@@ -264,13 +264,13 @@ function MainNav({ activeTab, onTabChange }: { activeTab: string; onTabChange: (
               onClick={() => onTabChange(id)}
               className={`w-full aspect-square flex items-center justify-center rounded-2xl transition-all duration-300 group relative ${
                 activeTab === id 
-                  ? "bg-black/5 text-slate-900 shadow-sm border border-black/5" 
-                  : "text-slate-400 hover:bg-black/5 hover:text-slate-800"
+                  ? "bg-white/10 text-white shadow-inner border border-white/5" 
+                  : "text-white/40 hover:bg-white/5 hover:text-white/80"
               }`}
               title={label}
             >
               <Icon className={`w-5 h-5 transition-transform duration-300 ${activeTab === id ? 'scale-110' : 'group-hover:scale-110'}`} />
-              <span className="absolute left-[70px] bg-white backdrop-blur-xl border border-black/5 text-slate-800 text-[12px] font-semibold px-3 py-1.5 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap shadow-md pointer-events-none z-50">
+              <span className="absolute left-[70px] bg-white/10 backdrop-blur-xl border border-white/10 text-white text-[12px] font-semibold px-3 py-1.5 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap shadow-xl pointer-events-none">
                 {label}
               </span>
             </button>
@@ -461,27 +461,27 @@ function SessionsPanel({
   const dateKeys = Object.keys(byDate).sort((a, b) => new Date(b).getTime() - new Date(a).getTime());
 
   return (
-    <aside className="w-[300px] bg-black/[0.03] backdrop-blur-[80px] border-r border-black/5 flex flex-col h-full z-10 relative shadow-sm shrink-0">
-      <div className="p-4 border-b border-black/5">
+    <aside className="w-[300px] bg-white/[0.03] backdrop-blur-[80px] border-r border-white/10 flex flex-col h-full z-10 relative shadow-[10px_0_30px_rgba(0,0,0,0.3)] shrink-0">
+      <div className="p-4 border-b border-white/10">
         <div className="flex items-center justify-between mb-3">
-          <h2 className="text-base font-bold text-slate-900">Sources</h2>
+          <h2 className="text-base font-bold text-foreground">Sources</h2>
           <Button
             onClick={onNewChat}
             size="sm"
             variant="ghost"
-            className="h-8 w-8 p-0 rounded-lg hover:bg-black/5 text-slate-600"
+            className="h-8 w-8 p-0 rounded-lg hover:bg-white/10 text-foreground"
             aria-label="Add source"
           >
             <UploadCloud className="h-4 w-4" />
           </Button>
         </div>
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder="Search sources"
             value={searchSources}
             onChange={(e) => setSearchSources(e.target.value)}
-            className="pl-9 h-9 rounded-xl bg-black/5 border-black/5 text-slate-900 placeholder:text-slate-400"
+            className="pl-9 h-9 rounded-xl bg-white/5 border-border/50 text-foreground placeholder:text-muted-foreground"
           />
         </div>
       </div>
@@ -510,14 +510,14 @@ function SessionsPanel({
                         onClick={() => onSelectSession(session)}
                         className={`group relative rounded-[16px] p-4 transition-all cursor-pointer border ${
                           isActive 
-                            ? "bg-white border-black/10 shadow-sm" 
-                            : "border-transparent hover:bg-black/5"
+                            ? "bg-white/10 border-white/20 shadow-[0_4px_16px_rgba(0,0,0,0.2)]" 
+                            : "border-transparent hover:bg-white/5"
                         }`}
                       >
                         <div className="flex items-start justify-between gap-2">
                           <div className="flex-1 min-w-0">
                             <h3 
-                              className={`text-[13px] tracking-wide ${isActive ? "text-slate-900 font-bold" : "text-slate-600 font-medium"}`} 
+                              className={`text-[13px] tracking-wide ${isActive ? "text-white font-bold" : "text-white/70 font-medium"}`} 
                               style={{
                                 display: "-webkit-box",
                                 WebkitLineClamp: 2,
@@ -1503,13 +1503,13 @@ function CenterColumn({
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
               style={{
-                background: 'rgba(0,0,0,0.02)',
-                border: '1px solid rgba(0,0,0,0.05)',
+                background: 'rgba(255,255,255,0.03)',
+                border: '1px solid rgba(255,255,255,0.08)',
                 borderRadius: '28px',
                 backdropFilter: 'blur(40px)',
-              }} className="p-8 flex items-center gap-8 shadow-sm relative overflow-hidden"
+              }} className="p-8 flex items-center gap-8 shadow-2xl relative overflow-hidden"
             >
-              <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-black/10 to-transparent opacity-50" />
+              <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent opacity-50" />
               
               {/* Circular progress */}
               <div className="relative shrink-0" style={{ width: 140, height: 140 }}>
@@ -1528,8 +1528,8 @@ function CenterColumn({
                   />
                 </svg>
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <span className="text-[36px] font-black text-slate-900" style={{ letterSpacing: '-1.5px', lineHeight: 1 }}>{overallProgress}</span>
-                  <span className="text-[12px] text-slate-500 font-bold mt-1 tracking-wider">%</span>
+                  <span className="text-[36px] font-black text-white" style={{ letterSpacing: '-1.5px', lineHeight: 1 }}>{overallProgress}</span>
+                  <span className="text-[12px] text-white/50 font-bold mt-1 tracking-wider">%</span>
                 </div>
               </div>
               {/* Label */}
@@ -1537,9 +1537,9 @@ function CenterColumn({
                 <div>
                   <div className="flex items-center gap-2.5 mb-2">
                     <div className="w-2 h-2 rounded-full shadow-lg" style={{ background: masteryColor, boxShadow: `0 0 10px ${masteryColor}` }} />
-                    <span className="text-[12px] font-bold tracking-widest text-slate-500 uppercase">{masteryLabel}</span>
+                    <span className="text-[12px] font-bold tracking-widest text-white/50 uppercase">{masteryLabel}</span>
                   </div>
-                  <p className="text-[17px] font-medium text-slate-700 leading-relaxed max-w-xl">
+                  <p className="text-[17px] font-medium text-white/90 leading-relaxed max-w-xl">
                     {overallProgress < 20 ? 'Start reading, quiz yourself, and review flashcards to build progress.' :
                      overallProgress < 50 ? 'Good momentum. Keep practicing to strengthen your retention.' :
                      overallProgress < 80 ? "You're close to full mastery of this topic." :
@@ -1554,11 +1554,11 @@ function CenterColumn({
                     { label: 'Quiz', value: lastQuizScore ? Math.round((lastQuizScore.score / lastQuizScore.total) * 100) : 0, color: '#FF9F0A' },
                   ].map(({ label, value, color }) => (
                     <div key={label} className="flex items-center gap-3">
-                      <span className="text-[11px] text-slate-500 w-20 font-semibold tracking-wide">{label}</span>
-                      <div className="flex-1 h-1.5 rounded-full" style={{ background: 'rgba(0,0,0,0.06)' }}>
+                      <span className="text-[11px] text-white/40 w-20 font-semibold tracking-wide">{label}</span>
+                      <div className="flex-1 h-1.5 rounded-full" style={{ background: 'rgba(255,255,255,0.06)' }}>
                         <div className="h-full rounded-full" style={{ width: `${value}%`, background: color, transition: 'width 1s ease', boxShadow: `0 0 8px ${color}50` }} />
                       </div>
-                      <span className="text-[11px] text-slate-500 w-10 text-right font-bold">{value}%</span>
+                      <span className="text-[11px] text-white/40 w-10 text-right font-bold">{value}%</span>
                     </div>
                   ))}
                 </div>
@@ -1586,17 +1586,17 @@ function CenterColumn({
                     backdropFilter: 'blur(30px)',
                   }}
                 >
-                  <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-black/10 to-transparent opacity-50" />
+                  <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent opacity-50" />
                   
                   <div className="flex items-center justify-between">
-                    <span className="text-[11px] font-bold tracking-widest text-slate-500 uppercase">{label}</span>
-                    <div className="w-9 h-9 rounded-[10px] flex items-center justify-center transition-colors shadow-sm group-hover:brightness-110" style={{ background: color, color: '#ffffff' }}>
+                    <span className="text-[11px] font-bold tracking-widest text-white/40 uppercase">{label}</span>
+                    <div className="w-9 h-9 rounded-[10px] flex items-center justify-center transition-colors shadow-md group-hover:brightness-110" style={{ background: color, color: '#ffffff' }}>
                       {icon}
                     </div>
                   </div>
                   <div className="mt-2">
-                    <p className="text-[34px] font-black text-slate-900 tracking-tight leading-none mb-1.5">{value}</p>
-                    <p className="text-[12px] text-slate-500 font-medium">{sub}</p>
+                    <p className="text-[34px] font-black text-white tracking-tight leading-none mb-1.5">{value}</p>
+                    <p className="text-[12px] text-white/40 font-medium">{sub}</p>
                   </div>
                 </motion.div>
               ))}
@@ -1797,13 +1797,13 @@ function ChatPanel({
 
   if (!session || !contentItem) {
     return (
-      <aside className="w-80 flex flex-col bg-transparent border-l border-black/5 h-full backdrop-blur-3xl">
-        <div className="p-4 border-b border-black/5">
-          <h2 className="text-sm font-bold text-slate-900">AI Assistant</h2>
+      <aside className="w-80 flex flex-col bg-transparent border-l border-white/5 h-full backdrop-blur-3xl">
+        <div className="p-4 border-b border-white/10">
+          <h2 className="text-sm font-bold text-foreground">AI Assistant</h2>
         </div>
         <div className="flex-1 flex flex-col items-center justify-center p-6 text-center">
-          <Sparkles className="h-8 w-8 text-slate-300 mb-2" />
-          <p className="text-xs text-slate-500">Select a source to start chatting</p>
+          <Sparkles className="h-8 w-8 text-muted-foreground/30 mb-2" />
+          <p className="text-xs text-muted-foreground">Select a source to start chatting</p>
         </div>
       </aside>
     );
@@ -1813,15 +1813,15 @@ function ChatPanel({
   const messages = session.messages || [];
 
   return (
-    <aside className="w-[400px] shrink-0 flex flex-col bg-black/[0.02] backdrop-blur-3xl border-l border-black/5 h-full absolute lg:relative right-0 top-0 bottom-0 shadow-[-10px_0_30px_rgba(0,0,0,0.05)] z-30">
-      <div className="h-16 flex items-center justify-between px-6 border-b border-black/5 bg-transparent shrink-0">
+    <aside className="w-[400px] shrink-0 flex flex-col bg-black/20 backdrop-blur-3xl border-l border-white/5 h-full absolute lg:relative right-0 top-0 bottom-0 shadow-[-10px_0_30px_rgba(0,0,0,0.5)] z-30">
+      <div className="h-16 flex items-center justify-between px-6 border-b border-white/5 bg-transparent shrink-0">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-primary to-pink-400 flex items-center justify-center shadow-md shadow-primary/20">
+          <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-primary to-blue-400 flex items-center justify-center shadow-lg shadow-primary/20">
             <Sparkles className="h-4 w-4 text-white" />
           </div>
-          <h2 className="text-[14px] font-bold text-slate-900 tracking-wide">Nova AI</h2>
+          <h2 className="text-[14px] font-bold text-foreground tracking-wide">Nova AI</h2>
         </div>
-        <div className="px-3 py-1 rounded-full bg-black/5 border border-black/5 text-[10px] font-bold tracking-widest uppercase text-slate-500">
+        <div className="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-[10px] font-bold tracking-widest uppercase text-white/60">
           GPT-4o
         </div>
       </div>
@@ -1830,11 +1830,11 @@ function ChatPanel({
         <div className="py-6 space-y-6">
           {messages.length === 0 ? (
             <div className="text-center py-12 flex flex-col items-center justify-center opacity-80">
-              <div className="w-16 h-16 rounded-[24px] bg-gradient-to-br from-black/5 to-transparent flex items-center justify-center mb-5 border border-black/5 shadow-sm">
-                <MessageSquare className="h-7 w-7 text-slate-400" />
+              <div className="w-16 h-16 rounded-[24px] bg-gradient-to-br from-white/10 to-transparent flex items-center justify-center mb-5 border border-white/10 shadow-lg">
+                <MessageSquare className="h-7 w-7 text-white/70" />
               </div>
-              <h3 className="text-[15px] font-semibold text-slate-900 mb-2">How can I help you?</h3>
-              <p className="text-[13px] text-slate-500 max-w-[220px] mx-auto leading-relaxed">
+              <h3 className="text-[15px] font-semibold text-foreground mb-2">How can I help you?</h3>
+              <p className="text-[13px] text-muted-foreground max-w-[220px] mx-auto leading-relaxed">
                 Ask questions, get summaries, or clarify complex topics from your notes.
               </p>
             </div>
@@ -1847,8 +1847,8 @@ function ChatPanel({
                 <div
                   className={`max-w-[85%] px-4 py-3 text-[14px] leading-[1.6] shadow-sm ${
                     msg.role === "user"
-                      ? "bg-gradient-to-br from-primary to-pink-500 text-white rounded-[20px] rounded-br-[4px]"
-                      : "bg-white text-slate-800 rounded-[20px] rounded-bl-[4px] border border-black/5 shadow-sm"
+                      ? "bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-[20px] rounded-br-[4px]"
+                      : "bg-[#1C1C1E] text-[#F2F2F7] rounded-[20px] rounded-bl-[4px] border border-white/5"
                   }`}
                 >
                   <ReactMarkdown
@@ -1876,14 +1876,14 @@ function ChatPanel({
 
       {/* macOS Style Input Area */}
       <div className="p-4 pt-2 shrink-0 bg-transparent">
-        <div className="relative bg-white/80 backdrop-blur-2xl rounded-[24px] border border-black/5 p-1 flex items-end shadow-sm transition-all focus-within:border-black/10 focus-within:bg-white focus-within:shadow-md">
+        <div className="relative bg-[#1C1C1E]/80 backdrop-blur-2xl rounded-[24px] border border-white/10 p-1 flex items-end shadow-lg transition-all focus-within:border-white/20 focus-within:bg-[#1C1C1E]">
           <Textarea
             ref={textareaRef}
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder="Message Nova..."
-            className="min-h-[44px] max-h-[150px] resize-none bg-transparent border-none focus:ring-0 text-[14px] py-3 pl-4 pr-12 text-slate-900 placeholder:text-slate-400 custom-scrollbar"
+            className="min-h-[44px] max-h-[150px] resize-none bg-transparent border-none focus:ring-0 text-[14px] py-3 pl-4 pr-12 text-[#F2F2F7] placeholder:text-muted-foreground custom-scrollbar"
             disabled={!isReady}
           />
           <div className="absolute right-2 bottom-2 flex items-center gap-1.5">
@@ -1902,14 +1902,14 @@ function ChatPanel({
               onClick={handleSend}
               disabled={!input.trim() || !isReady}
               size="icon"
-              className="h-8 w-8 rounded-full bg-primary hover:bg-primary/90 text-white disabled:bg-black/5 disabled:text-slate-400 transition-all shrink-0 shadow-sm"
+              className="h-8 w-8 rounded-full bg-blue-500 hover:bg-blue-400 text-white disabled:bg-white/5 disabled:text-white/20 transition-all shrink-0"
             >
               <ArrowUp className="h-4 w-4" />
             </Button>
           </div>
         </div>
         <div className="text-center mt-3">
-          <p className="text-[10px] text-slate-400 font-medium">Nova AI can make mistakes. Consider verifying important information.</p>
+          <p className="text-[10px] text-muted-foreground font-medium">Nova AI can make mistakes. Consider verifying important information.</p>
         </div>
       </div>
     </aside>
@@ -1935,7 +1935,7 @@ function RightColumn({ contentItem, selectedView, onSelectView }: {
   ] as const;
 
   return (
-    <aside className="w-16 bg-black/[0.03] backdrop-blur-3xl border-l border-black/5 flex flex-col h-full py-4 items-center gap-4 z-10 relative shadow-sm">
+    <aside className="w-16 bg-white/[0.02] backdrop-blur-3xl border-l border-white/5 flex flex-col h-full py-4 items-center gap-4 z-10 relative shadow-[-10px_0_30px_rgba(0,0,0,0.2)]">
       {!contentItem || !isReady ? (
         <div className="flex flex-col items-center gap-4 opacity-20 pointer-events-none">
           {tools.map(({ id, icon: Icon }) => (
@@ -1954,8 +1954,8 @@ function RightColumn({ contentItem, selectedView, onSelectView }: {
                 onClick={() => onSelectView(id)}
                 className={`p-3 rounded-xl transition-all duration-200 group relative ${
                   isSelected 
-                    ? "bg-black/5 text-slate-900 shadow-sm border border-black/5" 
-                    : "text-slate-400 hover:bg-black/5 hover:text-slate-700"
+                    ? "bg-white/10 text-white shadow-lg" 
+                    : "text-muted-foreground hover:bg-white/5"
                 }`}
                 title={label}
               >
@@ -2312,10 +2312,10 @@ function Dashboard({ onUpload, onSelectSource }: { onUpload: () => void; onSelec
       
       <div className="max-w-5xl mx-auto relative z-10">
         <header className="mb-14">
-          <h1 className="text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-br from-slate-900 to-slate-500 mb-3 tracking-tight font-serif">
+          <h1 className="text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-br from-white to-white/60 mb-3 tracking-tight font-serif">
             Welcome back, Student
           </h1>
-          <p className="text-lg text-slate-500 font-medium">What would you like to research today?</p>
+          <p className="text-lg text-white/50 font-medium">What would you like to research today?</p>
         </header>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
@@ -2327,14 +2327,14 @@ function Dashboard({ onUpload, onSelectSource }: { onUpload: () => void; onSelec
             <button
               key={i}
               onClick={card.action}
-              className="group relative rounded-[32px] p-7 text-left transition-all duration-300 hover:scale-[1.02] border border-black/5 overflow-hidden"
+              className="group relative rounded-[32px] p-7 text-left transition-all duration-300 hover:scale-[1.02] border border-white/10 overflow-hidden"
               style={{
-                background: 'rgba(0, 0, 0, 0.02)',
+                background: 'rgba(255, 255, 255, 0.03)',
                 backdropFilter: 'blur(40px)',
-                boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.05), inset 0 1px 0 0 rgba(255, 255, 255, 0.5)',
+                boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.3), inset 0 1px 0 0 rgba(255, 255, 255, 0.1)',
               }}
             >
-              <div className="absolute inset-0 bg-gradient-to-br from-black/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+              <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
               
               <div 
                 className="w-12 h-12 rounded-xl flex items-center justify-center mb-6 text-white"
@@ -2345,34 +2345,34 @@ function Dashboard({ onUpload, onSelectSource }: { onUpload: () => void; onSelec
               >
                 <card.icon className="h-6 w-6" />
               </div>
-              <h3 className="text-xl font-bold text-slate-900 mb-2 tracking-tight">{card.title}</h3>
-              <p className="text-sm text-slate-500 font-medium leading-relaxed">{card.description}</p>
+              <h3 className="text-xl font-bold text-slate-100 mb-2 tracking-tight">{card.title}</h3>
+              <p className="text-sm text-slate-400 font-medium leading-relaxed">{card.description}</p>
             </button>
           ))}
         </div>
 
         <section>
           <div className="flex items-center justify-between mb-8">
-            <h2 className="text-2xl font-bold text-slate-900 tracking-tight font-serif">Recent Sources</h2>
-            <Button variant="ghost" size="sm" className="text-slate-500 hover:text-slate-900 hover:bg-black/5 rounded-full px-4">
+            <h2 className="text-2xl font-bold text-slate-100 tracking-tight font-serif">Recent Sources</h2>
+            <Button variant="ghost" size="sm" className="text-white/60 hover:text-white hover:bg-white/10 rounded-full px-4">
               View Library
             </Button>
           </div>
 
           {recentSessions.length === 0 ? (
             <div 
-              className="rounded-[32px] border border-black/5 p-16 text-center"
+              className="rounded-[32px] border border-white/10 p-16 text-center"
               style={{
-                background: 'rgba(0, 0, 0, 0.02)',
+                background: 'rgba(255, 255, 255, 0.02)',
                 backdropFilter: 'blur(40px)',
-                boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.05), inset 0 1px 0 0 rgba(255, 255, 255, 0.5)',
+                boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.2), inset 0 1px 0 0 rgba(255, 255, 255, 0.05)',
               }}
             >
-              <div className="w-20 h-20 rounded-3xl bg-black/5 border border-black/5 flex items-center justify-center mx-auto mb-6 shadow-inner">
-                <FileText className="h-10 w-10 text-slate-300" />
+              <div className="w-20 h-20 rounded-3xl bg-white/5 border border-white/10 flex items-center justify-center mx-auto mb-6">
+                <FileText className="h-10 w-10 text-white/20" />
               </div>
-              <p className="text-slate-500 mb-6 font-medium text-lg">You haven't uploaded any sources yet.</p>
-              <Button onClick={onUpload} className="bg-primary hover:bg-primary/90 text-white rounded-full px-8 py-6 shadow-[0_8px_24px_-4px_rgba(236,72,153,0.5)] font-bold text-base transition-transform hover:scale-105">
+              <p className="text-white/50 mb-6 font-medium text-lg">You haven't uploaded any sources yet.</p>
+              <Button onClick={onUpload} className="bg-primary hover:bg-primary/90 text-white rounded-full px-8 py-6 shadow-[0_8px_24px_-4px_rgba(0,122,255,0.5)] font-bold text-base transition-transform hover:scale-105">
                 Upload your first source
               </Button>
             </div>
@@ -2382,23 +2382,23 @@ function Dashboard({ onUpload, onSelectSource }: { onUpload: () => void; onSelec
                 <div
                   key={session.id}
                   onClick={() => onSelectSource(session)}
-                  className="relative rounded-[24px] p-5 flex items-center gap-5 cursor-pointer group transition-all duration-300 hover:scale-[1.02] border border-black/5 overflow-hidden"
+                  className="relative rounded-[24px] p-5 flex items-center gap-5 cursor-pointer group transition-all duration-300 hover:scale-[1.02] border border-white/10 overflow-hidden"
                   style={{
-                    background: 'rgba(0, 0, 0, 0.02)',
+                    background: 'rgba(255, 255, 255, 0.03)',
                     backdropFilter: 'blur(40px)',
-                    boxShadow: '0 4px 24px -4px rgba(0,0,0,0.05), inset 0 1px 0 0 rgba(255,255,255,0.5)'
+                    boxShadow: '0 4px 24px -4px rgba(0,0,0,0.2), inset 0 1px 0 0 rgba(255,255,255,0.1)'
                   }}
                 >
-                  <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+                  <div className="absolute inset-0 bg-gradient-to-r from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
                   
-                  <div className="w-12 h-12 rounded-xl flex items-center justify-center text-primary bg-primary/10 border border-primary/20 shadow-[0_0_15px_rgba(236,72,153,0.15)] group-hover:scale-110 transition-transform duration-300 relative z-10">
+                  <div className="w-12 h-12 rounded-xl flex items-center justify-center text-primary bg-primary/10 border border-primary/20 shadow-[0_0_15px_rgba(0,122,255,0.15)] group-hover:scale-110 transition-transform duration-300 relative z-10">
                     <FileText className="h-5 w-5" />
                   </div>
                   <div className="flex-1 min-w-0 relative z-10">
-                    <h4 className="font-bold text-slate-900 truncate tracking-tight text-base">{session.title}</h4>
+                    <h4 className="font-bold text-slate-200 truncate tracking-tight text-base">{session.title}</h4>
                     <p className="text-xs text-slate-500 font-medium mt-1">{new Date(session.updatedAt).toLocaleDateString()}</p>
                   </div>
-                  <ChevronRight className="h-5 w-5 text-slate-300 group-hover:text-slate-500 transition-colors group-hover:translate-x-1 duration-300 relative z-10" />
+                  <ChevronRight className="h-5 w-5 text-white/20 group-hover:text-white/60 transition-colors group-hover:translate-x-1 duration-300 relative z-10" />
                 </div>
               ))}
             </div>
@@ -2938,14 +2938,14 @@ export default function Workspace() {
   }
 
   return (
-    <div className="h-screen w-full bg-white flex overflow-hidden text-slate-900 relative">
-      {/* Light Mode VisionOS Environment Background */}
+    <div className="h-screen w-full bg-black flex overflow-hidden text-slate-200 relative">
+      {/* VisionOS Cinematic Environment Background */}
       <div 
-        className="absolute inset-0 bg-cover bg-center opacity-[0.65]"
+        className="absolute inset-0 bg-cover bg-center opacity-[0.65] mix-blend-screen"
         style={{ backgroundImage: "url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop')" }} 
       />
-      <div className="absolute inset-0 bg-white/30 backdrop-blur-[120px]" /> {/* Extreme blur for the glass aesthetic */}
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/20 to-white/80 pointer-events-none" />
+      <div className="absolute inset-0 bg-black/30 backdrop-blur-[120px]" /> {/* Extreme blur for the glass aesthetic */}
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/20 to-black/80 pointer-events-none" />
 
       {/* Main Floating Interface */}
       <div className="flex w-full h-full p-4 gap-4 relative z-10">
@@ -2953,7 +2953,7 @@ export default function Workspace() {
         <MainNav activeTab={activeMainNavTab} onTabChange={setActiveMainNavTab} />
         
         {/* 2. Main Workspace Area (Floating Glass Pane) */}
-        <div className="flex-1 flex overflow-hidden relative z-10 bg-white/[0.02] backdrop-blur-[80px] border border-black/10 rounded-[40px] shadow-[0_8px_32px_rgba(0,0,0,0.05)]">
+        <div className="flex-1 flex overflow-hidden relative z-10 bg-white/[0.02] backdrop-blur-[80px] border border-white/10 rounded-[40px] shadow-[0_8px_32px_rgba(0,0,0,0.5)]">
         {activeMainNavTab === "home" ? (
           <Dashboard 
             onUpload={handleNewChat} 
@@ -2978,7 +2978,7 @@ export default function Workspace() {
             {/* Sidebar Toggle Button */}
             <button 
               onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-              className={`absolute z-40 top-1/2 -translate-y-1/2 flex items-center justify-center w-5 h-12 bg-white/[0.05] backdrop-blur-[40px] border border-black/10 rounded-r-[12px] hover:bg-black/5 transition-all shadow-[0_4px_16px_rgba(0,0,0,0.1)] text-slate-500 ${
+              className={`absolute z-40 top-1/2 -translate-y-1/2 flex items-center justify-center w-5 h-12 bg-white/[0.05] backdrop-blur-[40px] border border-white/10 rounded-r-[12px] hover:bg-white/10 transition-all shadow-[0_4px_16px_rgba(0,0,0,0.3)] ${
                 isSidebarOpen ? "left-[300px] border-l-transparent shadow-none" : "left-0"
               }`}
             >
@@ -2988,7 +2988,7 @@ export default function Workspace() {
             {/* 3. Main Stage (Content + AI Tools) */}
             <div className="flex-1 flex flex-col overflow-hidden min-w-0">
               {/* Main Stage Header */}
-              <div className="h-16 border-b border-black/5 flex items-center justify-between px-8 bg-transparent shrink-0 min-w-0">
+              <div className="h-16 border-b border-white/5 flex items-center justify-between px-8 bg-transparent shrink-0 min-w-0">
                 <div className="flex items-center gap-4 min-w-0">
                   {selectedSession ? (
                     <>
