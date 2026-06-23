@@ -130,9 +130,18 @@ export async function processContent(
   // ── 2. Run all AI generation in parallel (failures are non-fatal) ────────────
   const tasks: Promise<void>[] = [];
 
+  const withTimeout = <T>(promise: Promise<T>, ms: number, taskName: string): Promise<T> => {
+    let timeoutId: NodeJS.Timeout;
+    const timeoutPromise = new Promise<T>((_, reject) => {
+      timeoutId = setTimeout(() => {
+        reject(new Error(`Task ${taskName} timed out after ${ms}ms`));
+      }, ms);
+    });
+    return Promise.race([promise, timeoutPromise]).finally(() => clearTimeout(timeoutId));
+  };
   if (options.generateSummary) {
     tasks.push(
-      (async () => {
+      withTimeout((async () => {
         try {
           const fmt = await generateFormattedSummaryAndFlashcards(extractedText);
           result.summary = fmt.summary_markdown;
@@ -140,46 +149,46 @@ export async function processContent(
         } catch {
           try { result.summary = await summarizeContent(extractedText); } catch {}
         }
-      })()
+      })(), 90000, "generateSummary").catch(e => console.warn(e.message))
     );
   }
 
   if (options.generateMindMap) {
     tasks.push(
-      (async () => {
+      withTimeout((async () => {
         try { result.mindMap = await generateMindMap(extractedText); } catch (e) {
           console.warn("Mind-map generation failed:", e);
         }
-      })()
+      })(), 60000, "generateMindMap").catch(e => console.warn(e.message))
     );
   }
 
   if (options.generateQuiz) {
     tasks.push(
-      (async () => {
+      withTimeout((async () => {
         try { result.quizData = await generateQuiz(extractedText); } catch (e) {
           console.warn("Quiz generation failed:", e);
         }
-      })()
+      })(), 60000, "generateQuiz").catch(e => console.warn(e.message))
     );
   }
 
   if (options.generateAudio) {
     tasks.push(
-      (async () => {
+      withTimeout((async () => {
         try {
           const audio = await generateSpeech(extractedText);
           if (audio) result.audioBuffer = audio;
         } catch (e) {
           console.warn("Audio generation failed:", e);
         }
-      })()
+      })(), 45000, "generateAudio").catch(e => console.warn(e.message))
     );
   }
 
   if (contentType === "video") {
     tasks.push(
-      (async () => {
+      withTimeout((async () => {
         try {
           const script = await generatePodcastScript(extractedText);
           result.podcastScript = script;
@@ -190,7 +199,7 @@ export async function processContent(
         } catch (e) {
           console.warn("Podcast generation failed:", e);
         }
-      })()
+      })(), 120000, "generatePodcast").catch(e => console.warn(e.message))
     );
   }
 
