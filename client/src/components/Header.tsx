@@ -47,7 +47,9 @@ export default function Header() {
       <div className="flex-1 flex items-center justify-between max-w-7xl mx-auto w-full">
         <Link href="/">
           <h1 className="text-xl font-bold text-white cursor-pointer font-serif flex items-center gap-2 group">
-            <img src="/logo.png" alt="Vidya" className="w-10 h-10 object-contain group-hover:scale-105 transition-transform" />
+            <div className="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center group-hover:scale-105 transition-transform">
+              <img src="/logo.png" alt="Vidya" className="w-5 h-5 object-contain" />
+            </div>
             <span>Vidya</span>
           </h1>
         </Link>

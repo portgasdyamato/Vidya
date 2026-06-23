@@ -35,7 +35,9 @@ export default function Home() {
       <header className="w-full max-w-6xl flex justify-between items-center py-6 absolute top-0 px-6">
         <Link href="/">
           <div className="flex items-center gap-3 cursor-pointer transition-transform hover:scale-105 active:scale-95 group">
-            <img src="/logo.png" alt="Vidya Logo" className="w-10 h-10 object-contain group-hover:scale-105 transition-transform" />
+            <div className="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center group-hover:bg-primary/30 transition-colors">
+              <img src="/logo.png" alt="Vidya Logo" className="w-5 h-5 object-contain" />
+            </div>
             <h1 className="text-2xl font-bold font-serif">Vidya</h1>
           </div>
         </Link>
@@ -105,7 +107,7 @@ export default function Home() {
             <div className="flex flex-col items-end gap-6 relative">
               <div className="w-full max-w-sm aspect-square bg-[#00a3b6]/5 rounded-[2.5rem] border border-white/5 flex items-center justify-center overflow-hidden relative group transition-all hover:bg-[#00a3b6]/10 shadow-[0_20px_50px_rgba(0,163,182,0.05)]">
                 <img 
-                  src="/talk.gif" 
+                  src="/ide.gif" 
                   alt="AI Assistant Visualization" 
                   className="w-full h-full object-cover opacity-70 group-hover:opacity-100 transition-all duration-700"
                 />
