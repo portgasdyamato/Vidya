@@ -2978,8 +2978,8 @@ export default function Workspace() {
             {/* Sidebar Toggle Button */}
             <button 
               onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-              className={`absolute z-40 top-1/2 -translate-y-1/2 flex items-center justify-center w-5 h-10 bg-white/[0.05] backdrop-blur-[40px] border border-white/10 rounded-r-[12px] hover:bg-white/10 transition-all shadow-[0_4px_16px_rgba(0,0,0,0.3)] ${
-                isSidebarOpen ? "left-[288px]" : "left-0"
+              className={`absolute z-40 top-1/2 -translate-y-1/2 flex items-center justify-center w-5 h-12 bg-white/[0.05] backdrop-blur-[40px] border border-white/10 rounded-r-[12px] hover:bg-white/10 transition-all shadow-[0_4px_16px_rgba(0,0,0,0.3)] ${
+                isSidebarOpen ? "left-[300px] border-l-transparent shadow-none" : "left-0"
               }`}
             >
               {isSidebarOpen ? <ChevronLeft className="h-3 w-3" /> : <ChevronRight className="h-3 w-3" />}
@@ -3043,8 +3043,8 @@ export default function Workspace() {
             {/* Right Sidebar Toggle Button */}
             <button
               onClick={() => setIsRightSidebarOpen(!isRightSidebarOpen)}
-              className={`absolute z-40 top-1/2 -translate-y-1/2 flex items-center justify-center w-5 h-10 bg-white/[0.05] backdrop-blur-[40px] border border-white/10 rounded-l-[12px] hover:bg-white/10 transition-all shadow-[0_4px_16px_rgba(0,0,0,0.3)] ${
-                isRightSidebarOpen ? (selectedSession ? "right-[400px]" : "right-80") : "right-0"
+              className={`absolute z-40 top-1/2 -translate-y-1/2 flex items-center justify-center w-5 h-12 bg-white/[0.05] backdrop-blur-[40px] border border-white/10 rounded-l-[12px] hover:bg-white/10 transition-all shadow-[0_4px_16px_rgba(0,0,0,0.3)] ${
+                isRightSidebarOpen ? (selectedSession ? "right-[400px] border-r-transparent shadow-none" : "right-[320px] border-r-transparent shadow-none") : "right-0"
               }`}
             >
               {isRightSidebarOpen ? <ChevronRight className="h-3 w-3" /> : <ChevronLeft className="h-3 w-3" />}
