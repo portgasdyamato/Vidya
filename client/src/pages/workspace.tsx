@@ -2156,7 +2156,7 @@ function VideoUploadWrapper({ onSuccess }: { onSuccess: (contentItem: { id: stri
           <Button
             onClick={handleSubmit}
             disabled={!url.trim() || isProcessing}
-            className="btn-primary px-8 py-4 text-lg font-semibold"
+            className="glass-button-primary px-8 py-4 text-lg font-semibold w-full sm:w-auto min-w-[250px]"
           >
             {isProcessing ? (
               <>

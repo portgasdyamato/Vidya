@@ -135,7 +135,7 @@ export default function ImageUpload() {
           />
           <Button 
             type="button" 
-            className="btn-primary cursor-pointer" 
+            className="glass-button cursor-pointer" 
             data-testid="button-choose-images"
             onClick={() => document.getElementById('image-upload')?.click()}
           >
@@ -229,7 +229,7 @@ export default function ImageUpload() {
           <Button
             onClick={handleSubmit}
             disabled={files.length === 0 || uploadMutation.isPending}
-            className="btn-primary px-8 py-4 text-lg font-semibold"
+            className="glass-button-primary px-8 py-4 text-lg font-semibold w-full sm:w-auto min-w-[250px]"
             data-testid="button-process-images"
           >
             {uploadMutation.isPending ? (
