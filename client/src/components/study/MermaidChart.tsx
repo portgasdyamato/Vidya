@@ -27,11 +27,11 @@ interface MermaidChartProps {
 // ── Constants & Parser ────────────────────────────────────────────────────────
 const RADII = [0, 200, 400, 600, 800];
 const DEPTH = [
-  { stroke: '#ec4899' },
-  { stroke: '#22d3ee' },
-  { stroke: '#a78bfa' },
-  { stroke: '#34d399' },
-  { stroke: '#fb923c' },
+  { stroke: 'rgba(255, 255, 255, 0.4)' },
+  { stroke: 'rgba(255, 255, 255, 0.3)' },
+  { stroke: 'rgba(255, 255, 255, 0.2)' },
+  { stroke: 'rgba(255, 255, 255, 0.15)' },
+  { stroke: 'rgba(255, 255, 255, 0.1)' },
 ];
 
 function parseMindmap(chart: string): TreeNode | null {
@@ -256,7 +256,7 @@ export default function MermaidChart({ data, onExplainNode }: MermaidChartProps)
         </span>
       </div>
 
-      <div className="w-full h-full rounded-3xl overflow-hidden border border-white/10 shadow-2xl relative bg-black/20 flex-1">
+      <div className="w-full h-full rounded-3xl overflow-hidden border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.4)] relative bg-white/[0.02] backdrop-blur-[40px] flex-1">
         <ReactFlow
           nodes={nodes}
           edges={edges}
@@ -270,15 +270,15 @@ export default function MermaidChart({ data, onExplainNode }: MermaidChartProps)
           minZoom={0.1}
           maxZoom={1.5}
           proOptions={{ hideAttribution: true }}
-          className="bg-black/20"
+          className="bg-transparent"
           nodesDraggable={true}
         >
-          <Background variant={BackgroundVariant.Dots} gap={24} size={2} color="#ffffff15" />
+          <Background variant={BackgroundVariant.Dots} gap={24} size={2} color="#ffffff10" />
           <Controls className="!bg-transparent !border-none !shadow-xl [&_button]:!bg-black/40 [&_button]:backdrop-blur-md [&_button]:!border-white/10 [&_button]:!border-b [&_button]:!fill-white hover:[&_button]:!bg-black/60 [&_button:first-child]:rounded-t-xl [&_button:last-child]:rounded-b-xl [&_button:last-child]:!border-b-0 overflow-hidden" showInteractive={false} />
         </ReactFlow>
 
         {!selectedId && (
-          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center justify-center gap-1.5 pointer-events-none bg-black/60 backdrop-blur-md px-4 py-2 rounded-full border border-white/10 shadow-lg">
+          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center justify-center gap-1.5 pointer-events-none bg-background/60 backdrop-blur-md px-4 py-2 rounded-full border border-border/20 shadow-lg">
             <Info className="w-3 h-3 text-white/50" />
             <span className="text-[10px] text-white/70 font-medium">Use mouse to pan and zoom. Click a node to explore.</span>
           </div>
