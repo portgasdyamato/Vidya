@@ -80,25 +80,27 @@ export async function processYouTube(videoUrl: string): Promise<string> {
 
   // ── Path 2: Download audio → Whisper transcription ────────────────────────
   try {
-    const ytdl = (await import('@distube/ytdl-core')).default;
+    const play = (await import('play-dl')).default;
 
-    // Verify the video is accessible first
-    if (!ytdl.validateID(videoId)) throw new Error("Invalid YouTube video ID");
+    console.log(`[processYouTube] Downloading audio for Whisper transcription using play-dl: ${videoId}`);
 
-    console.log(`[processYouTube] Downloading audio for Whisper transcription: ${videoId}`);
-
-    // Collect the audio stream into a buffer (pick lowest audio-only quality to stay small)
-    const audioBuffer = await new Promise<Buffer>((resolve, reject) => {
-      const chunks: Buffer[] = [];
-      const stream = ytdl(`https://www.youtube.com/watch?v=${videoId}`, {
-        quality: 'lowestaudio',
-        filter: 'audioonly',
-      });
-      stream.on('data', (chunk: Buffer) => chunks.push(chunk));
-      stream.on('end', () => resolve(Buffer.concat(chunks)));
-      stream.on('error', reject);
-      // Hard timeout: 90 seconds to download
-      setTimeout(() => reject(new Error('Audio download timed out after 90s')), 90_000);
+    // Collect the audio stream into a buffer
+    const audioBuffer = await new Promise<Buffer>(async (resolve, reject) => {
+      try {
+        const streamInfo = await play.stream(`https://www.youtube.com/watch?v=${videoId}`, {
+          discordPlayerCompatibility: false // false returns standard WebM/MP4 container (Whisper requires container headers)
+        });
+        
+        const chunks: Buffer[] = [];
+        streamInfo.stream.on('data', (chunk: Buffer) => chunks.push(chunk));
+        streamInfo.stream.on('end', () => resolve(Buffer.concat(chunks)));
+        streamInfo.stream.on('error', reject);
+        
+        // Hard timeout: 90 seconds to download
+        setTimeout(() => reject(new Error('Audio download timed out after 90s')), 90_000);
+      } catch (err) {
+        reject(err);
+      }
     });
 
     console.log(`[processYouTube] Audio downloaded (${(audioBuffer.length / 1024 / 1024).toFixed(1)} MB). Transcribing with Whisper...`);
