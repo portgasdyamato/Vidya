@@ -113,6 +113,12 @@ export async function ensureSchema(): Promise<void> {
   ALTER TABLE content_items
   ADD COLUMN IF NOT EXISTS progress integer DEFAULT 0;
 
+  ALTER TABLE content_items
+  ADD COLUMN IF NOT EXISTS stats jsonb DEFAULT '{"pagesRead": [], "highlightsCount": 0, "quizScores": [], "flashcardsConfidence": {}}'::jsonb;
+
+  ALTER TABLE users
+  ADD COLUMN IF NOT EXISTS display_name text;
+
   CREATE TABLE IF NOT EXISTS "session" (
     "sid" varchar NOT NULL COLLATE "default",
     "sess" json NOT NULL,
