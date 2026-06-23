@@ -67,15 +67,55 @@ export async function processYouTube(videoUrl: string): Promise<string> {
   const videoId = extractYouTubeId(videoUrl);
   if (!videoId) throw new Error("Invalid YouTube URL");
 
+  // ── Path 1: Try captions/transcript (fast, free) ──────────────────────────
   try {
     const transcript = await YoutubeTranscript.fetchTranscript(videoId);
-    if (!transcript || transcript.length === 0) {
-      throw new Error("No transcript found for this video.");
+    if (transcript && transcript.length > 0) {
+      console.log(`[processYouTube] Captions fetched for ${videoId} (${transcript.length} segments)`);
+      return transcript.map(t => t.text).join(' ');
     }
-    return transcript.map(t => t.text).join(' ');
-  } catch (error: any) {
-    console.error("[processYouTube] Error fetching transcript:", error);
-    throw new Error(`Failed to fetch video transcript: ${error.message}. This video might not have captions enabled or YouTube blocked the request.`);
+  } catch (captionErr: any) {
+    console.warn(`[processYouTube] Captions unavailable for ${videoId}: ${captionErr.message}. Falling back to Whisper transcription...`);
+  }
+
+  // ── Path 2: Download audio → Whisper transcription ────────────────────────
+  try {
+    const ytdl = (await import('ytdl-core')).default;
+
+    // Verify the video is accessible first
+    if (!ytdl.validateID(videoId)) throw new Error("Invalid YouTube video ID");
+
+    console.log(`[processYouTube] Downloading audio for Whisper transcription: ${videoId}`);
+
+    // Collect the audio stream into a buffer (pick lowest audio-only quality to stay small)
+    const audioBuffer = await new Promise<Buffer>((resolve, reject) => {
+      const chunks: Buffer[] = [];
+      const stream = ytdl(`https://www.youtube.com/watch?v=${videoId}`, {
+        quality: 'lowestaudio',
+        filter: 'audioonly',
+      });
+      stream.on('data', (chunk: Buffer) => chunks.push(chunk));
+      stream.on('end', () => resolve(Buffer.concat(chunks)));
+      stream.on('error', reject);
+      // Hard timeout: 90 seconds to download
+      setTimeout(() => reject(new Error('Audio download timed out after 90s')), 90_000);
+    });
+
+    console.log(`[processYouTube] Audio downloaded (${(audioBuffer.length / 1024 / 1024).toFixed(1)} MB). Transcribing with Whisper...`);
+
+    // Use existing transcribeAudio helper (uses OpenAI Whisper)
+    const { transcribeAudio } = await import('./openai.js');
+    const text = await transcribeAudio(audioBuffer, 'audio/webm');
+    if (!text || !text.trim()) throw new Error('Whisper returned empty transcription');
+
+    console.log(`[processYouTube] Whisper transcription complete (${text.length} chars)`);
+    return text;
+  } catch (whisperErr: any) {
+    console.error(`[processYouTube] Whisper fallback also failed:`, whisperErr.message);
+    throw new Error(
+      `Could not transcribe this video. Captions are disabled and audio download failed: ${whisperErr.message}. ` +
+      `Please try a video that has captions enabled, or paste the transcript text directly.`
+    );
   }
 }
 
