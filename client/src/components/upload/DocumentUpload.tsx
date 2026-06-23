@@ -177,6 +177,57 @@ export default function DocumentUpload({ onSuccess, hideProgress = false }: Docu
       <CardContent className="p-8">
         <h3 className="text-2xl font-semibold text-card-foreground mb-6 font-serif">Upload Your Documents</h3>
         
+        {(processingItem || uploadMutation.isPending) && !hideProgress && (
+          <div className="mb-8 rounded-2xl border border-border/60 bg-muted/20 p-6">
+            <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+              <div>
+                <p className="text-xs uppercase tracking-wide text-muted-foreground">Processing</p>
+                <h4 className="text-lg font-semibold text-foreground">
+                  {processingItem?.title || title || (files.length > 0 ? files[0].name : "Document")}
+                </h4>
+                <p className="text-sm text-muted-foreground">
+                  Status:{" "}
+                  <span className="font-medium text-primary">
+                    {processingItem?.status === "completed"
+                      ? "Ready to study"
+                      : processingItem?.status === "failed"
+                        ? "Failed"
+                        : "Analyzing content"}
+                  </span>
+                </p>
+                {processingItem?.errorMessage && (
+                  <p className="mt-2 text-xs text-destructive">{processingItem.errorMessage}</p>
+                )}
+              </div>
+              <div className="flex items-center gap-2">
+                {processingItem?.status === "completed" ? (
+                  <CheckCircle2 className="h-10 w-10 text-primary" />
+                ) : processingItem?.status === "failed" ? (
+                  <AlertTriangle className="h-10 w-10 text-destructive" />
+                ) : (
+                  <Loader2 className="h-10 w-10 animate-spin text-muted-foreground" />
+                )}
+              </div>
+            </div>
+            <Progress value={progressValue} className="mt-4" />
+            <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center">
+              <p className="text-xs text-muted-foreground">
+                We'll automatically refresh this status. You can navigate away and come back anytime.
+              </p>
+              {!onSuccess && (
+                <Button asChild disabled={processingItem?.status !== "completed"}>
+                  <Link href={`/study/${processingItem?.id || ''}`}>Continue to Study</Link>
+                </Button>
+              )}
+              {onSuccess && processingItem?.status === "completed" && (
+                <p className="text-xs text-primary font-medium">
+                  ✓ Processing complete! Returning to workspace...
+                </p>
+              )}
+            </div>
+          </div>
+        )}
+
         {/* File Drop Zone */}
         <div
           className={`border-2 border-dashed rounded-3xl p-12 text-center transition-all duration-300 ${
@@ -324,57 +375,6 @@ export default function DocumentUpload({ onSuccess, hideProgress = false }: Docu
             </div>
           </div>
         </div>
-
-        {(processingItem || uploadMutation.isPending) && !hideProgress && (
-          <div className="mt-8 rounded-2xl border border-border/60 bg-muted/20 p-6">
-            <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
-              <div>
-                <p className="text-xs uppercase tracking-wide text-muted-foreground">Processing</p>
-                <h4 className="text-lg font-semibold text-foreground">
-                  {processingItem?.title || title || (files.length > 0 ? files[0].name : "Document")}
-                </h4>
-                <p className="text-sm text-muted-foreground">
-                  Status:{" "}
-                  <span className="font-medium text-primary">
-                    {processingItem?.status === "completed"
-                      ? "Ready to study"
-                      : processingItem?.status === "failed"
-                        ? "Failed"
-                        : "Analyzing content"}
-                  </span>
-                </p>
-                {processingItem?.errorMessage && (
-                  <p className="mt-2 text-xs text-destructive">{processingItem.errorMessage}</p>
-                )}
-              </div>
-              <div className="flex items-center gap-2">
-                {processingItem?.status === "completed" ? (
-                  <CheckCircle2 className="h-10 w-10 text-primary" />
-                ) : processingItem?.status === "failed" ? (
-                  <AlertTriangle className="h-10 w-10 text-destructive" />
-                ) : (
-                  <Loader2 className="h-10 w-10 animate-spin text-muted-foreground" />
-                )}
-              </div>
-            </div>
-            <Progress value={progressValue} className="mt-4" />
-            <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center">
-              <p className="text-xs text-muted-foreground">
-                We'll automatically refresh this status. You can navigate away and come back anytime.
-              </p>
-              {!onSuccess && (
-                <Button asChild disabled={processingItem?.status !== "completed"}>
-                  <Link href={`/study/${processingItem?.id || ''}`}>Continue to Study</Link>
-                </Button>
-              )}
-              {onSuccess && processingItem?.status === "completed" && (
-                <p className="text-xs text-primary font-medium">
-                  ✓ Processing complete! Returning to workspace...
-                </p>
-              )}
-            </div>
-          </div>
-        )}
 
         {/* Process Button */}
         <div className="mt-8 text-center">
