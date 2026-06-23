@@ -3,6 +3,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link } from "wouter";
 import Header from "@/components/Header";
 import DocumentUpload from "@/components/upload/DocumentUpload";
+import ImageUpload from "@/components/upload/ImageUpload";
 import FlashcardDrill from "@/components/study/FlashcardDrill";
 import SummaryPanel from "@/components/summary/SummaryPanel";
 import PodcastPlayer from "@/components/audio/PodcastPlayer";
@@ -21,7 +22,6 @@ import { useToast } from "@/hooks/use-toast";
 import { useAudio } from "@/lib/AudioContext";
 import { useSpeechRecognition } from "@/hooks/useSpeechRecognition";
 import type { ContentItem } from "@shared/schema";
-import type { ContentItem } from "@shared/schema";
 import { useAuth } from "@/lib/auth";
 import { 
   FileText, BrainCircuit, Headphones, LayoutDashboard, LayoutTemplate, Share2, 
@@ -30,7 +30,7 @@ import {
   Pin, ThumbsUp, ThumbsDown, Plus, CheckCircle2, AlertCircle, Trash2, Clock, 
   MoreVertical, Mic, MicOff, Copy, Download, ShieldCheck, Home, SquarePen, 
   Folder, Library, ChevronRight, ChevronLeft, UploadCloud, UserCircle, LogOut,
-  Highlighter, CheckSquare
+  Highlighter, CheckSquare, ImageIcon
 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfmModule from "remark-gfm";
@@ -54,8 +54,6 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import VideoUpload from "@/components/upload/VideoUpload";
-import PdfViewer from "@/components/study/PdfViewer";
 import { motion, AnimatePresence } from "framer-motion";
 import ReactQuill from 'react-quill-new';
 import { marked } from 'marked';
@@ -494,7 +492,7 @@ function SessionsPanel({
             <div className="text-center py-12 px-4">
               <FileText className="h-10 w-10 text-muted-foreground mx-auto mb-3 opacity-50" />
               <p className="text-sm text-muted-foreground mb-1">No sources yet</p>
-              <p className="text-xs text-muted-foreground">Upload a document or add a video URL to get started</p>
+              <p className="text-xs text-muted-foreground">Upload a document or an image to get started</p>
             </div>
           ) : dateKeys.length === 0 ? (
             <p className="text-sm text-muted-foreground px-2">No matching sources</p>
@@ -708,7 +706,7 @@ function CenterColumn({
               <div className="space-y-2">
                 <h3 className="text-2xl font-black text-foreground font-serif">Ready to learn?</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed max-w-sm mx-auto">
-                  Upload any document or add a video URL. Vidya AI will instantly generate summaries, mind maps, flashcards, and a podcast.
+                  Upload any document or image. Vidya AI will instantly generate summaries, mind maps, flashcards, and a podcast.
                 </p>
               </div>
             </div>
@@ -731,7 +729,7 @@ function CenterColumn({
             </Button>
 
             <p className="text-[11px] text-white/20">
-              Supports PDF, DOCX, TXT, and YouTube / video URLs
+              Supports PDF, DOCX, TXT, PNG, JPG, WEBP
             </p>
           </div>
         </div>
@@ -997,33 +995,13 @@ function CenterColumn({
           <h2 className="text-base font-semibold text-foreground">Original Document</h2>
            <div className="flex items-center gap-2">
             <span className="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full font-bold uppercase tracking-wider border border-primary/20">
-              {contentItem.type === "video" ? "Video Source" : contentItem.type === "image" ? "Original Image" : "Original PDF"}
+              {contentItem.type === "image" ? "Original Image" : "Original PDF"}
             </span>
           </div>
         </div>
         <div className="flex-1 w-full h-full p-4">
           <div className="w-full h-full rounded-2xl overflow-hidden shadow-2xl">
-            {contentItem.type === "video" && contentItem.originalUrl ? (
-              <iframe 
-                src={
-                  (() => {
-                    try {
-                      const url = new URL(contentItem.originalUrl);
-                      if (url.hostname.includes("youtube.com") && url.searchParams.has("v")) {
-                        return `https://www.youtube.com/embed/${url.searchParams.get("v")}`;
-                      }
-                      if (url.hostname.includes("youtu.be")) {
-                        return `https://www.youtube.com/embed/${url.pathname.slice(1)}`;
-                      }
-                    } catch (e) {}
-                    return contentItem.originalUrl;
-                  })()
-                } 
-                className="w-full h-full border-none rounded-2xl" 
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-              />
-            ) : contentItem.type === "document" || contentItem.type === "image" ? (
+            {contentItem.type === "document" || contentItem.type === "image" ? (
               <PdfViewer url={`/api/content/${contentItem.id}/original`} contentItemId={contentItem.id.toString()} />
             ) : (
               <div className="p-8 prose prose-sm prose-invert max-w-none border border-border/50 bg-black/40 h-full rounded-2xl">
@@ -1113,7 +1091,6 @@ function CenterColumn({
   }
 
   if (selectedView === "audio") {
-    const hasPodcastAudio = isReady && contentItem.podcastAudioUrl;
     const hasDocumentAudio = isReady && contentItem.audioUrl;
     
     // The podcast SCRIPT is always the spoken content (it is pre-cleaned plain text).
@@ -1121,12 +1098,10 @@ function CenterColumn({
     // NEVER use the markdown summary as spoken content — it reads symbols aloud.
     const podcastScript = contentItem.podcastScript as string | undefined;
     const hasScript = isReady && !!podcastScript;
-    const hasAnyAudio = hasPodcastAudio || hasDocumentAudio;
+    const hasAnyAudio = hasDocumentAudio;
     const hasAnyText = isReady && (hasScript || !!(contentItem.extractedText as string));
     
-    const audioUrlToUse = hasPodcastAudio
-      ? `/api/content/${contentItem.id}/podcast-audio`
-      : hasDocumentAudio
+    const audioUrlToUse = hasDocumentAudio
         ? `/api/content/${contentItem.id}/audio`
         : "";
 
@@ -1974,136 +1949,40 @@ function RightColumn({ contentItem, selectedView, onSelectView }: {
   );
 }
 
-// Wrapper component for VideoUpload to integrate with workspace
-function VideoUploadWrapper({ onSuccess }: { onSuccess: (contentItem: { id: string; title: string; status: string }) => void }) {
+// Wrapper component for ImageUpload to integrate with workspace
+function ImageUploadWrapper({ onSuccess }: { onSuccess: (contentItem: { id: string; title: string; status: string }) => void }) {
   const queryClient = useQueryClient();
   const { toast } = useToast();
-  const [url, setUrl] = useState("");
-  const [title, setTitle] = useState("");
   const [generateAudio, setGenerateAudio] = useState(true);
   const [generateSummary, setGenerateSummary] = useState(true);
   const [generateMindMap, setGenerateMindMap] = useState(true);
   const [generateQuiz, setGenerateQuiz] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
 
-  const handleSubmit = async () => {
-    if (!url.trim()) {
-      toast({
-        title: "No URL provided",
-        description: "Please enter a video URL.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    try {
-      new URL(url);
-    } catch {
-      toast({
-        title: "Invalid URL",
-        description: "Please enter a valid video URL.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setIsProcessing(true);
-    try {
-      const response = await fetch("/api/content/video", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          url,
-          title: title || "Video Content",
-          processingOptions: {
-            generateAudio,
-            generateSummary,
-            generateMindMap,
-            generateQuiz,
-          },
-        }),
-        credentials: "include",
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to process video");
-      }
-
-      const contentItem = await response.json();
-      onSuccess(contentItem);
-      setUrl("");
-      setTitle("");
-      queryClient.invalidateQueries({ queryKey: ["/api/content"] });
-    } catch (error: any) {
-      toast({
-        title: "Processing failed",
-        description: error.message || "Something went wrong. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsProcessing(false);
-    }
-  };
-
-  const isYouTubeUrl = (url: string) => {
-    return url.includes("youtube.com") || url.includes("youtu.be");
-  };
-
   return (
     <Card className="border border-white/10 bg-white/[0.03] backdrop-blur-3xl shadow-lg">
       <CardContent className="p-8">
-        <h3 className="text-2xl font-semibold text-foreground mb-6">Process Video Content</h3>
+        <h3 className="text-2xl font-semibold text-foreground mb-6">Process Image Content</h3>
         
-        <div className="mb-6">
-          <Label htmlFor="video-url" className="text-base font-medium">Video URL</Label>
-          <div className="relative mt-2">
-            <Input
-              id="video-url"
-              type="url"
-              placeholder="https://www.youtube.com/watch?v=..."
-              value={url}
-              onChange={(e) => setUrl(e.target.value)}
-              className="pl-3"
-            />
-          </div>
-          <p className="text-sm text-muted-foreground mt-2">
-            Supports YouTube, Vimeo, and other video platforms
-          </p>
-          
-          {url && isYouTubeUrl(url) && (
-            <div className="mt-3 p-3 bg-primary/10 rounded-lg">
-              <p className="text-sm text-primary font-medium">
-                ✓ YouTube URL detected - ready for transcription
-              </p>
-            </div>
-          )}
-        </div>
+        <ImageUpload 
+          onSuccess={(contentItem) => {
+            onSuccess(contentItem);
+            queryClient.invalidateQueries({ queryKey: ["/api/content"] });
+          }}
+          hideProgress={true}
+        />
 
-        <div className="mb-8">
-          <Label htmlFor="video-title" className="text-base font-medium">Title (Optional)</Label>
-          <Input
-            id="video-title"
-            type="text"
-            placeholder="Enter a custom title for this video"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            className="mt-2"
-          />
-        </div>
-
-        <div className="mb-8">
+        <div className="mt-8">
           <h4 className="text-lg font-semibold text-foreground mb-4">Processing Options</h4>
           <div className="space-y-4">
             <div className="flex items-center space-x-3">
               <Checkbox
-                id="audio-video"
+                id="audio-image"
                 checked={generateAudio}
                 onCheckedChange={(checked) => setGenerateAudio(!!checked)}
               />
               <div>
-                <Label htmlFor="audio-video" className="font-medium">Generate Podcast Audio</Label>
+                <Label htmlFor="audio-image" className="font-medium">Generate Podcast Audio</Label>
                 <p className="text-sm text-muted-foreground">
                   Create audio version of the podcast script
                 </p>
@@ -2112,26 +1991,26 @@ function VideoUploadWrapper({ onSuccess }: { onSuccess: (contentItem: { id: stri
             
             <div className="flex items-center space-x-3">
               <Checkbox
-                id="summary-video"
+                id="summary-image"
                 checked={generateSummary}
                 onCheckedChange={(checked) => setGenerateSummary(!!checked)}
               />
               <div>
-                <Label htmlFor="summary-video" className="font-medium">Create Summary & Flashcards</Label>
+                <Label htmlFor="summary-image" className="font-medium">Create Summary & Flashcards</Label>
                 <p className="text-sm text-muted-foreground">
-                  Receive structured highlights plus flashcards from the transcript
+                  Receive structured highlights plus flashcards from the image
                 </p>
               </div>
             </div>
 
             <div className="flex items-center space-x-3">
               <Checkbox
-                id="mindmap-video"
+                id="mindmap-image"
                 checked={generateMindMap}
                 onCheckedChange={(checked) => setGenerateMindMap(!!checked)}
               />
               <div>
-                <Label htmlFor="mindmap-video" className="font-medium">Generate Mind Map</Label>
+                <Label htmlFor="mindmap-image" className="font-medium">Generate Mind Map</Label>
                 <p className="text-sm text-muted-foreground">
                   Create an interactive concept map with Mermaid.js
                 </p>
@@ -2140,38 +2019,18 @@ function VideoUploadWrapper({ onSuccess }: { onSuccess: (contentItem: { id: stri
             
             <div className="flex items-center space-x-3">
               <Checkbox
-                id="quiz-video"
+                id="quiz-image"
                 checked={generateQuiz}
                 onCheckedChange={(checked) => setGenerateQuiz(!!checked)}
               />
               <div>
-                <Label htmlFor="quiz-video" className="font-medium">Generate Quiz</Label>
+                <Label htmlFor="quiz-image" className="font-medium">Generate Quiz</Label>
                 <p className="text-sm text-muted-foreground">
-                  Create questions based on the video transcript
+                  Create questions based on the image content
                 </p>
               </div>
             </div>
           </div>
-        </div>
-
-        <div className="text-center">
-          <Button
-            onClick={handleSubmit}
-            disabled={!url.trim() || isProcessing}
-            className="glass-button-primary px-8 py-4 text-lg font-semibold w-full sm:w-auto min-w-[250px]"
-          >
-            {isProcessing ? (
-              <>
-                <Loader2 className="inline-block w-5 h-5 mr-2 animate-spin" />
-                Processing...
-              </>
-            ) : (
-              <>
-                <UploadCloud className="inline-block w-5 h-5 mr-2" />
-                Process Video
-              </>
-            )}
-          </Button>
         </div>
       </CardContent>
     </Card>
@@ -2467,7 +2326,7 @@ export default function Workspace() {
   const [selectedSession, setSelectedSession] = useState<ChatSession | undefined>();
   const [selectedView, setSelectedView] = useState<string>("summary");
   const [showUpload, setShowUpload] = useState(false);
-  const [uploadType, setUploadType] = useState<"document" | "video">("document");
+  const [uploadType, setUploadType] = useState<"document" | "image">("document");
   const [autoSelectNew, setAutoSelectNew] = useState(false);
   const queryClient = useQueryClient();
   const { toast } = useToast();
@@ -2900,15 +2759,15 @@ export default function Workspace() {
             </Card>
           )}
           
-          <Tabs value={uploadType} onValueChange={(value) => setUploadType(value as "document" | "video")} className="w-full">
+          <Tabs value={uploadType} onValueChange={(value) => setUploadType(value as "document" | "image")} className="w-full">
             <TabsList className="grid w-full grid-cols-2 mb-6">
               <TabsTrigger value="document" className="flex items-center gap-2">
                 <FileText className="h-4 w-4" />
                 Upload Document
               </TabsTrigger>
-              <TabsTrigger value="video" className="flex items-center gap-2">
-                <UploadCloud className="h-4 w-4" />
-                Video URL
+              <TabsTrigger value="image" className="flex items-center gap-2">
+                <ImageIcon className="h-4 w-4" />
+                Upload Image
               </TabsTrigger>
             </TabsList>
             
