@@ -18,9 +18,17 @@ export default function AuthPage() {
   const [showPass, setShowPass] = useState(false);
 
   return (
-    <div className="min-h-screen bg-[#060608] text-white flex overflow-hidden">
+    <div className="min-h-screen bg-black text-white flex overflow-hidden relative">
+      {/* VisionOS Cinematic Environment Background */}
+      <div 
+        className="absolute inset-0 bg-cover bg-center opacity-[0.65] mix-blend-screen pointer-events-none"
+        style={{ backgroundImage: "url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop')" }} 
+      />
+      <div className="absolute inset-0 bg-black/30 backdrop-blur-[120px] pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/20 to-black/80 pointer-events-none" />
+      
       {/* ── Left: Decorative Panel ─────────────────────────────────── */}
-      <div className="hidden lg:flex flex-col justify-between w-[45%] relative bg-gradient-to-br from-primary/10 via-transparent to-blue-500/5 p-16 border-r border-white/5">
+      <div className="hidden lg:flex flex-col justify-between w-[45%] relative bg-white/[0.02] backdrop-blur-[40px] p-16 border-r border-white/10 z-10 shadow-[8px_0_32px_rgba(0,0,0,0.5)]">
         {/* Background Orbs */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute -top-32 -left-32 w-96 h-96 bg-primary/8 blur-[120px] rounded-full" />
@@ -82,7 +90,7 @@ export default function AuthPage() {
       </div>
 
       {/* ── Right: Auth Form ────────────────────────────────────────── */}
-      <div className="flex-1 flex flex-col items-center justify-center p-6 lg:p-16 relative">
+      <div className="flex-1 flex flex-col items-center justify-center p-6 lg:p-16 relative z-10">
         {/* Mobile Logo */}
         <Link href="/">
           <div className="lg:hidden flex items-center gap-2 mb-10 cursor-pointer">

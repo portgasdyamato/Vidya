@@ -461,8 +461,8 @@ function SessionsPanel({
   const dateKeys = Object.keys(byDate).sort((a, b) => new Date(b).getTime() - new Date(a).getTime());
 
   return (
-    <aside className="w-72 bg-black/20 backdrop-blur-3xl border-r border-white/5 flex flex-col h-full z-10 relative shadow-[10px_0_30px_rgba(0,0,0,0.5)]">
-      <div className="p-4 border-b border-border/50">
+    <aside className="w-[300px] bg-white/[0.03] backdrop-blur-[80px] border-r border-white/10 flex flex-col h-full z-10 relative shadow-[10px_0_30px_rgba(0,0,0,0.3)] shrink-0">
+      <div className="p-4 border-b border-white/10">
         <div className="flex items-center justify-between mb-3">
           <h2 className="text-base font-bold text-foreground">Sources</h2>
           <Button
@@ -508,15 +508,16 @@ function SessionsPanel({
                       <div
                         key={session.id}
                         onClick={() => onSelectSession(session)}
-                        className={`group relative rounded-xl p-3 transition-all cursor-pointer border ${
-                          isActive ? "bg-white/5 border-primary/30 source-item-active" : "border-transparent hover:bg-white/5"
+                        className={`group relative rounded-[16px] p-4 transition-all cursor-pointer border ${
+                          isActive 
+                            ? "bg-white/10 border-white/20 shadow-[0_4px_16px_rgba(0,0,0,0.2)]" 
+                            : "border-transparent hover:bg-white/5"
                         }`}
                       >
                         <div className="flex items-start justify-between gap-2">
                           <div className="flex-1 min-w-0">
                             <h3 
-                              className={`text-[13px] tracking-wide ${isActive ? "text-primary font-bold" : "text-foreground/80 font-medium"}`} 
-                              title={session.title}
+                              className={`text-[13px] tracking-wide ${isActive ? "text-white font-bold" : "text-white/70 font-medium"}`} 
                               style={{
                                 display: "-webkit-box",
                                 WebkitLineClamp: 2,
@@ -784,8 +785,8 @@ function CenterColumn({
     };
 
     return (
-      <div className="flex-1 flex flex-col bg-background overflow-hidden h-full min-w-0">
-        <div className="h-16 px-6 border-b border-white/5 bg-transparent flex items-center justify-between shrink-0">
+      <div className="flex-1 flex flex-col bg-transparent overflow-hidden h-full min-w-0">
+        <div className="h-16 px-6 border-b border-white/10 bg-white/[0.02] backdrop-blur-3xl flex items-center justify-between shrink-0">
           <h2 className="text-[16px] font-bold tracking-wide text-foreground">Study Summary</h2>
           <div className="flex items-center gap-1">
             {isEditingSummary ? (
@@ -949,13 +950,13 @@ function CenterColumn({
 
                     return (
                       <>
-                        <section className="rounded-2xl border border-border/50 bg-gradient-to-br from-card/80 via-card to-background p-6 shadow-sm break-words w-full overflow-hidden">
+                        <section className="rounded-[32px] border border-white/10 bg-white/[0.04] backdrop-blur-[60px] p-8 shadow-[0_8px_32px_rgba(0,0,0,0.3)] break-words w-full overflow-hidden">
                           <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-2">Summary Overview</p>
                           <h1 className="text-3xl font-bold text-foreground leading-tight">{heroTitle}</h1>
                           <p className="mt-3 text-base text-muted-foreground leading-relaxed max-w-3xl">{heroDescription}</p>
                         </section>
 
-                        <section className="rounded-2xl border border-border/40 bg-card/60 p-6 break-words w-full overflow-hidden">
+                        <section className="rounded-[32px] border border-white/10 bg-white/[0.02] backdrop-blur-[40px] p-8 break-words w-full overflow-hidden shadow-[0_8px_32px_rgba(0,0,0,0.2)]">
                           {markdownSection}
                         </section>
                       </>
@@ -989,8 +990,8 @@ function CenterColumn({
 
   if (selectedView === "preview") {
     return (
-      <div className="flex-1 flex flex-col bg-background overflow-hidden h-full min-w-0">
-        <div className="p-4 border-b border-border/50 bg-card/30 flex items-center justify-between">
+      <div className="flex-1 flex flex-col bg-transparent overflow-hidden h-full min-w-0">
+        <div className="p-4 border-b border-white/10 bg-white/[0.02] backdrop-blur-3xl flex items-center justify-between">
           <h2 className="text-base font-semibold text-foreground">Original Document</h2>
            <div className="flex items-center gap-2">
             <span className="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full font-bold uppercase tracking-wider border border-primary/20">
@@ -1081,8 +1082,8 @@ function CenterColumn({
     };
 
     return (
-      <div className="flex-1 flex flex-col bg-background overflow-hidden h-full min-w-0">
-        <div className="p-4 border-b border-border/50 bg-card/30 flex items-center justify-between">
+      <div className="flex-1 flex flex-col bg-transparent overflow-hidden h-full min-w-0">
+        <div className="p-4 border-b border-white/10 bg-white/[0.02] backdrop-blur-3xl flex items-center justify-between">
           <div className="flex items-center gap-2">
             <BookMarked className="h-4 w-4 text-primary" />
             <h2 className="text-base font-semibold text-foreground">Flashcards</h2>
@@ -1133,8 +1134,8 @@ function CenterColumn({
     const summaryForDisplay = (contentItem.summary as string) || "";
     
     return (
-      <div className="flex-1 flex flex-col bg-background overflow-hidden h-full min-w-0">
-        <div className="p-4 border-b border-border/50 bg-card/30 flex items-center gap-3">
+      <div className="flex-1 flex flex-col bg-transparent overflow-hidden h-full min-w-0">
+        <div className="p-4 border-b border-white/10 bg-white/[0.02] backdrop-blur-3xl flex items-center gap-3">
           <Headphones className="h-4 w-4 text-primary" />
           <h2 className="text-base font-semibold text-foreground">AI Podcast</h2>
           {hasScript && (
@@ -1346,8 +1347,8 @@ function CenterColumn({
     };
 
     return (
-      <div className="flex-1 flex flex-col bg-background overflow-hidden h-full min-w-0">
-        <div className="p-4 border-b border-border/50 bg-card/30 flex items-center justify-between">
+      <div className="flex-1 flex flex-col bg-transparent overflow-hidden h-full min-w-0">
+        <div className="p-4 border-b border-white/10 bg-white/[0.02] backdrop-blur-3xl flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center border border-primary/20">
               <Check className="h-4 w-4 text-primary" />
@@ -1387,8 +1388,8 @@ function CenterColumn({
     const canRegenerate = isReady && !!(contentItem.extractedText as string);
 
     return (
-      <div className="flex-1 flex flex-col bg-background overflow-hidden h-full min-w-0">
-        <div className="p-4 border-b border-border/50 bg-card/30 flex items-center justify-between">
+      <div className="flex-1 flex flex-col bg-transparent overflow-hidden h-full min-w-0">
+        <div className="p-4 border-b border-white/10 bg-white/[0.02] backdrop-blur-3xl flex items-center justify-between">
           <div className="flex items-center gap-3">
             <BrainCircuit className="h-4 w-4 text-primary" />
             <h2 className="text-base font-semibold text-foreground">Mind Map</h2>
@@ -1479,9 +1480,9 @@ function CenterColumn({
       overallProgress < 80 ? '#FF9F0A' : '#30D158';
 
     return (
-      <div className="flex-1 flex flex-col bg-[#0A0A0B] overflow-hidden h-full min-w-0" style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", system-ui, sans-serif' }}>
+      <div className="flex-1 flex flex-col bg-transparent overflow-hidden h-full min-w-0" style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", system-ui, sans-serif' }}>
         {/* Header */}
-        <div className="px-8 pt-8 pb-6 bg-gradient-to-b from-white/[0.02] to-transparent border-b border-white/[0.04]">
+        <div className="px-8 pt-8 pb-6 bg-white/[0.02] backdrop-blur-3xl border-b border-white/10">
           <p className="text-[12px] font-bold tracking-[0.2em] text-white/40 uppercase mb-2">Progress</p>
           <h2 className="text-[28px] font-bold text-white tracking-tight" style={{ letterSpacing: '-0.5px' }}>
             Learning Analytics
@@ -1502,7 +1503,7 @@ function CenterColumn({
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
               style={{
-                background: 'rgba(28,28,30,0.5)',
+                background: 'rgba(255,255,255,0.03)',
                 border: '1px solid rgba(255,255,255,0.08)',
                 borderRadius: '28px',
                 backdropFilter: 'blur(40px)',
@@ -1579,7 +1580,7 @@ function CenterColumn({
                   key={label} 
                   className="p-5 flex flex-col gap-3 relative overflow-hidden group hover:scale-[1.02] transition-transform duration-300 shadow-xl"
                   style={{
-                    background: 'rgba(28,28,30,0.4)',
+                    background: 'rgba(255,255,255,0.03)',
                     border: '1px solid rgba(255,255,255,0.06)',
                     borderRadius: '24px',
                     backdropFilter: 'blur(30px)',
@@ -1608,7 +1609,7 @@ function CenterColumn({
                 <motion.div 
                   initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
                   style={{
-                    background: 'rgba(28,28,30,0.3)',
+                    background: 'rgba(255,255,255,0.03)',
                     border: '1px solid rgba(255,255,255,0.05)',
                     borderRadius: '24px',
                     backdropFilter: 'blur(40px)',
@@ -1658,7 +1659,7 @@ function CenterColumn({
                 <motion.div 
                   initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}
                   style={{
-                    background: 'rgba(28,28,30,0.3)',
+                    background: 'rgba(255,255,255,0.03)',
                     border: '1px solid rgba(255,255,255,0.05)',
                     borderRadius: '24px',
                     backdropFilter: 'blur(40px)',
@@ -1727,13 +1728,9 @@ function CenterColumn({
     );
   }
 
-  // No longer needed: selectedView === "chat" is handled by the persistent ChatPanel
-  // Removed input, suggestedPrompts, and chat-related hooks from this component
-  // to reduce redundancy.
-
   return (
-    <div className="flex-1 flex flex-col items-center justify-center p-6 text-center bg-background">
-      <Sparkles className="h-12 w-12 text-primary/10 mb-4" />
+    <div className="flex-1 flex flex-col items-center justify-center p-6 text-center bg-transparent">
+      <FileText className="h-16 w-16 text-muted-foreground opacity-50 mb-4" />
       <h3 className="text-lg font-semibold text-foreground mb-2">Select a tool to explore content</h3>
       <p className="text-sm text-muted-foreground max-w-sm">
         Use the tools on the right to generate a summary, flashcards, or take a quiz based on your source.
@@ -1800,8 +1797,8 @@ function ChatPanel({
 
   if (!session || !contentItem) {
     return (
-      <aside className="w-80 flex flex-col bg-background border-l border-border/50 h-full">
-        <div className="p-4 border-b border-border/50">
+      <aside className="w-80 flex flex-col bg-transparent border-l border-white/5 h-full backdrop-blur-3xl">
+        <div className="p-4 border-b border-white/10">
           <h2 className="text-sm font-bold text-foreground">AI Assistant</h2>
         </div>
         <div className="flex-1 flex flex-col items-center justify-center p-6 text-center">
@@ -1938,7 +1935,7 @@ function RightColumn({ contentItem, selectedView, onSelectView }: {
   ] as const;
 
   return (
-    <aside className="w-16 bg-black/10 backdrop-blur-3xl border-l border-white/5 flex flex-col h-full py-4 items-center gap-4 z-10 relative shadow-[-10px_0_30px_rgba(0,0,0,0.2)]">
+    <aside className="w-16 bg-white/[0.02] backdrop-blur-3xl border-l border-white/5 flex flex-col h-full py-4 items-center gap-4 z-10 relative shadow-[-10px_0_30px_rgba(0,0,0,0.2)]">
       {!contentItem || !isReady ? (
         <div className="flex flex-col items-center gap-4 opacity-20 pointer-events-none">
           {tools.map(({ id, icon: Icon }) => (
@@ -1957,21 +1954,18 @@ function RightColumn({ contentItem, selectedView, onSelectView }: {
                 onClick={() => onSelectView(id)}
                 className={`p-3 rounded-xl transition-all duration-200 group relative ${
                   isSelected 
-                    ? "bg-primary text-primary-foreground shadow-md shadow-primary/20" 
-                    : "text-muted-foreground hover:bg-muted"
+                    ? "bg-white/10 text-white shadow-lg" 
+                    : "text-muted-foreground hover:bg-white/5"
                 }`}
                 title={label}
               >
                 <Icon className="h-5 w-5" />
-                <span className="absolute right-14 bg-foreground text-background text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-50 pointer-events-none">
+                <span className="absolute right-14 bg-black text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-50 pointer-events-none">
                   {label}
                 </span>
               </button>
             );
           })}
-          
-          <div className="mt-auto pt-4 border-t border-border/50 w-full flex flex-col items-center gap-4">
-          </div>
         </>
       )}
     </aside>
@@ -2056,9 +2050,9 @@ function VideoUploadWrapper({ onSuccess }: { onSuccess: (contentItem: { id: stri
   };
 
   return (
-    <Card className="border border-border shadow-lg">
+    <Card className="border border-white/10 bg-white/[0.03] backdrop-blur-3xl shadow-lg">
       <CardContent className="p-8">
-        <h3 className="text-2xl font-semibold text-card-foreground mb-6">Process Video Content</h3>
+        <h3 className="text-2xl font-semibold text-foreground mb-6">Process Video Content</h3>
         
         <div className="mb-6">
           <Label htmlFor="video-url" className="text-base font-medium">Video URL</Label>
@@ -2098,7 +2092,7 @@ function VideoUploadWrapper({ onSuccess }: { onSuccess: (contentItem: { id: stri
         </div>
 
         <div className="mb-8">
-          <h4 className="text-lg font-semibold text-card-foreground mb-4">Processing Options</h4>
+          <h4 className="text-lg font-semibold text-foreground mb-4">Processing Options</h4>
           <div className="space-y-4">
             <div className="flex items-center space-x-3">
               <Checkbox
@@ -2435,11 +2429,11 @@ function Canvas({ initialContent, title }: { initialContent?: string; title: str
   };
 
   return (
-    <div className="flex-1 flex flex-col bg-background h-full overflow-hidden">
-      <div className="p-4 border-b border-border/50 flex items-center justify-between bg-card/10">
+    <div className="flex-1 flex flex-col bg-transparent h-full overflow-hidden">
+      <div className="p-4 border-b border-white/10 flex items-center justify-between bg-white/[0.02] backdrop-blur-3xl">
         <div className="flex items-center gap-2">
           <SquarePen className="h-4 w-4 text-primary" />
-          <h2 className="text-sm font-semibold text-foreground truncate max-w-[200px]">{title} Notes</h2>
+          <h2 className="text-sm font-semibold text-foreground truncate max-w-[200px]">Scratchpad: {title}</h2>
         </div>
         <div className="flex items-center gap-2">
           <span className="text-[10px] text-muted-foreground">
@@ -2787,8 +2781,7 @@ export default function Workspace() {
 
   if (showUpload) {
     return (
-      <div className="min-h-screen bg-background">
-        <Header />
+      <div className="min-h-screen bg-black">
         <div className="max-w-4xl mx-auto p-6">
           <Button variant="ghost" onClick={() => {
             if (!uploadedItemId || uploadedItem?.status === "completed") {
@@ -2985,7 +2978,7 @@ export default function Workspace() {
             {/* Sidebar Toggle Button */}
             <button 
               onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-              className={`absolute z-40 top-1/2 -translate-y-1/2 flex items-center justify-center w-5 h-10 bg-background border border-border/50 rounded-r-lg hover:bg-muted transition-all shadow-sm ${
+              className={`absolute z-40 top-1/2 -translate-y-1/2 flex items-center justify-center w-5 h-10 bg-white/[0.05] backdrop-blur-[40px] border border-white/10 rounded-r-[12px] hover:bg-white/10 transition-all shadow-[0_4px_16px_rgba(0,0,0,0.3)] ${
                 isSidebarOpen ? "left-[288px]" : "left-0"
               }`}
             >
@@ -3050,7 +3043,7 @@ export default function Workspace() {
             {/* Right Sidebar Toggle Button */}
             <button
               onClick={() => setIsRightSidebarOpen(!isRightSidebarOpen)}
-              className={`absolute z-40 top-1/2 -translate-y-1/2 flex items-center justify-center w-5 h-10 bg-background border border-border/50 rounded-l-lg hover:bg-muted transition-all shadow-sm ${
+              className={`absolute z-40 top-1/2 -translate-y-1/2 flex items-center justify-center w-5 h-10 bg-white/[0.05] backdrop-blur-[40px] border border-white/10 rounded-l-[12px] hover:bg-white/10 transition-all shadow-[0_4px_16px_rgba(0,0,0,0.3)] ${
                 isRightSidebarOpen ? (selectedSession ? "right-[400px]" : "right-80") : "right-0"
               }`}
             >

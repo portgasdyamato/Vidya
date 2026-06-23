@@ -19,7 +19,17 @@ export default function Home() {
   const { user } = useAuth();
   
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-white flex flex-col items-center justify-center p-4 selection:bg-[#00a3b6]/30">
+    <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center p-4 selection:bg-[#00a3b6]/30 relative overflow-hidden">
+      {/* VisionOS Cinematic Environment Background */}
+      <div 
+        className="absolute inset-0 bg-cover bg-center opacity-[0.65] mix-blend-screen pointer-events-none"
+        style={{ backgroundImage: "url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop')" }} 
+      />
+      <div className="absolute inset-0 bg-black/30 backdrop-blur-[120px] pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/20 to-black/80 pointer-events-none" />
+      
+      {/* Main Content wrapper */}
+      <div className="relative z-10 flex flex-col w-full items-center">
       
       {/* Custom Header */}
       <header className="w-full max-w-6xl flex justify-between items-center py-6 absolute top-0 px-6">
@@ -183,6 +193,7 @@ export default function Home() {
           Powered by Project Vidya AI 2026
         </p>
       </footer>
+      </div>
     </div>
   );
 }
