@@ -69,10 +69,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         processingOptions: parsedOptions,
       });
 
-      // Process in background
-      processContentAsync(contentItem.id, req.file.path, "document", parsedOptions, undefined, req.file.originalname);
+      // Process synchronously so Vercel doesn't kill the lambda
+      await processContentAsync(contentItem.id, req.file.path, "document", parsedOptions, undefined, req.file.originalname);
 
-      res.json(contentItem);
+      const updatedItem = await storage.getContentItem(contentItem.id);
+      res.json(updatedItem);
     } catch (error: any) {
       res.status(400).json({ message: error?.message || 'Failed to process document' });
     }
@@ -102,10 +103,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         processingOptions: parsedOptions,
       });
 
-      // Process in background
-      processContentAsync(contentItem.id, req.file.path, "image", parsedOptions, undefined, req.file.originalname);
+      // Process synchronously so Vercel doesn't kill the lambda
+      await processContentAsync(contentItem.id, req.file.path, "image", parsedOptions, undefined, req.file.originalname);
 
-      res.json(contentItem);
+      const updatedItem = await storage.getContentItem(contentItem.id);
+      res.json(updatedItem);
     } catch (error: any) {
       res.status(400).json({ message: error?.message || 'Failed to process image' });
     }
@@ -158,12 +160,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         processingOptions: parsedOptions,
       });
 
-      // Process in background (don't await)
-      processContentAsync(contentItem.id, null, "video", parsedOptions, url.trim()).catch((err) => {
-        console.error("Background video processing error:", err);
-      });
+      // Process synchronously so Vercel doesn't kill the lambda
+      await processContentAsync(contentItem.id, null, "video", parsedOptions, url.trim());
 
-      res.json(contentItem);
+      const updatedItem = await storage.getContentItem(contentItem.id);
+      res.json(updatedItem);
     } catch (error: any) {
       console.error("Video processing error:", error);
       const errorMessage = error?.message || 'Failed to process video';
@@ -189,10 +190,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         processingOptions: parsedOptions,
       });
 
-      // Process in background - will transcribe audio using Whisper
-      processAudioFileAsync(contentItem.id, req.file.path, req.file.mimetype, parsedOptions, req.file.originalname);
+      // Process synchronously so Vercel doesn't kill the lambda
+      await processAudioFileAsync(contentItem.id, req.file.path, req.file.mimetype, parsedOptions, req.file.originalname);
 
-      res.json(contentItem);
+      const updatedItem = await storage.getContentItem(contentItem.id);
+      res.json(updatedItem);
     } catch (error: any) {
       res.status(400).json({ message: error?.message || 'Failed to process audio file' });
     }

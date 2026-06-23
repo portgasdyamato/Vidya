@@ -1817,9 +1817,9 @@ function ChatPanel({
       <div className="h-16 flex items-center justify-between px-6 border-b border-white/5 bg-transparent shrink-0">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-white/30 to-white/10 flex items-center justify-center shadow-lg shadow-white/10">
-            <Sparkles className="h-4 w-4 text-white" />
+            <img src="/logo.png" alt="Vidya AI" className="w-4 h-4 object-contain" />
           </div>
-          <h2 className="text-[14px] font-bold text-foreground tracking-wide">Nova AI</h2>
+          <h2 className="text-[14px] font-bold text-foreground tracking-wide">Vidya AI</h2>
         </div>
         <div className="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-[10px] font-bold tracking-widest uppercase text-white/60">
           GPT-4o
@@ -1831,7 +1831,7 @@ function ChatPanel({
           {messages.length === 0 ? (
             <div className="text-center py-12 flex flex-col items-center justify-center opacity-80">
               <div className="w-16 h-16 rounded-[24px] bg-gradient-to-br from-white/10 to-transparent flex items-center justify-center mb-5 border border-white/10 shadow-lg">
-                <MessageSquare className="h-7 w-7 text-white/70" />
+                <img src="/logo.png" alt="Vidya AI" className="w-7 h-7 object-contain opacity-70" />
               </div>
               <h3 className="text-[15px] font-semibold text-foreground mb-2">How can I help you?</h3>
               <p className="text-[13px] text-muted-foreground max-w-[220px] mx-auto leading-relaxed">
@@ -1909,7 +1909,7 @@ function ChatPanel({
           </div>
         </div>
         <div className="text-center mt-3">
-          <p className="text-[10px] text-muted-foreground font-medium">Nova AI can make mistakes. Consider verifying important information.</p>
+          <p className="text-[10px] text-muted-foreground font-medium">Vidya AI can make mistakes. Consider verifying important information.</p>
         </div>
       </div>
     </aside>
