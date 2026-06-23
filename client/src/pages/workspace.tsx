@@ -54,6 +54,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import PdfViewer from "@/components/study/PdfViewer";
 import { motion, AnimatePresence } from "framer-motion";
 import ReactQuill from 'react-quill-new';
 import { marked } from 'marked';
