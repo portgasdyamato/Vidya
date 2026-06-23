@@ -66,11 +66,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         title: title || req.file.originalname,
         type: "document",
         originalFileName: req.file.originalname,
+        originalUrl: req.file.path,
         processingOptions: parsedOptions,
       });
 
-      // Process synchronously so Vercel doesn't kill the lambda
-      await processContentAsync(contentItem.id, req.file.path, "document", parsedOptions, undefined, req.file.originalname);
+      // Process asynchronously in the background so the UI can show progress
+      processContentAsync(contentItem.id, req.file.path, "document", parsedOptions, undefined, req.file.originalname).catch(err => console.error("Background processing failed:", err));
 
       const updatedItem = await storage.getContentItem(contentItem.id);
       res.json(updatedItem);
@@ -187,11 +188,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         title: title || req.file.originalname,
         type: "document", // Store as document type but process as audio
         originalFileName: req.file.originalname,
+        originalUrl: req.file.path,
         processingOptions: parsedOptions,
       });
 
-      // Process synchronously so Vercel doesn't kill the lambda
-      await processAudioFileAsync(contentItem.id, req.file.path, req.file.mimetype, parsedOptions, req.file.originalname);
+      // Process asynchronously in the background
+      processAudioFileAsync(contentItem.id, req.file.path, req.file.mimetype, parsedOptions, req.file.originalname).catch(err => console.error("Background audio processing failed:", err));
 
       const updatedItem = await storage.getContentItem(contentItem.id);
       res.json(updatedItem);
