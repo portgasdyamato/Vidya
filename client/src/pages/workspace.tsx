@@ -2785,14 +2785,14 @@ export default function Workspace() {
               />
             </TabsContent>
             
-            <TabsContent value="video">
-              <VideoUploadWrapper
+            <TabsContent value="image">
+              <ImageUploadWrapper
                 onSuccess={(contentItem) => {
                   setUploadedItemId(contentItem.id);
                   queryClient.invalidateQueries({ queryKey: ["/api/content"] });
                   toast({
                     title: "Processing started",
-                    description: "Your video is being transcribed. Please wait...",
+                    description: "Your image is being processed. Please wait...",
                   });
                 }}
               />
