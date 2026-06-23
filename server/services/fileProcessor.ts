@@ -9,6 +9,7 @@ import * as fs from "fs";
 import * as path from "path";
 import { createRequire } from "module";
 import mammoth from "mammoth";
+import { YoutubeTranscript } from 'youtube-transcript';
 import {
   extractTextFromImage,
   summarizeContent,
@@ -66,34 +67,15 @@ export async function processYouTube(videoUrl: string): Promise<string> {
   const videoId = extractYouTubeId(videoUrl);
   if (!videoId) throw new Error("Invalid YouTube URL");
 
-  const isVercel = !!(process.env.VERCEL || process.env.LAMBDA_TASK_ROOT);
-  const uploadsDir =
-    process.env.APP_UPLOADS_DIR || (isVercel ? "/tmp/uploads" : "uploads");
-  if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
-
-  const tempPath = path.join(uploadsDir, `yt_${Date.now()}.mp3`);
-  const cleanUrl = `https://www.youtube.com/watch?v=${videoId}`;
-
-  const ytdl = (await import("ytdl-core")).default;
-  const audioStream = ytdl(cleanUrl, {
-    quality: "lowestaudio",
-    filter: "audioonly",
-  });
-
-  await new Promise<void>((resolve, reject) => {
-    const ws = fs.createWriteStream(tempPath);
-    audioStream.pipe(ws);
-    ws.on("finish", resolve);
-    ws.on("error", reject);
-    audioStream.on("error", reject);
-  });
-
   try {
-    // transcribeAudio expects (Buffer, mimeType)
-    const audioBuffer = fs.readFileSync(tempPath);
-    return await transcribeAudio(audioBuffer, "audio/mpeg");
-  } finally {
-    if (fs.existsSync(tempPath)) fs.unlinkSync(tempPath);
+    const transcript = await YoutubeTranscript.fetchTranscript(videoId);
+    if (!transcript || transcript.length === 0) {
+      throw new Error("No transcript found for this video.");
+    }
+    return transcript.map(t => t.text).join(' ');
+  } catch (error: any) {
+    console.error("[processYouTube] Error fetching transcript:", error);
+    throw new Error(`Failed to fetch video transcript: ${error.message}. This video might not have captions enabled or YouTube blocked the request.`);
   }
 }
 

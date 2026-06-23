@@ -81,7 +81,7 @@ export default function VideoUpload({ onSuccess }: { onSuccess?: () => void }) {
   };
 
   return (
-    <Card className="border border-border shadow-lg">
+    <Card className="glass-card border border-white/10 rounded-[32px] shadow-[0_8px_32px_rgba(0,0,0,0.5)] bg-white/[0.02] backdrop-blur-[60px] overflow-hidden">
       <CardContent className="p-8">
         <h3 className="text-2xl font-semibold text-card-foreground mb-6">Process Video Content</h3>
         
@@ -96,7 +96,7 @@ export default function VideoUpload({ onSuccess }: { onSuccess?: () => void }) {
               placeholder="https://www.youtube.com/watch?v=..."
               value={url}
               onChange={(e) => setUrl(e.target.value)}
-              className="pl-10"
+              className="pl-10 bg-white/5 border-white/10 focus:border-white/20 text-white rounded-xl h-12"
               data-testid="input-video-url"
             />
           </div>
@@ -122,7 +122,7 @@ export default function VideoUpload({ onSuccess }: { onSuccess?: () => void }) {
             placeholder="Enter a custom title for this video"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            className="mt-2"
+            className="mt-2 bg-white/5 border-white/10 focus:border-white/20 text-white rounded-xl h-12"
             data-testid="input-title-videos"
           />
         </div>
@@ -183,7 +183,7 @@ export default function VideoUpload({ onSuccess }: { onSuccess?: () => void }) {
           <Button
             onClick={handleSubmit}
             disabled={!url.trim() || uploadMutation.isPending}
-            className="btn-primary px-8 py-4 text-lg font-semibold"
+            className="glass-button-primary px-8 py-4 text-lg font-semibold w-full sm:w-auto min-w-[250px]"
             data-testid="button-process-videos"
           >
             {uploadMutation.isPending ? (
@@ -201,13 +201,13 @@ export default function VideoUpload({ onSuccess }: { onSuccess?: () => void }) {
         </div>
 
         {/* Info Box */}
-        <div className="mt-8 p-4 bg-muted rounded-lg">
+        <div className="mt-8 p-6 bg-white/[0.02] border border-white/10 rounded-2xl">
           <h5 className="font-medium text-card-foreground mb-2">How it works:</h5>
           <ul className="text-sm text-muted-foreground space-y-1">
-            <li>• We extract audio from the video using advanced AI</li>
-            <li>• Whisper API transcribes the speech to accurate text</li>
-            <li>• GPT-4 processes the content for summaries and quizzes</li>
-            <li>• Text-to-speech creates accessible audio versions</li>
+            <li>• We securely fetch the closed captions directly from the video</li>
+            <li>• Processing is incredibly fast, returning transcripts in seconds</li>
+            <li>• GPT-4 processes the content to generate summaries and quizzes</li>
+            <li>• Text-to-speech creates premium audio versions of the content</li>
           </ul>
         </div>
       </CardContent>

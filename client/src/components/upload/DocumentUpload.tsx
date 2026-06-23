@@ -162,14 +162,14 @@ export default function DocumentUpload({ onSuccess, hideProgress = false }: Docu
   };
 
   return (
-    <Card className="glass-card border border-border rounded-2xl shadow-lg">
+    <Card className="glass-card border border-white/10 rounded-[32px] shadow-[0_8px_32px_rgba(0,0,0,0.5)] bg-white/[0.02] backdrop-blur-[60px] overflow-hidden">
       <CardContent className="p-8">
         <h3 className="text-2xl font-semibold text-card-foreground mb-6 font-serif">Upload Your Documents</h3>
         
         {/* File Drop Zone */}
         <div
-          className={`border-2 border-dashed rounded-xl p-12 text-center transition-colors ${
-            dragActive ? "border-primary bg-primary/5" : "border-border hover:border-primary"
+          className={`border-2 border-dashed rounded-3xl p-12 text-center transition-all duration-300 ${
+            dragActive ? "border-white/40 bg-white/10" : "border-white/10 hover:border-white/20 bg-white/[0.02] hover:bg-white/[0.04]"
           }`}
           onDragEnter={handleDrag}
           onDragLeave={handleDrag}
@@ -177,12 +177,12 @@ export default function DocumentUpload({ onSuccess, hideProgress = false }: Docu
           onDrop={handleDrop}
           data-testid="dropzone-documents"
         >
-          <Upload className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+          <Upload className="w-16 h-16 text-white/50 mx-auto mb-4" />
           <h4 className="text-xl font-semibold text-card-foreground mb-2">
             {files.length > 0 ? `${files.length} file(s) selected` : "Drop your files here"}
           </h4>
-          <p className="text-muted-foreground mb-4">or click to browse your computer</p>
-          <p className="text-sm text-muted-foreground mb-4">Supports PDF and DOCX files up to 10MB</p>
+          <p className="text-white/50 mb-4">or click to browse your computer</p>
+          <p className="text-sm text-white/40 mb-4">Supports PDF and DOCX files up to 10MB</p>
           
           <Input
             type="file"
@@ -195,7 +195,7 @@ export default function DocumentUpload({ onSuccess, hideProgress = false }: Docu
           />
           <Button 
             type="button" 
-            className="btn-primary cursor-pointer" 
+            className="glass-button cursor-pointer mt-4" 
             data-testid="button-choose-files"
             onClick={() => document.getElementById('file-upload')?.click()}
           >
@@ -243,7 +243,7 @@ export default function DocumentUpload({ onSuccess, hideProgress = false }: Docu
             placeholder="Enter a custom title for your content"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            className="mt-2"
+            className="mt-2 bg-white/5 border-white/10 focus:border-white/20 text-white rounded-xl h-12"
             data-testid="input-title-documents"
           />
         </div>
@@ -368,7 +368,7 @@ export default function DocumentUpload({ onSuccess, hideProgress = false }: Docu
           <Button
             onClick={handleSubmit}
             disabled={files.length === 0 || uploadMutation.isPending}
-            className="btn-primary px-8 py-4 text-lg font-semibold"
+            className="glass-button-primary px-8 py-4 text-lg font-semibold w-full sm:w-auto min-w-[250px]"
             data-testid="button-process-documents"
           >
             {uploadMutation.isPending ? (
