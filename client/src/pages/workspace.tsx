@@ -3086,7 +3086,7 @@ export default function Workspace() {
             <h2 className="text-2xl font-bold mb-2">Settings</h2>
             <p className="text-muted-foreground">General application settings and profile management.</p>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );
