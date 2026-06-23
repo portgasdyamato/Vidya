@@ -12,6 +12,62 @@ const features = [
   "Neural audio podcast",
 ];
 
+const BackgroundNodes = () => {
+  return (
+    <div className="absolute inset-0 pointer-events-none overflow-hidden hidden lg:block opacity-40">
+      
+      {/* Top Left */}
+      <svg className="absolute top-[150px] left-0 w-[400px] h-[200px]" preserveAspectRatio="none">
+        <path d="M 0 0 L 250 0 L 350 150 L 400 150" fill="none" stroke="rgba(255,255,255,0.2)" strokeWidth="1" />
+      </svg>
+      <div className="absolute top-[130px] -left-[20px] w-24 h-10 bg-[#111] border border-white/10 rounded-lg flex items-center justify-end pr-2 shadow-lg">
+        <div className="flex flex-col gap-1 pr-2">
+           <div className="flex gap-1"><div className="w-1 h-1 bg-white/20 rounded-full"/><div className="w-1 h-1 bg-white/20 rounded-full"/></div>
+           <div className="flex gap-1"><div className="w-1 h-1 bg-white/20 rounded-full"/><div className="w-1 h-1 bg-white/20 rounded-full"/></div>
+        </div>
+      </div>
+      <div className="absolute top-[148px] left-[85px] w-1.5 h-1.5 bg-white/60 rounded-full shadow-[0_0_8px_rgba(255,255,255,0.8)]" />
+
+      {/* Bottom Left */}
+      <svg className="absolute bottom-[150px] left-0 w-[400px] h-[200px]" preserveAspectRatio="none">
+        <path d="M 0 200 L 250 200 L 350 50 L 400 50" fill="none" stroke="rgba(255,255,255,0.2)" strokeWidth="1" />
+      </svg>
+      <div className="absolute bottom-[130px] -left-[20px] w-24 h-10 bg-[#111] border border-white/10 rounded-lg flex items-center justify-end pr-2 shadow-lg">
+         <div className="flex flex-col gap-1 pr-2">
+           <div className="flex gap-1"><div className="w-1 h-1 bg-white/20 rounded-full"/><div className="w-1 h-1 bg-white/20 rounded-full"/></div>
+           <div className="flex gap-1"><div className="w-1 h-1 bg-white/20 rounded-full"/><div className="w-1 h-1 bg-white/20 rounded-full"/></div>
+        </div>
+      </div>
+      <div className="absolute bottom-[148px] left-[85px] w-1.5 h-1.5 bg-white/60 rounded-full shadow-[0_0_8px_rgba(255,255,255,0.8)]" />
+
+      {/* Top Right */}
+      <svg className="absolute top-[150px] right-0 w-[400px] h-[200px]" preserveAspectRatio="none">
+        <path d="M 400 0 L 150 0 L 50 150 L 0 150" fill="none" stroke="rgba(255,255,255,0.2)" strokeWidth="1" />
+      </svg>
+      <div className="absolute top-[130px] -right-[20px] w-24 h-10 bg-[#111] border border-white/10 rounded-lg flex items-center justify-start pl-2 shadow-lg">
+         <div className="flex flex-col gap-1 pl-2">
+           <div className="flex gap-1"><div className="w-1 h-1 bg-white/20 rounded-full"/><div className="w-1 h-1 bg-white/20 rounded-full"/></div>
+           <div className="flex gap-1"><div className="w-1 h-1 bg-white/20 rounded-full"/><div className="w-1 h-1 bg-white/20 rounded-full"/></div>
+        </div>
+      </div>
+      <div className="absolute top-[148px] right-[85px] w-1.5 h-1.5 bg-white/60 rounded-full shadow-[0_0_8px_rgba(255,255,255,0.8)]" />
+
+      {/* Bottom Right */}
+      <svg className="absolute bottom-[150px] right-0 w-[400px] h-[200px]" preserveAspectRatio="none">
+        <path d="M 400 200 L 150 200 L 50 50 L 0 50" fill="none" stroke="rgba(255,255,255,0.2)" strokeWidth="1" />
+      </svg>
+      <div className="absolute bottom-[130px] -right-[20px] w-24 h-10 bg-[#111] border border-white/10 rounded-lg flex items-center justify-start pl-2 shadow-lg">
+         <div className="flex flex-col gap-1 pl-2">
+           <div className="flex gap-1"><div className="w-1 h-1 bg-white/20 rounded-full"/><div className="w-1 h-1 bg-white/20 rounded-full"/></div>
+           <div className="flex gap-1"><div className="w-1 h-1 bg-white/20 rounded-full"/><div className="w-1 h-1 bg-white/20 rounded-full"/></div>
+        </div>
+      </div>
+      <div className="absolute bottom-[148px] right-[85px] w-1.5 h-1.5 bg-white/60 rounded-full shadow-[0_0_8px_rgba(255,255,255,0.8)]" />
+
+    </div>
+  );
+};
+
 export default function AuthPage() {
   const [, setLocation] = useLocation();
   const [isLogin, setIsLogin] = useState(true);
@@ -32,6 +88,8 @@ export default function AuthPage() {
         <div className="absolute -top-32 -left-32 w-96 h-96 bg-white/5 blur-[120px] rounded-full" />
         <div className="absolute bottom-0 right-0 w-80 h-80 bg-white/5 blur-[100px] rounded-full" />
       </div>
+
+      <BackgroundNodes />
 
       <div className="w-full max-w-[400px] relative z-10 animate-in fade-in zoom-in duration-700">
         <div className="bg-white/[0.02] backdrop-blur-[60px] border border-white/10 rounded-[32px] p-8 shadow-[0_8px_32px_rgba(0,0,0,0.5)] flex flex-col items-center">
