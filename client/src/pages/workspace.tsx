@@ -29,7 +29,8 @@ import {
   Search, BookOpen, Layers, Grid, BarChart3, Presentation, BookMarked, AlignLeft,
   Pin, ThumbsUp, ThumbsDown, Plus, CheckCircle2, AlertCircle, Trash2, Clock, 
   MoreVertical, Mic, MicOff, Copy, Download, ShieldCheck, Home, SquarePen, 
-  Folder, Library, ChevronRight, ChevronLeft, UploadCloud, UserCircle, LogOut
+  Folder, Library, ChevronRight, ChevronLeft, UploadCloud, UserCircle, LogOut,
+  Highlighter, CheckSquare
 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfmModule from "remark-gfm";

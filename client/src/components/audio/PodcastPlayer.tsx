@@ -248,10 +248,7 @@ export default function PodcastPlayer({ audioUrl, title, transcript, summary, us
                   </div>
                 </div>
 
-                {/* Overlay Controls */}
-                <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-20 backdrop-blur-[2px]">
-                   <Maximize2 className="w-8 h-8 text-white/70" />
-                </div>
+
               </div>
               
               {/* Floating Play Button */}
