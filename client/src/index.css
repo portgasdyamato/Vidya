@@ -59,6 +59,12 @@
     font-family: var(--font-serif);
     letter-spacing: -0.02em;
   }
+
+  /* Fix react-pdf text selection styling */
+  .react-pdf__Page__textContent ::selection {
+    background-color: rgba(59, 130, 246, 0.3) !important;
+    color: transparent !important;
+  }
 }
 
 @layer components {

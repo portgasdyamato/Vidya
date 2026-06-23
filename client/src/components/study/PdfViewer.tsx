@@ -25,12 +25,44 @@ const COLORS = [
 
 export default function PdfViewer({ url, contentItemId }: { url: string, contentItemId?: string }) {
   const [numPages, setNumPages] = useState<number>(0);
-  const [scale, setScale] = useState(1.2);
+  const [scale, setScale] = useState(1.0);
   const [mode, setMode] = useState<'pan' | 'highlight' | 'erase'>('pan');
   const [color, setColor] = useState(COLORS[0].value);
+  const [containerWidth, setContainerWidth] = useState<number>(0);
+  const wrapperRef = useRef<HTMLDivElement>(null);
   
   // Store strokes per page
   const [strokes, setStrokes] = useState<Record<number, Stroke[]>>({});
+
+  useEffect(() => {
+    if (!wrapperRef.current) return;
+    const observer = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        setContainerWidth(entry.contentRect.width);
+      }
+    });
+    observer.observe(wrapperRef.current);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    const handleWheel = (e: WheelEvent) => {
+      if (e.ctrlKey || e.metaKey) {
+        e.preventDefault();
+        if (e.deltaY < 0) {
+          setScale(s => Math.min(3.0, s + 0.1));
+        } else {
+          setScale(s => Math.max(0.5, s - 0.1));
+        }
+      }
+    };
+    
+    const container = wrapperRef.current;
+    if (container) {
+      container.addEventListener('wheel', handleWheel, { passive: false });
+      return () => container.removeEventListener('wheel', handleWheel);
+    }
+  }, []);
 
   function onDocumentLoadSuccess({ numPages }: { numPages: number }) {
     setNumPages(numPages);
@@ -95,7 +127,11 @@ export default function PdfViewer({ url, contentItemId }: { url: string, content
         </button>
       </div>
 
-      <div className="flex-1 overflow-auto w-full custom-scrollbar relative" style={{ touchAction: mode === 'pan' ? 'auto' : 'none' }}>
+      <div 
+        ref={wrapperRef}
+        className="flex-1 overflow-auto w-full custom-scrollbar relative" 
+        style={{ touchAction: mode === 'pan' ? 'auto' : 'none' }}
+      >
         <div className="mx-auto w-fit py-20 px-8 flex flex-col gap-8">
           <Document
             file={url}
@@ -122,6 +158,7 @@ export default function PdfViewer({ url, contentItemId }: { url: string, content
                 strokes={strokes[index + 1] || []}
                 setStrokes={(newStrokes) => setStrokes(prev => ({ ...prev, [index + 1]: newStrokes }))}
                 contentItemId={contentItemId}
+                containerWidth={containerWidth}
               />
             ))}
           </Document>
@@ -138,7 +175,8 @@ function PdfPage({
   color, 
   strokes, 
   setStrokes,
-  contentItemId
+  contentItemId,
+  containerWidth
 }: { 
   pageNumber: number, 
   scale: number, 
@@ -146,7 +184,8 @@ function PdfPage({
   color: string,
   strokes: Stroke[],
   setStrokes: (s: Stroke[]) => void,
-  contentItemId?: string
+  contentItemId?: string,
+  containerWidth: number
 }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -280,6 +319,7 @@ function PdfPage({
     >
       <Page 
         pageNumber={pageNumber} 
+        width={containerWidth ? Math.min(containerWidth - 64, 1000) : undefined}
         scale={scale} 
         renderTextLayer={true}
         renderAnnotationLayer={false}
