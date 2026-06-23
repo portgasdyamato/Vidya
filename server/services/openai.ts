@@ -1,10 +1,12 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import OpenAI from "openai";
+import Groq from "groq-sdk";
 import * as fs from "fs";
 import * as path from "path";
 
 // ── AI Provider Setup ─────────────────────────────────────────────────────────
-// Priority: DeepSeek (primary) → Gemini (fallback) → OpenAI (fallback)
+// Priority: DeepSeek (primary) → Gemini (fallback) → OpenRouter (fallback)
+// Audio transcription: Groq Whisper (free) → OpenAI Whisper (paid, fallback)
 
 // 1. DeepSeek — primary provider (OpenAI-compatible API)
 const DEEPSEEK_API_KEY = process.env.DEEPSEEK_API_KEY || "";
@@ -18,18 +20,22 @@ const googleAI: GoogleGenerativeAI | null = null; // Force disabled to use OpenR
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY || "";
 const openai = OPENAI_API_KEY ? new OpenAI({ apiKey: OPENAI_API_KEY }) : null;
 
-// 4. OpenRouter — alternative provider (OpenAI-compatible)
+// 4. OpenRouter — primary text generation provider (OpenAI-compatible)
 const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY || "";
 const openrouter = OPENROUTER_API_KEY
   ? new OpenAI({
       apiKey: OPENROUTER_API_KEY,
       baseURL: "https://openrouter.ai/api/v1",
       defaultHeaders: {
-        "HTTP-Referer": "https://vidya-study.vercel.app", // Optional, for OpenRouter rankings
-        "X-Title": "Vidya Study AI", // Optional, for OpenRouter rankings
+        "HTTP-Referer": "https://vidya-study.vercel.app",
+        "X-Title": "Vidya Study AI",
       },
     })
   : null;
+
+// 5. Groq — free Whisper audio transcription (whisper-large-v3)
+const GROQ_API_KEY = process.env.GROQ_API_KEY || "";
+const groq = GROQ_API_KEY ? new Groq({ apiKey: GROQ_API_KEY }) : null;
 
 // ── DeepSeek helpers ──────────────────────────────────────────────────────────
 
@@ -574,72 +580,72 @@ Content: ${text.substring(0, 15000)}`;
 }
 
 export async function transcribeAudio(audioBuffer: Buffer, mimeType: string): Promise<string> {
+  // Determine file extension
+  let extension = "mp3";
+  if (mimeType?.includes("wav")) extension = "wav";
+  else if (mimeType?.includes("m4a")) extension = "m4a";
+  else if (mimeType?.includes("webm")) extension = "webm";
+  else if (mimeType?.includes("mp4")) extension = "mp4";
+  else if (mimeType?.includes("ogg")) extension = "ogg";
+
+  const tempDir = "uploads";
+  if (!fs.existsSync(tempDir)) fs.mkdirSync(tempDir, { recursive: true });
+  const tempFilePath = path.join(tempDir, `whisper_${Date.now()}_${Math.random().toString(36).substring(7)}.${extension}`);
+
   try {
-    if (!openai) {
-      throw new Error("OpenAI API key not configured. Please set OPENAI_API_KEY environment variable.");
+    fs.writeFileSync(tempFilePath, audioBuffer);
+
+    // ── Path 1: Groq Whisper (free, whisper-large-v3) ────────────────────────
+    if (groq) {
+      try {
+        console.log("[transcribeAudio] Using Groq Whisper (free)...");
+        const fileStream = fs.createReadStream(tempFilePath);
+        const transcription = await groq.audio.transcriptions.create({
+          file: fileStream,
+          model: "whisper-large-v3",
+          response_format: "text",
+        });
+        const text = typeof transcription === "string" ? transcription : (transcription as any)?.text || "";
+        if (text.trim()) {
+          console.log(`[transcribeAudio] Groq Whisper succeeded (${text.length} chars)`);
+          return text;
+        }
+      } catch (groqErr: any) {
+        console.warn("[transcribeAudio] Groq Whisper failed:", groqErr.message, "— trying OpenAI fallback...");
+      }
     }
 
-    // Save to temporary file for OpenAI Whisper API
-    // The OpenAI SDK for Node.js works best with file paths or readable streams
-    const tempDir = "uploads";
-    if (!fs.existsSync(tempDir)) {
-      fs.mkdirSync(tempDir, { recursive: true });
-    }
-    
-    // Determine file extension from mimeType
-    let extension = "mp3";
-    if (mimeType?.includes("wav")) extension = "wav";
-    else if (mimeType?.includes("m4a")) extension = "m4a";
-    else if (mimeType?.includes("webm")) extension = "webm";
-    else if (mimeType?.includes("mp4")) extension = "mp4";
-    else if (mimeType?.includes("ogg")) extension = "ogg";
-    
-    const tempFilePath = path.join(tempDir, `whisper_${Date.now()}_${Math.random().toString(36).substring(7)}.${extension}`);
-    
-    try {
-      // Write buffer to temp file
-      fs.writeFileSync(tempFilePath, audioBuffer);
-      
-      // Create a readable stream from the file
-      // The OpenAI SDK for Node.js accepts File objects (Node.js 18+) or readable streams
-      const fileStream = fs.createReadStream(tempFilePath);
-      
-      // Try to create a File object (available in Node.js 18+)
-      // If File is not available, we'll use the stream directly
+    // ── Path 2: OpenAI Whisper fallback (paid) ────────────────────────────────
+    if (openai) {
+      console.log("[transcribeAudio] Using OpenAI Whisper fallback...");
+      const fileStream2 = fs.createReadStream(tempFilePath);
       let file: File | fs.ReadStream;
       try {
-        // File API is available in Node.js 18+
         file = new File([new Uint8Array(audioBuffer)], `audio.${extension}`, { type: mimeType || `audio/${extension}` });
       } catch {
-        // Fallback to stream if File is not available
-        file = fileStream;
+        file = fileStream2;
       }
-      
-      // Use OpenAI Whisper API for transcription
       const transcription = await openai.audio.transcriptions.create({
-        file: file as any, // SDK accepts File or ReadStream
+        file: file as any,
         model: "whisper-1",
-        language: "en", // Optional: specify language for better accuracy
-        response_format: "text", // Get plain text response
+        response_format: "text",
       });
-
-      // The response is a string when response_format is "text"
       return typeof transcription === "string" ? transcription : String(transcription);
-    } finally {
-      // Clean up temp file
-      if (fs.existsSync(tempFilePath)) {
-        try {
-          fs.unlinkSync(tempFilePath);
-        } catch (cleanupError) {
-          console.warn("Failed to cleanup temp file:", cleanupError);
-        }
-      }
     }
+
+    throw new Error(
+      "No transcription service configured. Please set GROQ_API_KEY (free at console.groq.com) or OPENAI_API_KEY in your environment variables."
+    );
   } catch (error: any) {
     console.error("Whisper transcription error:", error);
     throw new Error(`Failed to transcribe audio: ${error?.message || 'Unknown error'}`);
+  } finally {
+    if (fs.existsSync(tempFilePath)) {
+      try { fs.unlinkSync(tempFilePath); } catch {}
+    }
   }
 }
+
 
 export async function generatePodcastScript(transcript: string, summary?: string): Promise<string> {
   try {
