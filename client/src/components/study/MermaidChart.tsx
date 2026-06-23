@@ -21,6 +21,7 @@ interface NodePos {
 
 interface MermaidChartProps {
   data: string | { chart: string; explanations: Record<string, string> } | null | undefined;
+  onExplainNode?: (label: string) => void;
 }
 
 // ── Constants & Parser ────────────────────────────────────────────────────────
@@ -122,7 +123,7 @@ const nodeTypes = {
 };
 
 // ── Main component ────────────────────────────────────────────────────────────
-export default function MermaidChart({ data }: MermaidChartProps) {
+export default function MermaidChart({ data, onExplainNode }: MermaidChartProps) {
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
   const { chart, explanations } = useMemo(() => {
@@ -316,6 +317,17 @@ export default function MermaidChart({ data }: MermaidChartProps) {
                 <p className="text-[13px] text-slate-400 leading-relaxed font-medium pl-[1.125rem] border-l border-white/5">
                   {selectedExplanation}
                 </p>
+                {onExplainNode && (
+                  <div className="pl-[1.125rem] mt-2">
+                    <button
+                      onClick={() => onExplainNode(selectedNode.label)}
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-[12px] font-semibold text-white/80 transition-colors"
+                    >
+                      <Sparkles className="w-3.5 h-3.5 text-primary" />
+                      Explain More
+                    </button>
+                  </div>
+                )}
               </div>
               <button
                 onClick={() => setSelectedId(null)}

@@ -153,29 +153,29 @@ export default function FlashcardDrill({ flashcards, contentId }: FlashcardDrill
   return (
     <div className="max-w-3xl mx-auto space-y-8 select-none">
       {/* Progress & Stats Header */}
-      <div className="flex items-center justify-between gap-6">
-        <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center">
-            <Sparkles className="w-4 h-4 text-primary" />
-          </div>
-          <div>
-            <p className="text-xs text-white/40 font-bold uppercase tracking-wider">Card {currentIndex + 1} of {total}</p>
-            <p className="text-sm font-bold text-white">Flashcard Drill</p>
-          </div>
+      <div className="flex items-center justify-between mb-2">
+        <div>
+          <h2 className="text-xl font-bold text-white tracking-tight">Flashcard Drill</h2>
+          <p className="text-sm text-white/40 font-medium">Card {currentIndex + 1} of {total}</p>
         </div>
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-green-500/10 border border-green-500/20">
-            <CheckCircle2 className="w-3 h-3 text-green-400" />
-            <span className="text-xs font-bold text-green-400">{correctCount}</span>
+        <div className="flex items-center gap-5 text-sm font-bold">
+          <div className="flex items-center gap-2 text-green-400">
+            <CheckCircle2 className="w-5 h-5" />
+            <span>{correctCount}</span>
           </div>
-          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-orange-500/10 border border-orange-500/20">
-            <XCircle className="w-3 h-3 text-orange-400" />
-            <span className="text-xs font-bold text-orange-400">{wrongCount}</span>
+          <div className="flex items-center gap-2 text-orange-400">
+            <XCircle className="w-5 h-5" />
+            <span>{wrongCount}</span>
           </div>
         </div>
       </div>
 
-      <Progress value={progress} className="h-1.5 bg-white/5" />
+      <div className="w-full h-1 bg-white/5 rounded-full overflow-hidden mb-6">
+        <div 
+          className="h-full bg-primary rounded-full transition-all duration-500 ease-out" 
+          style={{ width: `${progress}%` }} 
+        />
+      </div>
 
       {/* Card */}
       <div
@@ -232,23 +232,23 @@ export default function FlashcardDrill({ flashcards, contentId }: FlashcardDrill
 
           {/* Back Face */}
           <div
-            className="absolute inset-0 rounded-3xl border border-primary/20 bg-gradient-to-br from-primary/8 to-transparent p-10 flex flex-col justify-between overflow-hidden"
+            className="absolute inset-0 rounded-3xl border border-white/8 bg-[#151518] p-10 flex flex-col justify-between overflow-hidden"
             style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}
           >
-            <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent pointer-events-none" />
-
-            <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 border border-primary/20 w-fit">
-              <Target className="w-3 h-3 text-primary" />
-              <span className="text-[10px] font-bold text-primary uppercase tracking-widest">Answer</span>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/8 w-fit">
+                <Target className="w-3 h-3 text-white/40" />
+                <span className="text-[10px] font-bold text-white/40 uppercase tracking-widest">Answer</span>
+              </div>
             </div>
 
-            <div className="flex-1 flex items-center justify-center py-8 relative z-10">
-              <p className="text-base md:text-lg text-white/80 text-center leading-relaxed">
+            <div className="flex-1 flex items-center justify-center py-8 relative z-10 overflow-y-auto">
+              <p className="text-lg md:text-xl text-slate-200 text-center leading-relaxed font-medium">
                 {current.answer}
               </p>
             </div>
 
-            <div className="flex items-center justify-center gap-2 text-primary/40 text-[10px] font-bold uppercase tracking-widest">
+            <div className="flex items-center justify-center gap-2 text-white/20 text-[10px] font-bold uppercase tracking-widest">
               <RotateCcw className="w-3 h-3" />
               Tap to flip back
             </div>

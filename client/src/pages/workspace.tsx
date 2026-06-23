@@ -248,9 +248,9 @@ function MainNav({ activeTab, onTabChange }: { activeTab: string; onTabChange: (
 
   return (
     <>
-      <nav className="w-[72px] flex flex-col items-center py-6 bg-black/40 backdrop-blur-2xl border-r border-white/5 h-full gap-8 z-20 shadow-2xl relative">
-        <div className="absolute inset-0 pointer-events-none opacity-20">
-          <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-white/5 to-transparent" />
+      <nav className="w-[76px] flex flex-col items-center py-6 bg-white/[0.03] backdrop-blur-[80px] border border-white/10 rounded-[32px] h-full gap-8 z-20 shadow-[0_8px_32px_rgba(0,0,0,0.4)] relative shrink-0">
+        <div className="absolute inset-0 pointer-events-none opacity-20 rounded-[32px] overflow-hidden">
+          <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-white/10 to-transparent" />
         </div>
 
         <div className="w-11 h-11 rounded-2xl bg-primary flex items-center justify-center mb-4 shadow-[0_0_20px_rgba(var(--primary),0.3)] relative z-10">
@@ -461,7 +461,7 @@ function SessionsPanel({
   const dateKeys = Object.keys(byDate).sort((a, b) => new Date(b).getTime() - new Date(a).getTime());
 
   return (
-    <aside className="w-72 glass-card rounded-none border-r border-border/50 flex flex-col h-full border-t-0 border-b-0 border-l-0">
+    <aside className="w-72 bg-black/20 backdrop-blur-3xl border-r border-white/5 flex flex-col h-full z-10 relative shadow-[10px_0_30px_rgba(0,0,0,0.5)]">
       <div className="p-4 border-b border-border/50">
         <div className="flex items-center justify-between mb-3">
           <h2 className="text-base font-bold text-foreground">Sources</h2>
@@ -692,12 +692,9 @@ function CenterColumn({
 
   if (!session || !contentItem) {
     return (
-      <div className="flex-1 flex flex-col bg-background h-full relative overflow-hidden min-w-0">
-        {/* Ambient background */}
-        <div className="absolute inset-0 pointer-events-none overflow-hidden">
-          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/4 blur-[120px] rounded-full" />
-          <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-blue-500/3 blur-[100px] rounded-full" />
-        </div>
+      <div className="flex-1 flex flex-col bg-transparent h-full relative min-w-0">
+        {/* Ambient background is handled globally in Workspace now */}
+
 
         <div className="flex-1 flex items-center justify-center p-12 relative z-10">
           <div className="max-w-lg w-full text-center space-y-10">
@@ -1592,7 +1589,7 @@ function CenterColumn({
                   
                   <div className="flex items-center justify-between">
                     <span className="text-[11px] font-bold tracking-widest text-white/40 uppercase">{label}</span>
-                    <div className="w-9 h-9 rounded-[10px] flex items-center justify-center transition-colors group-hover:bg-white/10" style={{ background: bg, color }}>
+                    <div className="w-9 h-9 rounded-[10px] flex items-center justify-center transition-colors shadow-md group-hover:brightness-110" style={{ background: color, color: '#ffffff' }}>
                       {icon}
                     </div>
                   </div>
@@ -1819,7 +1816,7 @@ function ChatPanel({
   const messages = session.messages || [];
 
   return (
-    <aside className="w-[400px] shrink-0 flex flex-col bg-background/95 backdrop-blur-3xl lg:bg-background/50 border-l border-border/40 h-full absolute lg:relative right-0 top-0 bottom-0 shadow-[-10px_0_30px_rgba(0,0,0,0.3)] lg:shadow-[-10px_0_30px_rgba(0,0,0,0.1)] z-30">
+    <aside className="w-[400px] shrink-0 flex flex-col bg-black/20 backdrop-blur-3xl border-l border-white/5 h-full absolute lg:relative right-0 top-0 bottom-0 shadow-[-10px_0_30px_rgba(0,0,0,0.5)] z-30">
       <div className="h-16 flex items-center justify-between px-6 border-b border-white/5 bg-transparent shrink-0">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-primary to-blue-400 flex items-center justify-center shadow-lg shadow-primary/20">
@@ -1941,7 +1938,7 @@ function RightColumn({ contentItem, selectedView, onSelectView }: {
   ] as const;
 
   return (
-    <aside className="w-16 bg-card/10 border-l border-border/50 flex flex-col h-full py-4 items-center gap-4">
+    <aside className="w-16 bg-black/10 backdrop-blur-3xl border-l border-white/5 flex flex-col h-full py-4 items-center gap-4 z-10 relative shadow-[-10px_0_30px_rgba(0,0,0,0.2)]">
       {!contentItem || !isReady ? (
         <div className="flex flex-col items-center gap-4 opacity-20 pointer-events-none">
           {tools.map(({ id, icon: Icon }) => (
@@ -2317,61 +2314,97 @@ function Dashboard({ onUpload, onSelectSource }: { onUpload: () => void; onSelec
   const recentSessions = sessions.slice(0, 4);
 
   return (
-    <div className="flex-1 overflow-y-auto bg-[#F9FAFB] dark:bg-[#0A0A0A] p-8">
-      <div className="max-w-5xl mx-auto">
-        <header className="mb-12">
-          <h1 className="text-3xl font-bold text-foreground mb-2">Welcome back, Student</h1>
-          <p className="text-muted-foreground">What would you like to research today?</p>
+    <div className="flex-1 overflow-y-auto bg-transparent relative p-8 md:p-12 custom-scrollbar">
+      
+      <div className="max-w-5xl mx-auto relative z-10">
+        <header className="mb-14">
+          <h1 className="text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-br from-white to-white/60 mb-3 tracking-tight font-serif">
+            Welcome back, Student
+          </h1>
+          <p className="text-lg text-white/50 font-medium">What would you like to research today?</p>
         </header>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
           {[
-            { title: "New Project", description: "Upload sources and start researching", icon: Plus, action: onUpload, color: "bg-primary" },
-            { title: "Continue Reading", description: "Pick up where you left off", icon: BookOpen, action: () => {}, color: "bg-indigo-500" },
-            { title: "Practice Mode", description: "Review flashcards and quizzes", icon: Grid, action: () => {}, color: "bg-emerald-500" },
+            { title: "New Project", description: "Upload sources and start researching", icon: Plus, action: onUpload, color: "linear-gradient(135deg, #007AFF 0%, #0056b3 100%)", shadow: "rgba(0, 122, 255, 0.4)" },
+            { title: "Continue Reading", description: "Pick up where you left off", icon: BookOpen, action: () => {}, color: "linear-gradient(135deg, #AF52DE 0%, #7B33A4 100%)", shadow: "rgba(175, 82, 222, 0.4)" },
+            { title: "Practice Mode", description: "Review flashcards and quizzes", icon: Grid, action: () => {}, color: "linear-gradient(135deg, #34C759 0%, #248A3D 100%)", shadow: "rgba(52, 199, 89, 0.4)" },
           ].map((card, i) => (
             <button
               key={i}
               onClick={card.action}
-              className="group bg-white dark:bg-zinc-900 rounded-2xl p-6 border border-border/50 hover:border-primary/50 transition-all text-left shadow-sm hover:shadow-md"
+              className="group relative rounded-[32px] p-7 text-left transition-all duration-300 hover:scale-[1.02] border border-white/10 overflow-hidden"
+              style={{
+                background: 'rgba(255, 255, 255, 0.03)',
+                backdropFilter: 'blur(40px)',
+                boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.3), inset 0 1px 0 0 rgba(255, 255, 255, 0.1)',
+              }}
             >
-              <div className={`w-12 h-12 rounded-xl ${card.color} flex items-center justify-center mb-4 text-white shadow-lg`}>
+              <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+              
+              <div 
+                className="w-12 h-12 rounded-xl flex items-center justify-center mb-6 text-white"
+                style={{ 
+                  background: card.color,
+                  boxShadow: `0 8px 20px -4px ${card.shadow}, inset 0 2px 4px rgba(255,255,255,0.3)`
+                }}
+              >
                 <card.icon className="h-6 w-6" />
               </div>
-              <h3 className="text-lg font-bold text-foreground mb-1">{card.title}</h3>
-              <p className="text-sm text-muted-foreground">{card.description}</p>
+              <h3 className="text-xl font-bold text-slate-100 mb-2 tracking-tight">{card.title}</h3>
+              <p className="text-sm text-slate-400 font-medium leading-relaxed">{card.description}</p>
             </button>
           ))}
         </div>
 
         <section>
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-bold text-foreground">Recent Sources</h2>
-            <Button variant="ghost" size="sm" className="text-primary hover:text-primary/80">View Library</Button>
+          <div className="flex items-center justify-between mb-8">
+            <h2 className="text-2xl font-bold text-slate-100 tracking-tight font-serif">Recent Sources</h2>
+            <Button variant="ghost" size="sm" className="text-white/60 hover:text-white hover:bg-white/10 rounded-full px-4">
+              View Library
+            </Button>
           </div>
 
           {recentSessions.length === 0 ? (
-            <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-dashed border-border p-12 text-center">
-              <FileText className="h-12 w-12 text-muted-foreground/20 mx-auto mb-4" />
-              <p className="text-muted-foreground mb-4">You haven't uploaded any sources yet.</p>
-              <Button onClick={onUpload}>Upload your first source</Button>
+            <div 
+              className="rounded-[32px] border border-white/10 p-16 text-center"
+              style={{
+                background: 'rgba(255, 255, 255, 0.02)',
+                backdropFilter: 'blur(40px)',
+                boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.2), inset 0 1px 0 0 rgba(255, 255, 255, 0.05)',
+              }}
+            >
+              <div className="w-20 h-20 rounded-3xl bg-white/5 border border-white/10 flex items-center justify-center mx-auto mb-6">
+                <FileText className="h-10 w-10 text-white/20" />
+              </div>
+              <p className="text-white/50 mb-6 font-medium text-lg">You haven't uploaded any sources yet.</p>
+              <Button onClick={onUpload} className="bg-primary hover:bg-primary/90 text-white rounded-full px-8 py-6 shadow-[0_8px_24px_-4px_rgba(0,122,255,0.5)] font-bold text-base transition-transform hover:scale-105">
+                Upload your first source
+              </Button>
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
               {recentSessions.map((session) => (
                 <div
                   key={session.id}
                   onClick={() => onSelectSource(session)}
-                  className="bg-white dark:bg-zinc-900 border border-border/50 rounded-2xl p-4 flex items-center gap-4 hover:border-primary/30 cursor-pointer group shadow-sm"
+                  className="relative rounded-[24px] p-5 flex items-center gap-5 cursor-pointer group transition-all duration-300 hover:scale-[1.02] border border-white/10 overflow-hidden"
+                  style={{
+                    background: 'rgba(255, 255, 255, 0.03)',
+                    backdropFilter: 'blur(40px)',
+                    boxShadow: '0 4px 24px -4px rgba(0,0,0,0.2), inset 0 1px 0 0 rgba(255,255,255,0.1)'
+                  }}
                 >
-                  <div className="w-10 h-10 rounded-lg bg-primary/5 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+                  <div className="absolute inset-0 bg-gradient-to-r from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+                  
+                  <div className="w-12 h-12 rounded-xl flex items-center justify-center text-primary bg-primary/10 border border-primary/20 shadow-[0_0_15px_rgba(0,122,255,0.15)] group-hover:scale-110 transition-transform duration-300 relative z-10">
                     <FileText className="h-5 w-5" />
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <h4 className="font-semibold text-foreground truncate">{session.title}</h4>
-                    <p className="text-xs text-muted-foreground">{new Date(session.updatedAt).toLocaleDateString()}</p>
+                  <div className="flex-1 min-w-0 relative z-10">
+                    <h4 className="font-bold text-slate-200 truncate tracking-tight text-base">{session.title}</h4>
+                    <p className="text-xs text-slate-500 font-medium mt-1">{new Date(session.updatedAt).toLocaleDateString()}</p>
                   </div>
-                  <ChevronRight className="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <ChevronRight className="h-5 w-5 text-white/20 group-hover:text-white/60 transition-colors group-hover:translate-x-1 duration-300 relative z-10" />
                 </div>
               ))}
             </div>
@@ -2912,11 +2945,22 @@ export default function Workspace() {
   }
 
   return (
-    <div className="h-screen bg-background flex overflow-hidden text-foreground">
-      {/* 1. Main Navigation Sidebar */}
-      <MainNav activeTab={activeMainNavTab} onTabChange={setActiveMainNavTab} />
-      
-      <div className="flex-1 flex overflow-hidden relative">
+    <div className="h-screen w-full bg-black flex overflow-hidden text-slate-200 relative">
+      {/* VisionOS Cinematic Environment Background */}
+      <div 
+        className="absolute inset-0 bg-cover bg-center opacity-[0.65] mix-blend-screen"
+        style={{ backgroundImage: "url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop')" }} 
+      />
+      <div className="absolute inset-0 bg-black/30 backdrop-blur-[120px]" /> {/* Extreme blur for the glass aesthetic */}
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/20 to-black/80 pointer-events-none" />
+
+      {/* Main Floating Interface */}
+      <div className="flex w-full h-full p-4 gap-4 relative z-10">
+        {/* 1. Main Navigation Sidebar (Floating) */}
+        <MainNav activeTab={activeMainNavTab} onTabChange={setActiveMainNavTab} />
+        
+        {/* 2. Main Workspace Area (Floating Glass Pane) */}
+        <div className="flex-1 flex overflow-hidden relative z-10 bg-white/[0.02] backdrop-blur-[80px] border border-white/10 rounded-[40px] shadow-[0_8px_32px_rgba(0,0,0,0.5)]">
         {activeMainNavTab === "home" ? (
           <Dashboard 
             onUpload={handleNewChat} 
@@ -3042,7 +3086,7 @@ export default function Workspace() {
             <h2 className="text-2xl font-bold mb-2">Settings</h2>
             <p className="text-muted-foreground">General application settings and profile management.</p>
           </div>
-        )}
+        </div>
       </div>
     </div>
   );

@@ -202,7 +202,7 @@ export default function PodcastPlayer({ audioUrl, title, transcript, summary, us
       {!useWebSpeech && <audio ref={audioRef} src={audioUrl} preload="metadata" />}
       
       {/* Premium Podcast Player UI */}
-      <Card className="glass-card relative border-primary/20 bg-black/40 overflow-hidden shadow-2xl">
+      <Card className="relative border-white/10 bg-white/[0.03] backdrop-blur-[60px] overflow-hidden shadow-[0_8px_32px_rgba(0,0,0,0.5)] rounded-[40px] w-full">
         {/* Animated Background Pulse */}
         <div className="absolute top-0 right-0 w-96 h-96 bg-primary/5 blur-[120px] rounded-full -translate-y-1/2 translate-x-1/2" />
         <div className="absolute bottom-0 left-0 w-80 h-80 bg-blue-500/5 blur-[100px] rounded-full translate-y-1/2 -translate-x-1/2" />
