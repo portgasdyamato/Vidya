@@ -2781,8 +2781,15 @@ export default function Workspace() {
 
   if (showUpload) {
     return (
-      <div className="min-h-screen bg-black">
-        <div className="max-w-4xl mx-auto p-6">
+      <div className="min-h-screen w-full bg-black flex overflow-hidden text-slate-200 relative">
+        <div 
+          className="absolute inset-0 bg-cover bg-center opacity-[0.65] mix-blend-screen"
+          style={{ backgroundImage: "url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop')" }} 
+        />
+        <div className="absolute inset-0 bg-black/30 backdrop-blur-[120px]" />
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/20 to-black/80 pointer-events-none" />
+
+        <div className="max-w-4xl w-full mx-auto p-6 relative z-10 overflow-y-auto custom-scrollbar pt-12">
           <Button variant="ghost" onClick={() => {
             if (!uploadedItemId || uploadedItem?.status === "completed") {
               setShowUpload(false);
