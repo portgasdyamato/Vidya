@@ -119,7 +119,7 @@ export default function Home() {
 
               {/* Action Button */}
               <Link href="/workspace">
-                <Button className="glass-button-primary px-8 py-6 rounded-full shadow-xl flex items-center gap-3 transition-all hover:scale-105 active:scale-95 group">
+                <Button className="glass-button-primary px-8 py-6 rounded-full shadow-xl flex items-center gap-3 group">
                   {user ? "Go to Workspace" : "Start learning now"}
                   <ShieldCheck className="w-5 h-5 opacity-80 group-hover:scale-110 transition-transform" />
                 </Button>
@@ -175,7 +175,7 @@ export default function Home() {
             </div>
           </div>
           <Link href={user ? "/workspace" : "/login"}>
-            <Button className="glass-button-primary transition-all gap-2 text-md px-6 py-6 rounded-xl hover:scale-105 active:scale-95">
+            <Button className="glass-button-primary transition-all gap-2 text-md px-6 py-6 rounded-xl">
               {user ? "Go to Workspace" : "Get started"}
               <ArrowRight className="w-4 h-4" />
             </Button>

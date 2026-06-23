@@ -722,7 +722,7 @@ function CenterColumn({
 
             <Button
               onClick={onUpload}
-              className="h-14 px-10 text-base font-black rounded-2xl glass-button-primary shadow-2xl hover:scale-105 active:scale-95 transition-all gap-3"
+              className="h-14 px-10 text-base font-black rounded-2xl glass-button-primary shadow-2xl transition-all gap-3"
             >
               <UploadCloud className="h-5 w-5" />
               Upload Your First Source
