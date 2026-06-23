@@ -3087,6 +3087,7 @@ export default function Workspace() {
             <p className="text-muted-foreground">General application settings and profile management.</p>
           </div>
         )}
+        </div>
       </div>
     </div>
   );
