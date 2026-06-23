@@ -270,17 +270,17 @@ export default function MermaidChart({ data, onExplainNode }: MermaidChartProps)
           minZoom={0.1}
           maxZoom={1.5}
           proOptions={{ hideAttribution: true }}
-          className="bg-black/20"
+          className="bg-[#fcfbf9]"
           nodesDraggable={true}
         >
-          <Background variant={BackgroundVariant.Dots} gap={24} size={2} color="#ffffff10" />
-          <Controls className="!bg-transparent !border-none !shadow-xl [&_button]:!bg-black/40 [&_button]:backdrop-blur-md [&_button]:!border-white/10 [&_button]:!border-b [&_button]:!fill-white hover:[&_button]:!bg-black/60 [&_button:first-child]:rounded-t-xl [&_button:last-child]:rounded-b-xl [&_button:last-child]:!border-b-0 overflow-hidden" showInteractive={false} />
+          <Background variant={BackgroundVariant.Dots} gap={24} size={2} color="#00000015" />
+          <Controls className="!bg-transparent !border-none !shadow-xl [&_button]:!bg-white/80 [&_button]:backdrop-blur-md [&_button]:!border-black/10 [&_button]:!border-b [&_button]:!fill-black hover:[&_button]:!bg-white [&_button:first-child]:rounded-t-xl [&_button:last-child]:rounded-b-xl [&_button:last-child]:!border-b-0 overflow-hidden" showInteractive={false} />
         </ReactFlow>
 
         {!selectedId && (
-          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center justify-center gap-1.5 pointer-events-none bg-background/60 backdrop-blur-md px-4 py-2 rounded-full border border-border/20 shadow-lg">
-            <Info className="w-3 h-3 text-white/50" />
-            <span className="text-[10px] text-white/70 font-medium">Use mouse to pan and zoom. Click a node to explore.</span>
+          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center justify-center gap-1.5 pointer-events-none bg-white/60 backdrop-blur-md px-4 py-2 rounded-full border border-black/10 shadow-lg">
+            <Info className="w-3 h-3 text-black/50" />
+            <span className="text-[10px] text-black/70 font-medium">Use mouse to pan and zoom. Click a node to explore.</span>
           </div>
         )}
       </div>

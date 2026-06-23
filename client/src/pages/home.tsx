@@ -92,7 +92,7 @@ export default function Home() {
               
               <div className="pt-4">
                 <Link href="/workspace">
-                  <span className="text-[#00a3b6] hover:text-[#22d3ee] font-medium flex items-center gap-1 transition-colors cursor-pointer group">
+                  <span className="text-[#ec4899] hover:text-[#f472b6] font-medium flex items-center gap-1 transition-colors cursor-pointer group">
                     Get started with your first source
                     <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                   </span>
@@ -102,24 +102,24 @@ export default function Home() {
 
             {/* AI Visual Right Panel */}
             <div className="flex flex-col items-end gap-6 relative">
-              <div className="w-full max-w-sm aspect-square bg-[#00a3b6]/5 rounded-[2.5rem] border border-white/5 flex items-center justify-center overflow-hidden relative group transition-all hover:bg-[#00a3b6]/10 shadow-[0_20px_50px_rgba(0,163,182,0.05)]">
+              <div className="w-full max-w-sm aspect-square bg-white rounded-[2.5rem] border border-white/20 flex items-center justify-center overflow-hidden relative group transition-all hover:bg-white/90 shadow-[0_20px_50px_rgba(255,255,255,0.05)]">
                 <img 
                   src="/talk.gif" 
                   alt="AI Assistant Visualization" 
                   className="w-full h-full object-cover opacity-70 group-hover:opacity-100 transition-all duration-700"
                 />
-                <div className="absolute inset-0 bg-gradient-to-tr from-black/10 to-transparent pointer-events-none" />
+                <div className="absolute inset-0 bg-gradient-to-tr from-white/10 to-transparent pointer-events-none" />
                 
                 {/* Visual Accent */}
-                <div className="absolute bottom-4 left-4 bg-black/40 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/10 flex items-center gap-2">
+                <div className="absolute bottom-4 left-4 bg-white/40 backdrop-blur-md px-3 py-1.5 rounded-full border border-black/10 flex items-center gap-2 shadow-lg">
                   <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                  <span className="text-[10px] font-bold uppercase tracking-widest text-white/80">AI Active</span>
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-black/80">AI Active</span>
                 </div>
               </div>
 
               {/* Action Button */}
               <Link href="/workspace">
-                <Button className="bg-[#5c8a82] hover:bg-[#6c9a92] text-white px-8 py-6 rounded-full font-medium shadow-xl flex items-center gap-3 transition-all hover:scale-105 active:scale-95 group">
+                <Button className="bg-[#ec4899] hover:bg-[#db2777] text-white px-8 py-6 rounded-full font-medium shadow-[0_10px_30px_rgba(236,72,153,0.3)] flex items-center gap-3 transition-all hover:scale-105 active:scale-95 group">
                   {user ? "Go to Workspace" : "Start learning now"}
                   <ShieldCheck className="w-5 h-5 opacity-80 group-hover:scale-110 transition-transform" />
                 </Button>

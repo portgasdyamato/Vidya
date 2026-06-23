@@ -158,13 +158,13 @@ export default function FlashcardDrill({ flashcards, contentId }: FlashcardDrill
           <h2 className="text-xl font-bold text-white tracking-tight">Flashcard Drill</h2>
           <p className="text-sm text-white/40 font-medium">Card {currentIndex + 1} of {total}</p>
         </div>
-        <div className="flex items-center gap-5 text-sm font-bold">
-          <div className="flex items-center gap-2 text-green-400">
-            <CheckCircle2 className="w-5 h-5" />
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 bg-green-500/10 border border-green-500/20 text-green-400 px-3 py-1.5 rounded-full text-sm font-bold shadow-[0_0_15px_rgba(34,197,94,0.1)]">
+            <CheckCircle2 className="w-4 h-4" />
             <span>{correctCount}</span>
           </div>
-          <div className="flex items-center gap-2 text-orange-400">
-            <XCircle className="w-5 h-5" />
+          <div className="flex items-center gap-2 bg-orange-500/10 border border-orange-500/20 text-orange-400 px-3 py-1.5 rounded-full text-sm font-bold shadow-[0_0_15px_rgba(249,115,22,0.1)]">
+            <XCircle className="w-4 h-4" />
             <span>{wrongCount}</span>
           </div>
         </div>
@@ -272,14 +272,14 @@ export default function FlashcardDrill({ flashcards, contentId }: FlashcardDrill
           <div className="flex-1 flex gap-3">
             <Button
               onClick={() => goNext("wrong")}
-              className="flex-1 h-12 rounded-2xl bg-orange-500/10 hover:bg-orange-500/20 border border-orange-500/20 text-orange-300 font-bold gap-2"
+              className="flex-1 h-12 rounded-2xl bg-white/[0.05] hover:bg-white/10 border border-white/10 text-orange-400 font-bold gap-2 shadow-[0_4px_16px_rgba(249,115,22,0.1)] transition-all backdrop-blur-md"
             >
               <XCircle className="w-4 h-4" />
               Need to Review
             </Button>
             <Button
               onClick={() => goNext("correct")}
-              className="flex-1 h-12 rounded-2xl bg-green-500/10 hover:bg-green-500/20 border border-green-500/20 text-green-300 font-bold gap-2"
+              className="flex-1 h-12 rounded-2xl bg-white/[0.05] hover:bg-white/10 border border-white/10 text-green-400 font-bold gap-2 shadow-[0_4px_16px_rgba(34,197,94,0.1)] transition-all backdrop-blur-md"
             >
               <CheckCircle2 className="w-4 h-4" />
               Got It!
