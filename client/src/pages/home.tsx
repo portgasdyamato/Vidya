@@ -35,9 +35,7 @@ export default function Home() {
       <header className="w-full max-w-6xl flex justify-between items-center py-6 absolute top-0 px-6">
         <Link href="/">
           <div className="flex items-center gap-3 cursor-pointer transition-transform hover:scale-105 active:scale-95 group">
-            <div className="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center group-hover:bg-primary/30 transition-colors">
-              <img src="/logo.png" alt="Vidya Logo" className="w-5 h-5 object-contain" />
-            </div>
+            <img src="/logo.png" alt="Vidya Logo" className="w-10 h-10 object-contain group-hover:scale-105 transition-transform" />
             <h1 className="text-2xl font-bold font-serif">Vidya</h1>
           </div>
         </Link>

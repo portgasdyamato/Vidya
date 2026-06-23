@@ -253,9 +253,9 @@ function MainNav({ activeTab, onTabChange }: { activeTab: string; onTabChange: (
           <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-white/10 to-transparent" />
         </div>
 
-        <div className="w-11 h-11 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center mb-4 shadow-[0_0_20px_rgba(255,255,255,0.05)] relative z-10">
-          <img src="/logo.png" alt="Vidya Logo" className="w-6 h-6 object-contain" />
-        </div>
+        <Link href="/">
+          <img src="/logo.png" alt="Vidya Logo" className="w-10 h-10 object-contain mb-4 cursor-pointer hover:scale-105 transition-transform relative z-10" />
+        </Link>
         
         <div className="flex-1 flex flex-col gap-4 relative z-10 w-full px-3">
           {items.map(({ id, icon: Icon, label }) => (
