@@ -27,11 +27,11 @@ interface MermaidChartProps {
 // ── Constants & Parser ────────────────────────────────────────────────────────
 const RADII = [0, 200, 400, 600, 800];
 const DEPTH = [
-  { stroke: '#22d3ee' },
-  { stroke: '#818cf8' },
-  { stroke: '#22c55e' },
-  { stroke: '#f472b6' },
-  { stroke: '#fb923c' },
+  { stroke: '#db2777' }, // Root (Pink)
+  { stroke: '#7c3aed' }, // L1 (Violet)
+  { stroke: '#2563eb' }, // L2 (Blue)
+  { stroke: '#059669' }, // L3 (Green)
+  { stroke: '#d97706' }, // L4 (Orange)
 ];
 
 function parseMindmap(chart: string): TreeNode | null {
@@ -295,33 +295,29 @@ export default function MermaidChart({ data, onExplainNode }: MermaidChartProps)
             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
             className="absolute bottom-8 right-8 md:w-[380px] rounded-[1.25rem] p-5 z-20 backdrop-blur-2xl"
             style={{
-              background: `rgba(9, 9, 11, 0.75)`,
-              border: `1px solid rgba(255, 255, 255, 0.08)`,
-              boxShadow: `0 24px 48px -12px rgba(0,0,0,0.5), inset 0 1px 0 0 rgba(255,255,255,0.05)`,
+              background: `rgba(255, 255, 255, 0.85)`,
+              border: `1px solid rgba(0, 0, 0, 0.08)`,
+              background: `rgba(255, 255, 255, 0.95)`,
+              border: `1px solid rgba(0, 0, 0, 0.1)`,
+              boxShadow: `0 24px 48px -12px rgba(0,0,0,0.1), inset 0 1px 0 0 rgba(255,255,255,0.5)`,
             }}
           >
             <div className="flex items-start justify-between gap-4">
               <div className="flex flex-col gap-3 min-w-0">
-                <div className="flex items-center gap-2.5">
-                  <div 
-                    className="w-2.5 h-2.5 rounded-full" 
-                    style={{ 
-                      backgroundColor: selectedColor.stroke, 
-                      boxShadow: `0 0 12px ${selectedColor.stroke}, inset 0 0 4px rgba(255,255,255,0.5)` 
-                    }} 
-                  />
-                  <h4 className="text-[15px] font-semibold text-slate-100 tracking-wide leading-none">
+                <div className="flex items-center gap-3">
+                  <div className="w-2.5 h-2.5 rounded-full shadow-[0_0_12px]" style={{ backgroundColor: selectedColor.stroke, boxShadow: `0 0 12px ${selectedColor.stroke}` }} />
+                  <h3 className="font-serif text-xl font-semibold text-slate-900 tracking-tight pr-6">
                     {selectedNode.label}
-                  </h4>
+                  </h3>
                 </div>
-                <p className="text-[13px] text-slate-400 leading-relaxed font-medium pl-[1.125rem] border-l border-white/5">
+                <p className="text-sm text-slate-600 leading-relaxed font-medium">
                   {selectedExplanation}
                 </p>
                 {onExplainNode && (
-                  <div className="pl-[1.125rem] mt-2">
+                  <div className="mt-2">
                     <button
                       onClick={() => onExplainNode(selectedNode.label)}
-                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-[12px] font-semibold text-white/80 transition-colors"
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-black/5 hover:bg-black/10 border border-black/5 text-[12px] font-semibold text-slate-800 transition-colors"
                     >
                       <Sparkles className="w-3.5 h-3.5 text-primary" />
                       Explain More
@@ -331,9 +327,9 @@ export default function MermaidChart({ data, onExplainNode }: MermaidChartProps)
               </div>
               <button
                 onClick={() => setSelectedId(null)}
-                className="p-1.5 -mr-1 -mt-1 rounded-full hover:bg-white/10 transition-colors flex-shrink-0 text-slate-500 hover:text-slate-300"
+                className="group p-1.5 -mr-1 -mt-1 rounded-full hover:bg-black/5 transition-colors flex-shrink-0"
               >
-                <X className="w-4 h-4" />
+                <X className="w-4 h-4 text-slate-400 group-hover:text-black transition-colors" />
               </button>
             </div>
           </motion.div>

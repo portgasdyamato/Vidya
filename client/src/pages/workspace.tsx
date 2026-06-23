@@ -2938,14 +2938,14 @@ export default function Workspace() {
   }
 
   return (
-    <div className="h-screen w-full bg-black flex overflow-hidden text-slate-200 relative">
-      {/* VisionOS Cinematic Environment Background */}
+    <div className="h-screen w-full bg-[#fdfcfb] flex overflow-hidden text-slate-900 relative">
+      {/* Light Mode VisionOS Environment Background */}
       <div 
-        className="absolute inset-0 bg-cover bg-center opacity-[0.65] mix-blend-screen"
+        className="absolute inset-0 bg-cover bg-center opacity-[0.8]"
         style={{ backgroundImage: "url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop')" }} 
       />
-      <div className="absolute inset-0 bg-black/30 backdrop-blur-[120px]" /> {/* Extreme blur for the glass aesthetic */}
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/20 to-black/80 pointer-events-none" />
+      <div className="absolute inset-0 bg-white/70 backdrop-blur-[120px]" /> {/* Extreme blur for the glass aesthetic */}
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/50 to-white/95 pointer-events-none" />
 
       {/* Main Floating Interface */}
       <div className="flex w-full h-full p-4 gap-4 relative z-10">
@@ -2953,7 +2953,7 @@ export default function Workspace() {
         <MainNav activeTab={activeMainNavTab} onTabChange={setActiveMainNavTab} />
         
         {/* 2. Main Workspace Area (Floating Glass Pane) */}
-        <div className="flex-1 flex overflow-hidden relative z-10 bg-white/[0.02] backdrop-blur-[80px] border border-white/10 rounded-[40px] shadow-[0_8px_32px_rgba(0,0,0,0.5)]">
+        <div className="flex-1 flex overflow-hidden relative z-10 bg-white/[0.7] backdrop-blur-[80px] border border-black/5 rounded-[40px] shadow-[0_8px_32px_rgba(0,0,0,0.05)]">
         {activeMainNavTab === "home" ? (
           <Dashboard 
             onUpload={handleNewChat} 
@@ -2978,8 +2978,8 @@ export default function Workspace() {
             {/* Sidebar Toggle Button */}
             <button 
               onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-              className={`absolute z-40 top-1/2 -translate-y-1/2 flex items-center justify-center w-5 h-12 bg-white/[0.05] backdrop-blur-[40px] border border-white/10 rounded-r-[12px] hover:bg-white/10 transition-all shadow-[0_4px_16px_rgba(0,0,0,0.3)] ${
-                isSidebarOpen ? "left-[300px] border-l-transparent shadow-none" : "left-0"
+              className={`absolute z-40 top-1/2 -translate-y-1/2 flex items-center justify-center w-5 h-12 bg-white/80 backdrop-blur-[40px] border border-black/5 rounded-r-[12px] hover:bg-white transition-all shadow-sm text-slate-500 ${
+                isSidebarOpen ? "left-[300px] border-l-transparent" : "left-0"
               }`}
             >
               {isSidebarOpen ? <ChevronLeft className="h-3 w-3" /> : <ChevronRight className="h-3 w-3" />}
@@ -2988,7 +2988,7 @@ export default function Workspace() {
             {/* 3. Main Stage (Content + AI Tools) */}
             <div className="flex-1 flex flex-col overflow-hidden min-w-0">
               {/* Main Stage Header */}
-              <div className="h-16 border-b border-white/5 flex items-center justify-between px-8 bg-transparent shrink-0 min-w-0">
+              <div className="h-16 border-b border-black/5 flex items-center justify-between px-8 bg-transparent shrink-0 min-w-0">
                 <div className="flex items-center gap-4 min-w-0">
                   {selectedSession ? (
                     <>

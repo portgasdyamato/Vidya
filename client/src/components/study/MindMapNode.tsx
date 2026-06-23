@@ -3,11 +3,11 @@ import { clsx } from 'clsx';
 import { Network } from 'lucide-react';
 
 const DEPTH = [
-  { bgTop: 'rgba(34, 211, 238, 0.12)', bgBot: 'rgba(34, 211, 238, 0.02)', border: 'rgba(34, 211, 238, 0.25)', text: '#67e8f9', shadow: 'rgba(34, 211, 238, 0.15)' }, // Root (Cyan)
-  { bgTop: 'rgba(96, 165, 250, 0.12)', bgBot: 'rgba(96, 165, 250, 0.02)', border: 'rgba(96, 165, 250, 0.25)', text: '#93c5fd', shadow: 'rgba(96, 165, 250, 0.15)' }, // L1 (Blue)
-  { bgTop: 'rgba(52, 211, 153, 0.12)', bgBot: 'rgba(52, 211, 153, 0.02)', border: 'rgba(52, 211, 153, 0.25)', text: '#6ee7b7', shadow: 'rgba(52, 211, 153, 0.15)' }, // L2 (Green)
-  { bgTop: 'rgba(244, 114, 182, 0.12)', bgBot: 'rgba(244, 114, 182, 0.02)', border: 'rgba(244, 114, 182, 0.25)', text: '#f9a8d4', shadow: 'rgba(244, 114, 182, 0.15)' }, // L3 (Pink)
-  { bgTop: 'rgba(251, 146, 60, 0.12)', bgBot: 'rgba(251, 146, 60, 0.02)', border: 'rgba(251, 146, 60, 0.25)', text: '#fdba74', shadow: 'rgba(251, 146, 60, 0.15)' }, // L4 (Orange)
+  { bgTop: 'rgba(236, 72, 153, 0.15)', bgBot: 'rgba(236, 72, 153, 0.05)', border: 'rgba(236, 72, 153, 0.3)', text: '#db2777', shadow: 'rgba(236, 72, 153, 0.2)' }, // Root (Pink)
+  { bgTop: 'rgba(139, 92, 246, 0.15)', bgBot: 'rgba(139, 92, 246, 0.05)', border: 'rgba(139, 92, 246, 0.3)', text: '#7c3aed', shadow: 'rgba(139, 92, 246, 0.2)' }, // L1 (Violet)
+  { bgTop: 'rgba(59, 130, 246, 0.15)', bgBot: 'rgba(59, 130, 246, 0.05)', border: 'rgba(59, 130, 246, 0.3)', text: '#2563eb', shadow: 'rgba(59, 130, 246, 0.2)' }, // L2 (Blue)
+  { bgTop: 'rgba(16, 185, 129, 0.15)', bgBot: 'rgba(16, 185, 129, 0.05)', border: 'rgba(16, 185, 129, 0.3)', text: '#059669', shadow: 'rgba(16, 185, 129, 0.2)' }, // L3 (Green)
+  { bgTop: 'rgba(245, 158, 11, 0.15)', bgBot: 'rgba(245, 158, 11, 0.05)', border: 'rgba(245, 158, 11, 0.3)', text: '#d97706', shadow: 'rgba(245, 158, 11, 0.2)' }, // L4 (Orange)
 ];
 
 const dc = (d: number) => DEPTH[Math.min(d, DEPTH.length - 1)];
