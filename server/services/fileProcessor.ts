@@ -80,7 +80,7 @@ export async function processYouTube(videoUrl: string): Promise<string> {
 
   // ── Path 2: Download audio → Whisper transcription ────────────────────────
   try {
-    const ytdl = (await import('ytdl-core')).default;
+    const ytdl = (await import('@distube/ytdl-core')).default;
 
     // Verify the video is accessible first
     if (!ytdl.validateID(videoId)) throw new Error("Invalid YouTube video ID");
