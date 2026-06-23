@@ -155,22 +155,22 @@ export default function FlashcardDrill({ flashcards, contentId }: FlashcardDrill
       {/* Progress & Stats Header */}
       <div className="flex items-center justify-between mb-2">
         <div>
-          <h2 className="text-xl font-bold text-white tracking-tight">Flashcard Drill</h2>
-          <p className="text-sm text-white/40 font-medium">Card {currentIndex + 1} of {total}</p>
+          <h2 className="text-xl font-bold text-slate-900 tracking-tight">Flashcard Drill</h2>
+          <p className="text-sm text-slate-500 font-medium">Card {currentIndex + 1} of {total}</p>
         </div>
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2 bg-green-500/10 border border-green-500/20 text-green-400 px-3 py-1.5 rounded-full text-sm font-bold shadow-[0_0_15px_rgba(34,197,94,0.1)]">
+          <div className="flex items-center gap-2 bg-green-50 border border-green-100 text-green-600 px-3 py-1.5 rounded-full text-sm font-bold shadow-sm">
             <CheckCircle2 className="w-4 h-4" />
             <span>{correctCount}</span>
           </div>
-          <div className="flex items-center gap-2 bg-orange-500/10 border border-orange-500/20 text-orange-400 px-3 py-1.5 rounded-full text-sm font-bold shadow-[0_0_15px_rgba(249,115,22,0.1)]">
+          <div className="flex items-center gap-2 bg-orange-50 border border-orange-100 text-orange-600 px-3 py-1.5 rounded-full text-sm font-bold shadow-sm">
             <XCircle className="w-4 h-4" />
             <span>{wrongCount}</span>
           </div>
         </div>
       </div>
 
-      <div className="w-full h-1 bg-white/5 rounded-full overflow-hidden mb-6">
+      <div className="w-full h-1 bg-slate-100 rounded-full overflow-hidden mb-6">
         <div 
           className="h-full bg-primary rounded-full transition-all duration-500 ease-out" 
           style={{ width: `${progress}%` }} 
@@ -194,19 +194,19 @@ export default function FlashcardDrill({ flashcards, contentId }: FlashcardDrill
         >
           {/* Front Face */}
           <div
-            className="relative rounded-3xl border border-white/8 bg-gradient-to-br from-white/5 to-transparent p-10 min-h-[300px] flex flex-col justify-between overflow-hidden"
+            className="relative rounded-3xl border border-black/5 bg-gradient-to-br from-white/90 to-white/50 p-10 min-h-[300px] flex flex-col justify-between overflow-hidden shadow-lg backdrop-blur-md"
             style={{ backfaceVisibility: "hidden" }}
           >
-            <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-blue-500/3 pointer-events-none" />
-            <div className="absolute top-0 right-0 w-64 h-64 bg-primary/3 blur-[80px] rounded-full pointer-events-none" />
+            <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-pink-500/5 pointer-events-none" />
+            <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 blur-[80px] rounded-full pointer-events-none" />
 
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/8">
-                <BookOpen className="w-3 h-3 text-white/40" />
-                <span className="text-[10px] font-bold text-white/40 uppercase tracking-widest">Question</span>
+              <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-black/5 border border-black/5">
+                <BookOpen className="w-3 h-3 text-slate-500" />
+                <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Question</span>
               </div>
               {cardResult ? (
-                <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-[10px] font-bold uppercase tracking-widest ${cardResult === "correct" ? "bg-green-500/10 border-green-500/20 text-green-400" : "bg-orange-500/10 border-orange-500/20 text-orange-400"}`}>
+                <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-[10px] font-bold uppercase tracking-widest ${cardResult === "correct" ? "bg-green-50 border-green-100 text-green-600" : "bg-orange-50 border-orange-100 text-orange-600"}`}>
                   {cardResult === "correct" ? <CheckCircle2 className="w-3 h-3" /> : <XCircle className="w-3 h-3" />}
                   {cardResult}
                 </div>
@@ -219,12 +219,12 @@ export default function FlashcardDrill({ flashcards, contentId }: FlashcardDrill
             </div>
 
             <div className="flex-1 flex items-center justify-center py-8 relative z-10">
-              <p className="text-xl md:text-2xl font-bold text-white text-center leading-relaxed font-serif">
+              <p className="text-xl md:text-2xl font-bold text-slate-800 text-center leading-relaxed font-serif">
                 {current.question}
               </p>
             </div>
 
-            <div className="flex items-center justify-center gap-2 text-white/20 text-[10px] font-bold uppercase tracking-widest">
+            <div className="flex items-center justify-center gap-2 text-slate-400 text-[10px] font-bold uppercase tracking-widest">
               <Zap className="w-3 h-3" />
               Tap to flip
             </div>
@@ -232,23 +232,23 @@ export default function FlashcardDrill({ flashcards, contentId }: FlashcardDrill
 
           {/* Back Face */}
           <div
-            className="absolute inset-0 rounded-3xl border border-white/8 bg-[#151518] p-10 flex flex-col justify-between overflow-hidden"
+            className="absolute inset-0 rounded-3xl border border-black/5 bg-white p-10 flex flex-col justify-between overflow-hidden shadow-xl"
             style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}
           >
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/8 w-fit">
-                <Target className="w-3 h-3 text-white/40" />
-                <span className="text-[10px] font-bold text-white/40 uppercase tracking-widest">Answer</span>
+              <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-black/5 border border-black/5 w-fit">
+                <Target className="w-3 h-3 text-slate-500" />
+                <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Answer</span>
               </div>
             </div>
 
             <div className="flex-1 flex items-center justify-center py-8 relative z-10 overflow-y-auto">
-              <p className="text-lg md:text-xl text-slate-200 text-center leading-relaxed font-medium">
+              <p className="text-lg md:text-xl text-slate-800 text-center leading-relaxed font-medium">
                 {current.answer}
               </p>
             </div>
 
-            <div className="flex items-center justify-center gap-2 text-white/20 text-[10px] font-bold uppercase tracking-widest">
+            <div className="flex items-center justify-center gap-2 text-slate-400 text-[10px] font-bold uppercase tracking-widest">
               <RotateCcw className="w-3 h-3" />
               Tap to flip back
             </div>
@@ -272,16 +272,16 @@ export default function FlashcardDrill({ flashcards, contentId }: FlashcardDrill
           <div className="flex-1 flex gap-3">
             <Button
               onClick={() => goNext("wrong")}
-              className="flex-1 h-12 rounded-2xl bg-white/[0.05] hover:bg-white/10 border border-white/10 text-orange-400 font-bold gap-2 shadow-[0_4px_16px_rgba(249,115,22,0.1)] transition-all backdrop-blur-md"
+              className="flex-1 h-12 rounded-2xl bg-white border border-black/10 text-orange-500 font-bold gap-2 shadow-sm hover:bg-orange-50 hover:border-orange-200 transition-all"
             >
               <XCircle className="w-4 h-4" />
               Need to Review
             </Button>
             <Button
               onClick={() => goNext("correct")}
-              className="flex-1 h-12 rounded-2xl bg-white/[0.05] hover:bg-white/10 border border-white/10 text-green-400 font-bold gap-2 shadow-[0_4px_16px_rgba(34,197,94,0.1)] transition-all backdrop-blur-md"
+              className="flex-1 h-12 rounded-2xl bg-white border border-black/10 text-green-600 font-bold gap-2 shadow-sm hover:bg-green-50 hover:border-green-200 transition-all"
             >
-              <CheckCircle2 className="w-4 h-4" />
+              <CheckCircle className="w-4 h-4" />
               Got It!
             </Button>
           </div>
