@@ -2938,14 +2938,14 @@ export default function Workspace() {
   }
 
   return (
-    <div className="h-screen w-full bg-black flex overflow-hidden text-slate-200 relative">
-      {/* VisionOS Cinematic Environment Background */}
+    <div className="h-screen w-full bg-slate-50 flex overflow-hidden text-slate-800 relative">
+      {/* Bright Glassmorphism Environment Background */}
       <div 
-        className="absolute inset-0 bg-cover bg-center opacity-[0.65] mix-blend-screen"
-        style={{ backgroundImage: "url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop')" }} 
+        className="absolute inset-0 bg-cover bg-center opacity-30 mix-blend-multiply"
+        style={{ backgroundImage: "url('https://images.unsplash.com/photo-1557683316-973673baf926?q=80&w=2564&auto=format&fit=crop')" }} 
       />
-      <div className="absolute inset-0 bg-black/30 backdrop-blur-[120px]" /> {/* Extreme blur for the glass aesthetic */}
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/20 to-black/80 pointer-events-none" />
+      <div className="absolute inset-0 bg-white/60 backdrop-blur-[100px]" /> {/* Extreme blur for the glass aesthetic */}
+      <div className="absolute inset-0 bg-gradient-to-b from-white/40 via-transparent to-pink-50/30 pointer-events-none" />
 
       {/* Main Floating Interface */}
       <div className="flex w-full h-full p-4 gap-4 relative z-10">
@@ -2953,7 +2953,7 @@ export default function Workspace() {
         <MainNav activeTab={activeMainNavTab} onTabChange={setActiveMainNavTab} />
         
         {/* 2. Main Workspace Area (Floating Glass Pane) */}
-        <div className="flex-1 flex overflow-hidden relative z-10 bg-white/[0.02] backdrop-blur-[80px] border border-white/10 rounded-[40px] shadow-[0_8px_32px_rgba(0,0,0,0.5)]">
+        <div className="flex-1 flex overflow-hidden relative z-10 bg-white/70 backdrop-blur-[80px] border border-black/5 rounded-[40px] shadow-[0_8px_32px_rgba(0,0,0,0.05)]">
         {activeMainNavTab === "home" ? (
           <Dashboard 
             onUpload={handleNewChat} 
@@ -2978,7 +2978,7 @@ export default function Workspace() {
             {/* Sidebar Toggle Button */}
             <button 
               onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-              className={`absolute z-40 top-1/2 -translate-y-1/2 flex items-center justify-center w-5 h-12 bg-white/[0.05] backdrop-blur-[40px] border border-white/10 rounded-r-[12px] hover:bg-white/10 transition-all shadow-[0_4px_16px_rgba(0,0,0,0.3)] ${
+              className={`absolute z-40 top-1/2 -translate-y-1/2 flex items-center justify-center w-5 h-12 bg-white/80 backdrop-blur-[40px] border border-black/5 rounded-r-[12px] hover:bg-white transition-all shadow-[0_4px_16px_rgba(0,0,0,0.05)] text-slate-600 ${
                 isSidebarOpen ? "left-[300px] border-l-transparent shadow-none" : "left-0"
               }`}
             >
@@ -2988,13 +2988,13 @@ export default function Workspace() {
             {/* 3. Main Stage (Content + AI Tools) */}
             <div className="flex-1 flex flex-col overflow-hidden min-w-0">
               {/* Main Stage Header */}
-              <div className="h-16 border-b border-white/5 flex items-center justify-between px-8 bg-transparent shrink-0 min-w-0">
+              <div className="h-16 border-b border-black/5 flex items-center justify-between px-8 bg-white/40 shrink-0 min-w-0">
                 <div className="flex items-center gap-4 min-w-0">
                   {selectedSession ? (
                     <>
                       <div className="flex items-center gap-3 min-w-0">
                         <FileText className="h-4 w-4 text-primary shrink-0" />
-                        <h1 className="text-[14px] font-semibold text-foreground tracking-wide truncate max-w-[400px]">
+                        <h1 className="text-[14px] font-semibold text-slate-800 tracking-wide truncate max-w-[400px]">
                           {selectedSession.title}
                         </h1>
                       </div>
@@ -3004,17 +3004,17 @@ export default function Workspace() {
                       </div>
                     </>
                   ) : (
-                    <h1 className="text-[14px] font-semibold text-foreground tracking-wide">Select a source</h1>
+                    <h1 className="text-[14px] font-semibold text-slate-800 tracking-wide">Select a source</h1>
                   )}
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="h-6 w-[1px] bg-border/50 mx-2" />
+                  <div className="h-6 w-[1px] bg-black/10 mx-2" />
                 </div>
               </div>
 
               <div className="flex-1 flex overflow-hidden min-w-0">
                 {/* Left part of Main Stage: Content Viewer */}
-                <div className="flex-1 flex flex-col overflow-hidden border-r border-border/50 min-w-0">
+                <div className="flex-1 flex flex-col overflow-hidden border-r border-black/5 min-w-0">
                   {selectedView === "canvas" ? (
                     <Canvas 
                       title={selectedSession?.title || "Draft"} 
@@ -3043,7 +3043,7 @@ export default function Workspace() {
             {/* Right Sidebar Toggle Button */}
             <button
               onClick={() => setIsRightSidebarOpen(!isRightSidebarOpen)}
-              className={`absolute z-40 top-1/2 -translate-y-1/2 flex items-center justify-center w-5 h-12 bg-white/[0.05] backdrop-blur-[40px] border border-white/10 rounded-l-[12px] hover:bg-white/10 transition-all shadow-[0_4px_16px_rgba(0,0,0,0.3)] ${
+              className={`absolute z-40 top-1/2 -translate-y-1/2 flex items-center justify-center w-5 h-12 bg-white/80 backdrop-blur-[40px] border border-black/5 rounded-l-[12px] hover:bg-white transition-all shadow-[0_4px_16px_rgba(0,0,0,0.05)] text-slate-600 ${
                 isRightSidebarOpen ? (selectedSession ? "right-[400px] border-r-transparent shadow-none" : "right-[320px] border-r-transparent shadow-none") : "right-0"
               }`}
             >
