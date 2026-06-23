@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, ReactNode } from "react";
+import React, { createContext, useContext, useEffect, ReactNode } from "react";
 
 interface ThemeCtx {
   theme: "light" | "dark";
@@ -8,20 +8,18 @@ interface ThemeCtx {
 const ThemeContext = createContext<ThemeCtx | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const prefersDark = typeof window !== "undefined" && window.matchMedia("(prefers-color-scheme: dark)").matches;
-  const [theme, setTheme] = useState<"light" | "dark">(() => {
-    if (typeof window === "undefined") return "light";
-    return (localStorage.getItem("theme") as "light" | "dark") || (prefersDark ? "dark" : "light");
-  });
+  const theme = "dark";
 
   useEffect(() => {
     const root = window.document.documentElement;
-    if (theme === "dark") root.classList.add("dark");
-    else root.classList.remove("dark");
-    localStorage.setItem("theme", theme);
-  }, [theme]);
+    root.classList.add("dark");
+    root.classList.remove("light");
+    localStorage.setItem("theme", "dark");
+  }, []);
 
-  const toggle = () => setTheme((t) => (t === "dark" ? "light" : "dark"));
+  const toggle = () => {
+    // No-op
+  };
 
   return <ThemeContext.Provider value={{ theme, toggle }}>{children}</ThemeContext.Provider>;
 }

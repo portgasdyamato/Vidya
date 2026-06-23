@@ -211,6 +211,87 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Serve the original uploaded file for the PDF Viewer
+  app.get("/api/content/:id/original", async (req, res) => {
+    try {
+      const item = await storage.getContentItem(req.params.id);
+      if (!item || !item.originalUrl) {
+        return res.status(404).json({ message: "Original file not found" });
+      }
+      const fs = await import("fs");
+      const path = await import("path");
+      
+      const filePath = item.originalUrl;
+      if (!fs.existsSync(filePath)) {
+         return res.status(404).json({ message: "File missing on disk" });
+      }
+      
+      const ext = path.extname(filePath).toLowerCase();
+      let contentType = "application/pdf";
+      if (ext === ".txt") contentType = "text/plain";
+      else if (ext === ".mp3" || ext === ".m4a") contentType = "audio/mpeg";
+
+      res.setHeader("Content-Type", contentType);
+      const fileStream = fs.createReadStream(filePath);
+      fileStream.pipe(res);
+    } catch (error: any) {
+      console.error("Serve original file error:", error);
+      res.status(500).json({ message: "Failed to serve original file" });
+    }
+  });
+
+  // Update specific content item (e.g. saving edited summary)
+  app.patch("/api/content/:id", async (req, res) => {
+    try {
+      const { summary } = req.body;
+      const item = await storage.getContentItem(req.params.id);
+      if (!item) return res.status(404).json({ message: "Content not found" });
+
+      const updated = await storage.updateContentItem(item.id, { summary: summary as any });
+      res.json(updated);
+    } catch (error: any) {
+      res.status(500).json({ message: error?.message || 'Failed to update content item' });
+    }
+  });
+
+  // Update stats for content
+  app.post("/api/content/:id/stats", async (req, res) => {
+    try {
+      const item = await storage.getContentItem(req.params.id);
+      if (!item) return res.status(404).json({ message: "Content not found" });
+
+      const { type, payload } = req.body;
+      const currentStats = (item.stats as any) || { flashcardConfidence: {}, documentProgress: {}, quizScores: [] };
+      
+      if (type === 'flashcard_confidence') {
+        const { flashcardId, confidence } = payload;
+        if (!currentStats.flashcardConfidence) currentStats.flashcardConfidence = {};
+        currentStats.flashcardConfidence[flashcardId] = confidence;
+      } else if (type === 'quiz_attempt') {
+        const { score, total } = payload;
+        if (!currentStats.quizScores) currentStats.quizScores = [];
+        currentStats.quizScores.push({ date: new Date().toISOString(), score, total });
+      } else if (type === 'page_read') {
+        const { page } = payload;
+        if (!currentStats.documentProgress) currentStats.documentProgress = { pagesRead: [] };
+        if (!currentStats.documentProgress.pagesRead) currentStats.documentProgress.pagesRead = [];
+        if (!currentStats.documentProgress.pagesRead.includes(page)) {
+          currentStats.documentProgress.pagesRead.push(page);
+        }
+      } else if (type === 'annotation_added') {
+        if (!currentStats.documentProgress) currentStats.documentProgress = {};
+        currentStats.documentProgress.highlightsCount = (currentStats.documentProgress.highlightsCount || 0) + 1;
+      } else if (type === 'chat_interaction') {
+        currentStats.chatInteractionsCount = (currentStats.chatInteractionsCount || 0) + 1;
+      }
+      
+      const updated = await storage.updateContentItem(item.id, { stats: currentStats as any });
+      res.json(updated);
+    } catch (error: any) {
+      res.status(500).json({ message: error?.message || 'Failed to update stats' });
+    }
+  });
+
   // Regenerate mind map for an existing content item
   app.post("/api/content/:id/regenerate-mindmap", async (req, res) => {
     try {
@@ -231,6 +312,88 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error: any) {
       console.error("Regenerate mindmap error:", error);
       res.status(500).json({ message: error?.message || "Failed to regenerate mind map" });
+    }
+  });
+
+  // Regenerate flashcards for an existing content item
+  app.post("/api/content/:id/regenerate-flashcards", async (req, res) => {
+    try {
+      const item = await storage.getContentItem(req.params.id);
+      if (!item) return res.status(404).json({ message: "Content not found" });
+
+      const text = (item.extractedText as string) || "";
+      if (!text || text.length < 20) {
+        return res.status(400).json({ message: "No extracted text available." });
+      }
+
+      const { generateRegeneratedFlashcards } = await import("./services/openai.js");
+      const newFlashcards = await generateRegeneratedFlashcards(text);
+      if (!newFlashcards || newFlashcards.length === 0) {
+        return res.json({ success: true, exhausted: true, item });
+      }
+
+      const updated = await storage.updateContentItem(item.id, { flashcards: newFlashcards as any });
+      res.json({ success: true, exhausted: false, item: updated });
+    } catch (error: any) {
+      console.error("Regenerate flashcards error:", error);
+      res.status(500).json({ message: error?.message || "Failed to regenerate flashcards" });
+    }
+  });
+
+  // Regenerate quiz for an existing content item
+  app.post("/api/content/:id/regenerate-quiz", async (req, res) => {
+    try {
+      const item = await storage.getContentItem(req.params.id);
+      if (!item) return res.status(404).json({ message: "Content not found" });
+
+      const text = (item.extractedText as string) || "";
+      if (!text || text.length < 20) {
+        return res.status(400).json({ message: "No extracted text available." });
+      }
+
+      const { generateRegeneratedQuiz } = await import("./services/openai.js");
+      const newQuiz = await generateRegeneratedQuiz(text);
+      if (!newQuiz || (Array.isArray(newQuiz) && newQuiz.length === 0)) {
+        return res.json({ success: true, exhausted: true, item });
+      }
+
+      const updated = await storage.updateContentItem(item.id, { quizData: newQuiz as any });
+      res.json({ success: true, exhausted: false, item: updated });
+    } catch (error: any) {
+      console.error("Regenerate quiz error:", error);
+      res.status(500).json({ message: error?.message || "Failed to regenerate quiz" });
+    }
+  });
+
+  // Update statistics for a content item
+  app.post("/api/content/:id/stats", async (req, res) => {
+    try {
+      const { type, payload } = req.body;
+      const item = await storage.getContentItem(req.params.id);
+      if (!item) return res.status(404).json({ message: "Content not found" });
+
+      const currentStats: any = item.stats || { pagesRead: [], highlightsCount: 0, quizScores: [], flashcardsConfidence: {} };
+
+      if (type === 'page_read') {
+        if (!currentStats.pagesRead) currentStats.pagesRead = [];
+        if (!currentStats.pagesRead.includes(payload.pageNumber)) {
+          currentStats.pagesRead.push(payload.pageNumber);
+        }
+      } else if (type === 'highlight_added') {
+        currentStats.highlightsCount = (currentStats.highlightsCount || 0) + 1;
+      } else if (type === 'quiz_completed') {
+        if (!currentStats.quizScores) currentStats.quizScores = [];
+        currentStats.quizScores.push({ date: new Date().toISOString(), score: payload.score, total: payload.total });
+      } else if (type === 'flashcard_confidence') {
+        if (!currentStats.flashcardsConfidence) currentStats.flashcardsConfidence = {};
+        currentStats.flashcardsConfidence[payload.flashcardId] = payload.confidence; // 'got_it' or 'need_review'
+      }
+
+      const updated = await storage.updateContentItem(item.id, { stats: currentStats as any });
+      res.json(updated);
+    } catch (error: any) {
+      console.error("Update stats error:", error);
+      res.status(500).json({ message: error?.message || "Failed to update stats" });
     }
   });
 

@@ -76,7 +76,7 @@ export async function processYouTube(videoUrl: string): Promise<string> {
 
   const ytdl = (await import("ytdl-core")).default;
   const audioStream = ytdl(cleanUrl, {
-    quality: "highestaudio",
+    quality: "lowestaudio",
     filter: "audioonly",
   });
 

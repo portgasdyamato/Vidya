@@ -21,43 +21,15 @@ import { useToast } from "@/hooks/use-toast";
 import { useAudio } from "@/lib/AudioContext";
 import { useSpeechRecognition } from "@/hooks/useSpeechRecognition";
 import type { ContentItem } from "@shared/schema";
+import type { ContentItem } from "@shared/schema";
+import { useAuth } from "@/lib/auth";
 import { 
-  UploadCloud, 
-  FileText, 
-  Speaker, 
-  BookOpen, 
-  Grid, 
-  MessageSquare,
-  ArrowUp,
-  Pin,
-  ThumbsUp,
-  ThumbsDown,
-  Plus,
-  Loader2,
-  CheckCircle2,
-  AlertCircle,
-  X,
-  Trash2,
-  Clock,
-  MoreVertical,
-  Headphones,
-  Mic,
-  MicOff,
-  Search,
-  Copy,
-  Download,
-  Layers,
-  BarChart3,
-  ShieldCheck,
-  Home,
-  Settings,
-  BrainCircuit,
-  SquarePen,
-  Folder,
-  Library,
-  Sparkles,
-  ChevronRight,
-  ChevronLeft
+  FileText, BrainCircuit, Headphones, LayoutDashboard, LayoutTemplate, Share2, 
+  Settings, Loader2, Sparkles, MessageSquare, ArrowUp, Send, Check, X,
+  Search, BookOpen, Layers, Grid, BarChart3, Presentation, BookMarked, AlignLeft,
+  Pin, ThumbsUp, ThumbsDown, Plus, CheckCircle2, AlertCircle, Trash2, Clock, 
+  MoreVertical, Mic, MicOff, Copy, Download, ShieldCheck, Home, SquarePen, 
+  Folder, Library, ChevronRight, ChevronLeft, UploadCloud, UserCircle, LogOut
 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfmModule from "remark-gfm";
@@ -72,8 +44,38 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import VideoUpload from "@/components/upload/VideoUpload";
+import PdfViewer from "@/components/study/PdfViewer";
+import { motion, AnimatePresence } from "framer-motion";
+import ReactQuill from 'react-quill-new';
+import { marked } from 'marked';
+
+import TurndownService from 'turndown';
+
+const turndownService = new TurndownService({
+  headingStyle: 'atx',
+  bulletListMarker: '-',
+  codeBlockStyle: 'fenced'
+});
+
+const quillModules = {
+  toolbar: [
+    [{ 'header': [1, 2, 3, false] }],
+    [{ 'size': ['small', false, 'large', 'huge'] }],
+    ['bold', 'italic', 'underline', 'strike'],
+    [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+    ['clean']
+  ],
+};
 
 class MarkdownErrorBoundary extends React.Component<{ fallback: React.ReactNode; children?: React.ReactNode }, { hasError: boolean }> {
   state = { hasError: false };
@@ -206,6 +208,36 @@ function saveSessions(sessions: ChatSession[]) {
 
 // Far Left: Main Navigation Sidebar (Anara Style)
 function MainNav({ activeTab, onTabChange }: { activeTab: string; onTabChange: (tab: string) => void }) {
+  const { user, logoutMutation } = useAuth();
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+  const [displayName, setDisplayName] = useState(user?.name || user?.displayName || user?.username || "");
+  const [isUpdating, setIsUpdating] = useState(false);
+  const queryClient = useQueryClient();
+
+  const handleUpdateProfile = async () => {
+    if (!displayName.trim()) return;
+    setIsUpdating(true);
+    try {
+      const res = await fetch("/api/auth/user", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ displayName }),
+      });
+      if (res.ok) {
+        queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
+        setIsProfileModalOpen(false);
+      }
+    } catch (e) {
+      console.error("Failed to update profile", e);
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
+  const getInitials = (name: string) => {
+    return name.slice(0, 2).toUpperCase();
+  };
+
   const items = [
     { id: "home", icon: Home, label: "Home" },
     { id: "library", icon: Library, label: "Library" },
@@ -214,40 +246,119 @@ function MainNav({ activeTab, onTabChange }: { activeTab: string; onTabChange: (
   ];
 
   return (
-    <nav className="w-16 flex flex-col items-center py-6 bg-background border-r border-border/50 h-full gap-8 z-20">
-      <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center mb-2 shadow-lg shadow-primary/20">
-        <Sparkles className="h-6 w-6 text-primary-foreground" />
-      </div>
-      
-      <div className="flex-1 flex flex-col gap-4">
-        {items.map(({ id, icon: Icon, label }) => (
-          <button
-            key={id}
-            onClick={() => onTabChange(id)}
-            className={`p-3 rounded-xl transition-all duration-200 group relative ${
-              activeTab === id 
-                ? "bg-primary/10 text-primary" 
-                : "text-muted-foreground hover:bg-muted"
-            }`}
-            title={label}
-          >
-            <Icon className="h-6 w-6" />
-            <span className="absolute left-14 bg-foreground text-background text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-50 pointer-events-none">
-              {label}
-            </span>
-          </button>
-        ))}
-      </div>
-      
-      <div className="mt-auto">
-        <Button variant="ghost" size="icon" className="rounded-full h-10 w-10">
-          <div className="h-2 w-2 rounded-full bg-green-500 absolute bottom-2 right-2 border-2 border-background" />
-          <div className="h-8 w-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-[10px] text-white font-bold">
-            JD
+    <>
+      <nav className="w-[72px] flex flex-col items-center py-6 bg-black/40 backdrop-blur-2xl border-r border-white/5 h-full gap-8 z-20 shadow-2xl relative">
+        <div className="absolute inset-0 pointer-events-none opacity-20">
+          <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-white/5 to-transparent" />
+        </div>
+
+        <div className="w-11 h-11 rounded-2xl bg-primary flex items-center justify-center mb-4 shadow-[0_0_20px_rgba(var(--primary),0.3)] relative z-10">
+          <Sparkles className="h-6 w-6 text-primary-foreground" />
+        </div>
+        
+        <div className="flex-1 flex flex-col gap-4 relative z-10 w-full px-3">
+          {items.map(({ id, icon: Icon, label }) => (
+            <button
+              key={id}
+              onClick={() => onTabChange(id)}
+              className={`w-full aspect-square flex items-center justify-center rounded-2xl transition-all duration-300 group relative ${
+                activeTab === id 
+                  ? "bg-white/10 text-white shadow-inner border border-white/5" 
+                  : "text-white/40 hover:bg-white/5 hover:text-white/80"
+              }`}
+              title={label}
+            >
+              <Icon className={`w-5 h-5 transition-transform duration-300 ${activeTab === id ? 'scale-110' : 'group-hover:scale-110'}`} />
+              <span className="absolute left-[70px] bg-white/10 backdrop-blur-xl border border-white/10 text-white text-[12px] font-semibold px-3 py-1.5 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap shadow-xl pointer-events-none">
+                {label}
+              </span>
+            </button>
+          ))}
+        </div>
+        
+        <div className="mt-auto relative z-10">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="rounded-full h-11 w-11 p-0 relative hover:scale-105 transition-transform border border-white/10 shadow-lg group">
+                <div className="h-2.5 w-2.5 rounded-full bg-[#30D158] absolute bottom-0 right-0 border-2 border-black z-10 shadow-[0_0_8px_#30D158]" />
+                <div className="h-full w-full rounded-full bg-gradient-to-br from-indigo-500 to-blue-600 flex items-center justify-center text-[11px] text-white font-bold overflow-hidden">
+                  {user?.photo ? (
+                    <img src={user.photo} alt={user.name} className="w-full h-full object-cover" />
+                  ) : (
+                    getInitials(user?.name || user?.displayName || user?.username || 'JD')
+                  )}
+                </div>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" side="right" sideOffset={16} className="w-60 p-2 bg-[#1C1C1E]/90 backdrop-blur-3xl border border-white/10 text-white rounded-[24px] shadow-2xl">
+              <div className="px-3 py-3 mb-2 border-b border-white/10 flex flex-col gap-0.5">
+                <p className="text-[14px] font-bold tracking-tight truncate text-white">{user?.name || user?.displayName || user?.username}</p>
+                <p className="text-[11px] font-medium tracking-wide text-white/40 uppercase truncate">Student Account</p>
+              </div>
+              <DropdownMenuItem 
+                onClick={() => setIsProfileModalOpen(true)}
+                className="rounded-[16px] cursor-pointer py-2.5 px-3 hover:bg-white/10 focus:bg-white/10 focus:text-white transition-colors"
+              >
+                <UserCircle className="w-4 h-4 mr-2.5 opacity-70" />
+                <span className="font-medium text-[13px]">Edit Profile Name</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem 
+                onClick={() => logoutMutation.mutate()}
+                className="rounded-[16px] cursor-pointer py-2.5 px-3 text-[#FF453A] hover:bg-[#FF453A]/10 focus:bg-[#FF453A]/10 focus:text-[#FF453A] mt-1 transition-colors"
+              >
+                <LogOut className="w-4 h-4 mr-2.5 opacity-70" />
+                <span className="font-medium text-[13px]">Log Out</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      </nav>
+
+      <Dialog open={isProfileModalOpen} onOpenChange={setIsProfileModalOpen}>
+        <DialogContent className="bg-[#1C1C1E]/95 backdrop-blur-3xl border border-white/10 text-white sm:rounded-[32px] sm:max-w-md p-8 shadow-2xl">
+          <DialogHeader className="space-y-3 mb-6">
+            <div className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center mb-2 shadow-inner">
+              <UserCircle className="w-6 h-6 text-white/70" />
+            </div>
+            <DialogTitle className="text-2xl font-bold tracking-tight">Edit Profile</DialogTitle>
+            <DialogDescription className="text-white/50 text-[14px] leading-relaxed">
+              Choose how you want your name to appear across Vidya.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4 py-2">
+            <div className="space-y-2">
+              <Label htmlFor="name" className="text-white/60 text-[12px] font-bold uppercase tracking-wider">Display Name</Label>
+              <Input
+                id="name"
+                value={displayName}
+                onChange={(e) => setDisplayName(e.target.value)}
+                className="bg-white/5 border-white/10 text-white placeholder:text-white/20 h-12 rounded-xl text-[15px] focus-visible:ring-1 focus-visible:ring-white/30 focus-visible:border-white/30 transition-all"
+                placeholder="Enter your name"
+              />
+            </div>
           </div>
-        </Button>
-      </div>
-    </nav>
+          
+          <DialogFooter className="mt-8 gap-3 sm:gap-0">
+            <Button
+              variant="ghost"
+              onClick={() => setIsProfileModalOpen(false)}
+              className="rounded-xl h-12 font-semibold hover:bg-white/5 hover:text-white"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleUpdateProfile}
+              disabled={isUpdating || !displayName.trim()}
+              className="rounded-xl h-12 font-bold bg-white text-black hover:bg-white/90 shadow-[0_0_20px_rgba(255,255,255,0.2)] hover:shadow-[0_0_25px_rgba(255,255,255,0.3)] transition-all disabled:opacity-50"
+            >
+              {isUpdating ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
+              Save Changes
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
 
@@ -403,7 +514,7 @@ function SessionsPanel({
                         <div className="flex items-start justify-between gap-2">
                           <div className="flex-1 min-w-0">
                             <h3 
-                              className={`text-sm font-medium ${isActive ? "text-foreground" : "text-foreground/90"}`} 
+                              className={`text-[13px] tracking-wide ${isActive ? "text-primary font-bold" : "text-foreground/80 font-medium"}`} 
                               title={session.title}
                               style={{
                                 display: "-webkit-box",
@@ -416,12 +527,14 @@ function SessionsPanel({
                             >
                               {session.title}
                             </h3>
-                            <div className="mt-1.5 h-1 bg-white/10 rounded-full overflow-hidden">
-                              <div
-                                className={`h-full transition-all ${progress === 100 ? "bg-primary" : progress > 0 ? "bg-primary/80" : "bg-transparent"}`}
-                                style={{ width: `${progress}%` }}
-                              />
-                            </div>
+                            {progress > 0 && progress < 100 && (
+                              <div className="mt-2 h-[2px] bg-white/10 rounded-full overflow-hidden w-full">
+                                <div
+                                  className="h-full bg-primary/80 transition-all"
+                                  style={{ width: `${progress}%` }}
+                                />
+                              </div>
+                            )}
                           </div>
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
@@ -465,6 +578,8 @@ function CenterColumn({
 }) {
   const [input, setInput] = useState("");
   const [suggestedPrompts, setSuggestedPrompts] = useState<string[]>([]);
+  const [isEditingSummary, setIsEditingSummary] = useState(false);
+  const [editedSummary, setEditedSummary] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const { toast } = useToast();
@@ -576,7 +691,7 @@ function CenterColumn({
 
   if (!session || !contentItem) {
     return (
-      <div className="flex-1 flex flex-col bg-background h-full relative overflow-hidden">
+      <div className="flex-1 flex flex-col bg-background h-full relative overflow-hidden min-w-0">
         {/* Ambient background */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
           <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/4 blur-[120px] rounded-full" />
@@ -628,11 +743,68 @@ function CenterColumn({
 
   // Render different views based on selectedView
   if (selectedView === "summary") {
+    const rawSummary = contentItem.summary as string | undefined;
+
+    const handleEditSummary = () => {
+      if (contentItem?.summary) {
+        // Parse the full summary object into just text
+        const parsed = parseSummary(contentItem.summary as any);
+        const textToEdit = parsed.text || (typeof contentItem.summary === "string" ? contentItem.summary : "");
+        // Convert markdown to HTML for the WYSIWYG editor
+        const htmlContent = marked.parse(textToEdit) as string;
+        setEditedSummary(htmlContent);
+      }
+      setIsEditingSummary(true);
+    };
+
+    const handleSaveSummary = async () => {
+      if (!contentItem) return;
+      try {
+        // Convert HTML back to Markdown for storage
+        const markdownContent = turndownService.turndown(editedSummary);
+        
+        // Ensure we preserve the flashcards from the original summary!
+        const parsedOld = parseSummary(contentItem.summary as any);
+        const newSummaryObj = {
+          summary_markdown: markdownContent,
+          flashcards: parsedOld.flashcards || []
+        };
+        
+        const res = await fetch(`/api/content/${contentItem.id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ summary: newSummaryObj })
+        });
+        if (!res.ok) throw new Error("Failed to save");
+        await queryClient.invalidateQueries({ queryKey: ["/api/content"] });
+        await queryClient.invalidateQueries({ queryKey: ["/api/content", contentItem.id] });
+        setIsEditingSummary(false);
+        toast({ title: "Saved", description: "Summary updated successfully." });
+      } catch (e) {
+        toast({ title: "Error", description: "Could not save summary.", variant: "destructive" });
+      }
+    };
+
     return (
-      <div className="flex-1 flex flex-col bg-background overflow-hidden h-full">
-        <div className="p-4 border-b border-border/50 bg-card/30 flex items-center justify-between">
-          <h2 className="text-base font-bold text-foreground">Study Summary</h2>
+      <div className="flex-1 flex flex-col bg-background overflow-hidden h-full min-w-0">
+        <div className="h-16 px-6 border-b border-white/5 bg-transparent flex items-center justify-between shrink-0">
+          <h2 className="text-[16px] font-bold tracking-wide text-foreground">Study Summary</h2>
           <div className="flex items-center gap-1">
+            {isEditingSummary ? (
+              <>
+                <Button variant="ghost" size="sm" onClick={() => setIsEditingSummary(false)}>Cancel</Button>
+                <Button size="sm" onClick={handleSaveSummary}>Save</Button>
+              </>
+            ) : (
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 text-muted-foreground hover:text-foreground"
+                onClick={handleEditSummary}
+              >
+                <SquarePen className="h-4 w-4" />
+              </Button>
+            )}
             <Button
               variant="ghost"
               size="icon"
@@ -671,13 +843,22 @@ function CenterColumn({
             </Button>
           </div>
         </div>
-        <ScrollArea className="flex-1">
+        <ScrollArea className="flex-1 min-w-0">
           <div className="p-6 max-w-4xl mx-auto">
-            {isReady && (contentItem.summary || contentItem.extractedText) ? (
+            {isEditingSummary ? (
+              <div className="relative glass-card rounded-2xl overflow-visible quill-dark-theme p-0 border-white/10 mt-6 shadow-2xl">
+                <ReactQuill 
+                  theme="snow"
+                  value={editedSummary} 
+                  onChange={setEditedSummary}
+                  modules={quillModules}
+                  className="min-h-[500px]"
+                />
+              </div>
+            ) : isReady && (contentItem.summary || contentItem.extractedText) ? (
               <div className="space-y-6">
                 {(() => {
                   try {
-                    const rawSummary = contentItem.summary as string | undefined;
                     const parsed = parseSummary(rawSummary ?? null);
                     let summaryText = parsed.text || '';
                     if (!summaryText && contentItem.extractedText) {
@@ -770,13 +951,13 @@ function CenterColumn({
 
                     return (
                       <>
-                        <section className="rounded-2xl border border-border/50 bg-gradient-to-br from-card/80 via-card to-background p-6 shadow-sm">
+                        <section className="rounded-2xl border border-border/50 bg-gradient-to-br from-card/80 via-card to-background p-6 shadow-sm break-words w-full overflow-hidden">
                           <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-2">Summary Overview</p>
                           <h1 className="text-3xl font-bold text-foreground leading-tight">{heroTitle}</h1>
                           <p className="mt-3 text-base text-muted-foreground leading-relaxed max-w-3xl">{heroDescription}</p>
                         </section>
 
-                        <section className="rounded-2xl border border-border/40 bg-card/60 p-6">
+                        <section className="rounded-2xl border border-border/40 bg-card/60 p-6 break-words w-full overflow-hidden">
                           {markdownSection}
                         </section>
                       </>
@@ -810,28 +991,48 @@ function CenterColumn({
 
   if (selectedView === "preview") {
     return (
-      <div className="flex-1 flex flex-col bg-background overflow-hidden h-full">
+      <div className="flex-1 flex flex-col bg-background overflow-hidden h-full min-w-0">
         <div className="p-4 border-b border-border/50 bg-card/30 flex items-center justify-between">
-          <h2 className="text-base font-semibold text-foreground">Source Content Preview</h2>
+          <h2 className="text-base font-semibold text-foreground">Original Document</h2>
            <div className="flex items-center gap-2">
             <span className="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full font-bold uppercase tracking-wider border border-primary/20">
-              Raw Extraction
+              {contentItem.type === "video" ? "Video Source" : contentItem.type === "image" ? "Original Image" : "Original PDF"}
             </span>
           </div>
         </div>
-        <ScrollArea className="flex-1">
-          <div className="p-8 max-w-4xl mx-auto space-y-6">
-            <Card className="glass-card border-white/5 bg-black/40">
-              <CardContent className="p-8">
-                 <div className="prose prose-sm prose-invert max-w-none prose-p:text-white/70 prose-p:leading-relaxed selection:bg-primary/30">
-                  <pre className="whitespace-pre-wrap font-sans text-sm leading-relaxed">
-                    {contentItem.extractedText || "No text could be extracted from this source."}
-                  </pre>
-                </div>
-              </CardContent>
-            </Card>
+        <div className="flex-1 w-full h-full p-4">
+          <div className="w-full h-full rounded-2xl overflow-hidden shadow-2xl">
+            {contentItem.type === "video" && contentItem.originalUrl ? (
+              <iframe 
+                src={
+                  (() => {
+                    try {
+                      const url = new URL(contentItem.originalUrl);
+                      if (url.hostname.includes("youtube.com") && url.searchParams.has("v")) {
+                        return `https://www.youtube.com/embed/${url.searchParams.get("v")}`;
+                      }
+                      if (url.hostname.includes("youtu.be")) {
+                        return `https://www.youtube.com/embed/${url.pathname.slice(1)}`;
+                      }
+                    } catch (e) {}
+                    return contentItem.originalUrl;
+                  })()
+                } 
+                className="w-full h-full border-none rounded-2xl" 
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              />
+            ) : contentItem.type === "document" || contentItem.type === "image" ? (
+              <PdfViewer url={`/api/content/${contentItem.id}/original`} contentItemId={contentItem.id.toString()} />
+            ) : (
+              <div className="p-8 prose prose-sm prose-invert max-w-none border border-border/50 bg-black/40 h-full rounded-2xl">
+                <pre className="whitespace-pre-wrap font-sans text-sm leading-relaxed">
+                  {contentItem.extractedText || "No text could be extracted from this source."}
+                </pre>
+              </div>
+            )}
           </div>
-        </ScrollArea>
+        </div>
       </div>
     );
   }
@@ -854,24 +1055,54 @@ function CenterColumn({
       }
     }
 
+    const RegenerateFlashcardsButton = () => {
+      const [loading, setLoading] = React.useState(false);
+      const handleRegenerate = async () => {
+        setLoading(true);
+        try {
+          const res = await fetch(`/api/content/${contentItem.id}/regenerate-flashcards`, { method: 'POST', credentials: 'include' });
+          if (!res.ok) throw new Error((await res.json()).message || 'Failed');
+          const data = await res.json();
+          if (data.exhausted) {
+            toast({ title: '🎓 You are ready!', description: 'You have covered all the key concepts in this document. Amazing work!' });
+          } else {
+            queryClient.invalidateQueries({ queryKey: ['content-item', contentItem.id] });
+            toast({ title: '✨ New Flashcards Ready!', description: 'A fresh set of flashcards has been generated for you.' });
+          }
+        } catch (e: any) {
+          toast({ title: 'Error', description: e.message, variant: 'destructive' });
+        } finally { setLoading(false); }
+      };
+      return (
+        <button onClick={handleRegenerate} disabled={loading}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold border border-primary/30 text-primary hover:bg-primary/10 transition-all disabled:opacity-50">
+          {loading ? <Loader2 className="w-3 h-3 animate-spin" /> : <Sparkles className="w-3 h-3" />}
+          {loading ? 'Generating…' : 'Regenerate'}
+        </button>
+      );
+    };
+
     return (
-      <div className="flex-1 flex flex-col bg-background overflow-hidden h-full">
-        <div className="p-4 border-b border-border/50 bg-card/30">
-          <h2 className="text-base font-semibold text-foreground">Flashcards</h2>
+      <div className="flex-1 flex flex-col bg-background overflow-hidden h-full min-w-0">
+        <div className="p-4 border-b border-border/50 bg-card/30 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <BookMarked className="h-4 w-4 text-primary" />
+            <h2 className="text-base font-semibold text-foreground">Flashcards</h2>
+            {flashcards.length > 0 && <span className="text-xs text-muted-foreground font-medium">{flashcards.length} cards</span>}
+          </div>
+          {isReady && flashcards.length > 0 && <RegenerateFlashcardsButton />}
         </div>
-        <ScrollArea className="flex-1">
+        <ScrollArea className="flex-1 min-w-0">
           <div className="p-6 max-w-4xl mx-auto">
             {isReady && flashcards && Array.isArray(flashcards) && flashcards.length > 0 ? (
-              <FlashcardDrill flashcards={flashcards} />
+              <FlashcardDrill flashcards={flashcards} contentId={contentItem.id} />
             ) : (
               <div className="text-center py-12">
                 <BookOpen className="h-8 w-8 text-muted-foreground mx-auto mb-3 opacity-50" />
                 <p className="text-sm text-muted-foreground">
                   {isReady ? "No flashcards available yet" : "Flashcards are being generated..."}
                 </p>
-                {!isReady && (
-                  <Loader2 className="h-6 w-6 text-muted-foreground animate-spin mx-auto mt-3" />
-                )}
+                {!isReady && <Loader2 className="h-6 w-6 text-muted-foreground animate-spin mx-auto mt-3" />}
               </div>
             )}
           </div>
@@ -904,7 +1135,7 @@ function CenterColumn({
     const summaryForDisplay = (contentItem.summary as string) || "";
     
     return (
-      <div className="flex-1 flex flex-col bg-background overflow-hidden h-full">
+      <div className="flex-1 flex flex-col bg-background overflow-hidden h-full min-w-0">
         <div className="p-4 border-b border-border/50 bg-card/30 flex items-center gap-3">
           <Headphones className="h-4 w-4 text-primary" />
           <h2 className="text-base font-semibold text-foreground">AI Podcast</h2>
@@ -914,7 +1145,7 @@ function CenterColumn({
             </span>
           )}
         </div>
-        <ScrollArea className="flex-1">
+        <ScrollArea className="flex-1 min-w-0">
           <div className="p-6 max-w-4xl mx-auto">
             {audioUrlToUse ? (
               <PodcastPlayer
@@ -967,44 +1198,184 @@ function CenterColumn({
       }
     }
     const hasQuiz = isReady && quizList.length > 0;
+    
+    // Premium component for a single question with interactive animations
+    const QuizQuestion = ({ q, questionIndex }: { q: any, questionIndex: number }) => {
+      const [selectedOption, setSelectedOption] = useState<number | null>(null);
+      const isAnswered = selectedOption !== null;
+      const isCorrect = isAnswered && selectedOption === Number(q.correctAnswer);
+
+      return (
+        <motion.div 
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: questionIndex * 0.05, duration: 0.4 }}
+          className="p-6 md:p-8 rounded-[28px] bg-[#1C1C1E]/60 backdrop-blur-2xl border border-white/5 shadow-2xl relative overflow-hidden"
+        >
+          {/* Subtle top highlight */}
+          <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent opacity-50" />
+          
+          <div className="flex items-start gap-4 mb-8">
+            <span className="flex items-center justify-center w-8 h-8 rounded-full bg-white/5 text-white/40 text-[13px] font-bold border border-white/5 shrink-0 mt-0.5">
+              {questionIndex + 1}
+            </span>
+            <h3 className="text-[17px] font-medium text-[#F2F2F7] leading-relaxed tracking-wide">
+              {q.question}
+            </h3>
+          </div>
+
+          {q.options && (
+            <div className="space-y-2.5">
+              {q.options.map((opt: string, idx: number) => {
+                const isSelected = selectedOption === idx;
+                const isCorrectOption = Number(q.correctAnswer) === idx;
+                
+                let stateClass = "bg-[#2C2C2E]/40 border-transparent hover:bg-[#3A3A3C]/60 text-white/90";
+                let letterClass = "bg-white/10 text-white/50";
+                
+                if (isAnswered) {
+                  if (isCorrectOption) {
+                    stateClass = "bg-[#34C759]/10 border-transparent text-[#34C759]";
+                    letterClass = "bg-[#34C759] text-black shadow-[0_0_15px_rgba(52,199,89,0.3)]";
+                  } else if (isSelected && !isCorrectOption) {
+                    stateClass = "bg-[#2C2C2E]/40 border-transparent text-white/90 opacity-60";
+                    letterClass = "bg-[#FF453A] text-white shadow-[0_0_15px_rgba(255,69,58,0.3)]";
+                  } else {
+                    stateClass = "bg-[#2C2C2E]/20 border-transparent opacity-30 cursor-not-allowed text-white/50";
+                    letterClass = "bg-black/20 text-white/30";
+                  }
+                }
+
+                return (
+                  <motion.button 
+                    key={idx} 
+                    onClick={() => {
+                      if (!isAnswered) {
+                        setSelectedOption(idx);
+                        if (contentItem) {
+                          fetch(`/api/content/${contentItem.id}/stats`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            credentials: 'include',
+                            body: JSON.stringify({
+                              type: 'quiz_attempt',
+                              payload: {
+                                score: idx === Number(q.correctAnswer) ? 1 : 0,
+                                total: 1
+                              }
+                            })
+                          }).catch(() => {});
+                        }
+                      }
+                    }}
+                    disabled={isAnswered}
+                    whileHover={!isAnswered ? { scale: 1.005 } : {}}
+                    whileTap={!isAnswered ? { scale: 0.99 } : {}}
+                    animate={isAnswered && isSelected && !isCorrectOption ? { x: [-3, 3, -3, 3, 0] } : {}}
+                    transition={{ duration: 0.3, ease: "easeOut" }}
+                    className={`w-full text-left p-4 rounded-2xl border transition-colors flex items-center gap-4 ${stateClass}`}
+                  >
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 text-[13px] font-bold transition-all ${letterClass}`}>
+                      {String.fromCharCode(65 + idx)}
+                    </div>
+                    <span className="text-[15px] font-medium tracking-wide leading-snug">{opt}</span>
+                  </motion.button>
+                );
+              })}
+            </div>
+          )}
+          
+          <AnimatePresence>
+            {isAnswered && (
+              <motion.div 
+                initial={{ opacity: 0, height: 0, marginTop: 0 }}
+                animate={{ opacity: 1, height: "auto", marginTop: 24 }}
+                exit={{ opacity: 0, height: 0, marginTop: 0 }}
+                className="overflow-hidden"
+              >
+                <div className={`p-4 rounded-2xl flex items-center gap-4 ${
+                  isCorrect ? "bg-[#34C759]/10 text-[#34C759]" : "bg-[#2C2C2E]/60 text-white"
+                }`}>
+                  <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${
+                    isCorrect ? "bg-[#34C759] text-black" : "bg-[#FF453A] text-white shadow-[0_0_15px_rgba(255,69,58,0.2)]"
+                  }`}>
+                    {isCorrect ? <CheckCircle2 className="w-5 h-5" /> : <X className="w-5 h-5" />}
+                  </div>
+                  <div>
+                    <p className="font-semibold text-[15px] leading-tight mb-0.5">
+                      {isCorrect ? "Excellent!" : "Not quite right"}
+                    </p>
+                    <p className="text-[13.5px] opacity-70">
+                      {isCorrect
+                        ? "You nailed it. Keep up the great work!"
+                        : `The correct answer is ${String.fromCharCode(65 + Number(q.correctAnswer))}.`
+                      }
+                    </p>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </motion.div>
+      );
+    };
+
+    const RegenerateQuizButton = () => {
+      const [loading, setLoading] = React.useState(false);
+      const handleRegenerate = async () => {
+        setLoading(true);
+        try {
+          const res = await fetch(`/api/content/${contentItem.id}/regenerate-quiz`, { method: 'POST', credentials: 'include' });
+          if (!res.ok) throw new Error((await res.json()).message || 'Failed');
+          const data = await res.json();
+          if (data.exhausted) {
+            toast({ title: '🎓 You are ready!', description: 'You have been tested on all the key topics in this document. Excellent!' });
+          } else {
+            queryClient.invalidateQueries({ queryKey: ['content-item', contentItem.id] });
+            toast({ title: '✨ New Quiz Ready!', description: 'A completely new set of questions has been generated.' });
+          }
+        } catch (e: any) {
+          toast({ title: 'Error', description: e.message, variant: 'destructive' });
+        } finally { setLoading(false); }
+      };
+      return (
+        <button onClick={handleRegenerate} disabled={loading}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold border border-primary/30 text-primary hover:bg-primary/10 transition-all disabled:opacity-50">
+          {loading ? <Loader2 className="w-3 h-3 animate-spin" /> : <Sparkles className="w-3 h-3" />}
+          {loading ? 'Generating…' : 'New Questions'}
+        </button>
+      );
+    };
+
     return (
-      <div className="flex-1 flex flex-col bg-background overflow-hidden h-full">
-        <div className="p-4 border-b border-border/50 bg-card/30">
-          <h2 className="text-base font-semibold text-foreground">Quiz</h2>
+      <div className="flex-1 flex flex-col bg-background overflow-hidden h-full min-w-0">
+        <div className="p-4 border-b border-border/50 bg-card/30 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center border border-primary/20">
+              <Check className="h-4 w-4 text-primary" />
+            </div>
+            <h2 className="text-base font-bold text-foreground">Interactive Quiz</h2>
+          </div>
+          {hasQuiz && <RegenerateQuizButton />}
         </div>
-        <ScrollArea className="flex-1">
-          <div className="p-6 max-w-4xl mx-auto">
+        <ScrollArea className="flex-1 custom-scrollbar min-w-0">
+          <div className="p-6 max-w-3xl mx-auto">
             {hasQuiz ? (
-              <div className="space-y-4">
+              <div className="space-y-6">
                 {quizList.map((q: any, i: number) => (
-                  <Card key={i} className="p-4 border-border/50">
-                    <p className="text-sm font-medium mb-3">{q.question}</p>
-                    {q.options && (
-                      <ul className="space-y-2">
-                        {q.options.map((opt: string, idx: number) => (
-                          <li 
-                            key={idx} 
-                            className={`p-2 rounded-lg border ${
-                              Number(q.correctAnswer) === idx 
-                                ? "border-primary bg-primary/5 text-primary font-medium" 
-                                : "border-border/50 bg-card/50"
-                            }`}
-                          >
-                            {String.fromCharCode(65 + idx)}. {opt}
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-                  </Card>
+                  <QuizQuestion key={i} q={q} questionIndex={i} />
                 ))}
               </div>
             ) : (
-              <div className="text-center py-12">
-                <Grid className="h-8 w-8 text-muted-foreground mx-auto mb-3 opacity-50" />
-                <p className="text-sm text-muted-foreground">
-                  {isReady ? "No quiz available yet. Enable “Create Quiz” when uploading to generate one." : "Quiz is being generated..."}
+              <div className="text-center py-16 flex flex-col items-center">
+                <div className="w-16 h-16 rounded-3xl bg-muted/30 flex items-center justify-center mb-4">
+                  <Check className="h-8 w-8 text-muted-foreground opacity-50" />
+                </div>
+                <h3 className="text-lg font-semibold text-foreground mb-2">No Quiz Available</h3>
+                <p className="text-sm text-muted-foreground max-w-[250px]">
+                  {isReady ? "Enable “Create Quiz” when uploading to generate interactive questions." : "Quiz is being generated..."}
                 </p>
-                {!isReady && <Loader2 className="h-6 w-6 text-muted-foreground animate-spin mx-auto mt-3" />}
+                {!isReady && <Loader2 className="h-6 w-6 text-primary animate-spin mt-6" />}
               </div>
             )}
           </div>
@@ -1018,7 +1389,7 @@ function CenterColumn({
     const canRegenerate = isReady && !!(contentItem.extractedText as string);
 
     return (
-      <div className="flex-1 flex flex-col bg-background overflow-hidden h-full">
+      <div className="flex-1 flex flex-col bg-background overflow-hidden h-full min-w-0">
         <div className="p-4 border-b border-border/50 bg-card/30 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <BrainCircuit className="h-4 w-4 text-primary" />
@@ -1033,51 +1404,325 @@ function CenterColumn({
             <RegenerateMindMapButton contentId={contentItem.id} onDone={() => queryClient.invalidateQueries({ queryKey: ["/api/content"] })} />
           )}
         </div>
-        <ScrollArea className="flex-1">
-          <div className="p-6 max-w-5xl mx-auto">
-            {hasMindMap ? (
-              <MermaidChart data={contentItem.mindMap as any} />
-            ) : (
-              <div className="flex flex-col items-center justify-center py-20 gap-6 text-center">
-                <div className="w-20 h-20 rounded-3xl bg-primary/10 border border-primary/20 flex items-center justify-center">
-                  <BrainCircuit className="h-10 w-10 text-primary/40" />
-                </div>
-                <div>
-                  <h3 className="text-lg font-bold text-white mb-2">No Mind Map Yet</h3>
-                  <p className="text-sm text-muted-foreground max-w-sm">
-                    {isReady
-                      ? "Click \"Generate Mind Map\" to create an interactive knowledge map from your document."
-                      : "Mind map is being generated from your document…"}
-                  </p>
-                </div>
-                {isReady && !hasMindMap && canRegenerate && (
-                  <RegenerateMindMapButton contentId={contentItem.id} onDone={() => queryClient.invalidateQueries({ queryKey: ["/api/content"] })} primary />
-                )}
-                {!isReady && <Loader2 className="h-6 w-6 text-primary animate-spin" />}
+        <div className="flex-1 relative w-full h-full flex flex-col p-4">
+          {hasMindMap ? (
+            <MermaidChart data={contentItem.mindMap as any} />
+          ) : (
+            <div className="flex flex-col items-center justify-center py-20 gap-6 text-center m-auto">
+              <div className="w-20 h-20 rounded-3xl bg-primary/10 border border-primary/20 flex items-center justify-center">
+                <BrainCircuit className="h-10 w-10 text-primary/40" />
               </div>
-            )}
-          </div>
-        </ScrollArea>
+              <div>
+                <h3 className="text-lg font-bold text-white mb-2">No Mind Map Yet</h3>
+                <p className="text-sm text-muted-foreground max-w-sm">
+                  {isReady
+                    ? "Click \"Generate Mind Map\" to create an interactive knowledge map from your document."
+                    : "Mind map is being generated from your document…"}
+                </p>
+              </div>
+              {isReady && !hasMindMap && canRegenerate && (
+                <RegenerateMindMapButton contentId={contentItem.id} onDone={() => queryClient.invalidateQueries({ queryKey: ["/api/content"] })} primary />
+              )}
+              {!isReady && <Loader2 className="h-6 w-6 text-primary animate-spin" />}
+            </div>
+          )}
+        </div>
       </div>
     );
   }
 
   if (selectedView === "reports") {
+    const stats: any = (contentItem as any).stats || {};
+    const pagesRead: number[] = Array.isArray(stats.documentProgress?.pagesRead) ? stats.documentProgress.pagesRead : [];
+    const quizScores: { date: string; score: number; total: number }[] = Array.isArray(stats.quizScores) ? stats.quizScores : [];
+    const flashcardsConfidence: Record<string, string> = stats.flashcardConfidence || {};
+    const highlightsCount: number = stats.documentProgress?.highlightsCount || 0;
+    const chatInteractionsCount: number = stats.chatInteractionsCount || 0;
+
+    let totalFlashcards = 0;
+    if (contentItem.flashcards) {
+      try {
+        const fc = typeof contentItem.flashcards === 'string' ? JSON.parse(contentItem.flashcards) : contentItem.flashcards;
+        totalFlashcards = Array.isArray(fc) ? fc.length : 0;
+      } catch {}
+    }
+    let totalQuizQuestions = 0;
+    if (contentItem.quizData) {
+      try {
+        const qd = typeof contentItem.quizData === 'string' ? JSON.parse(contentItem.quizData) : contentItem.quizData;
+        totalQuizQuestions = Array.isArray(qd) ? qd.length : (qd?.questions?.length || 0);
+      } catch {}
+    }
+
+    const gotItCount = Object.values(flashcardsConfidence).filter((v) => v === 'got_it').length;
+    const needReviewCount = Object.values(flashcardsConfidence).filter((v) => v === 'need_review').length;
+    const unseenCount = totalFlashcards - gotItCount - needReviewCount;
+    const flashcardProgress = totalFlashcards > 0 ? Math.round((gotItCount / totalFlashcards) * 100) : 0;
+    const lastQuizScore = quizScores.length > 0 ? quizScores[quizScores.length - 1] : null;
+    const avgQuizScore = quizScores.length > 0
+      ? Math.round(quizScores.reduce((acc, s) => acc + (s.score / s.total) * 100, 0) / quizScores.length)
+      : 0;
+    
+    // Adjusted scoring model based on actual data
+    const readingScore = Math.min(pagesRead.length * 5, 40); // cap at 40
+    const flashScore = flashcardProgress * 0.35;
+    const quizScore = lastQuizScore ? ((lastQuizScore.score / lastQuizScore.total) * 100) * 0.25 : 0;
+    const overallProgress = Math.min(Math.round(readingScore + flashScore + quizScore), 100);
+    const circumference = 2 * Math.PI * 54;
+
+    const masteryLabel =
+      overallProgress < 20 ? 'Getting started' :
+      overallProgress < 50 ? 'Building knowledge' :
+      overallProgress < 80 ? 'Almost there' : 'Mastered';
+
+    const masteryColor =
+      overallProgress < 20 ? '#636366' :
+      overallProgress < 50 ? '#0A84FF' :
+      overallProgress < 80 ? '#FF9F0A' : '#30D158';
+
     return (
-      <div className="flex-1 flex flex-col bg-background overflow-hidden h-full">
-        <div className="p-4 border-b border-border/50">
-          <h2 className="text-base font-bold text-foreground">Reports</h2>
+      <div className="flex-1 flex flex-col bg-[#0A0A0B] overflow-hidden h-full min-w-0" style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", system-ui, sans-serif' }}>
+        {/* Header */}
+        <div className="px-8 pt-8 pb-6 bg-gradient-to-b from-white/[0.02] to-transparent border-b border-white/[0.04]">
+          <p className="text-[12px] font-bold tracking-[0.2em] text-white/40 uppercase mb-2">Progress</p>
+          <h2 className="text-[28px] font-bold text-white tracking-tight" style={{ letterSpacing: '-0.5px' }}>
+            Learning Analytics
+          </h2>
         </div>
-        <ScrollArea className="flex-1">
-          <div className="p-6 max-w-2xl mx-auto">
-            <div className="glass-card rounded-2xl p-6 border border-border/50">
-              <BarChart3 className="h-10 w-10 text-primary mb-4" />
-              <h3 className="text-lg font-semibold text-foreground mb-2">Your content history</h3>
-              <p className="text-sm text-muted-foreground mb-4">View and manage all your uploaded documents, summaries, and progress in one place.</p>
-              <Button asChild className="bg-primary hover:bg-primary/90 text-primary-foreground">
-                <Link href="/history">Open History</Link>
-              </Button>
+
+        <ScrollArea className="flex-1 min-w-0 custom-scrollbar relative">
+          <div className="absolute inset-0 pointer-events-none overflow-hidden">
+            <div className="absolute -top-40 -left-40 w-96 h-96 bg-primary/5 blur-[120px] rounded-full" />
+            <div className="absolute top-1/2 -right-40 w-80 h-80 bg-blue-500/5 blur-[100px] rounded-full" />
+          </div>
+
+          <div className="px-8 py-8 space-y-6 max-w-4xl mx-auto relative z-10">
+
+            {/* Mastery Hero Card */}
+            <motion.div 
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              style={{
+                background: 'rgba(28,28,30,0.5)',
+                border: '1px solid rgba(255,255,255,0.08)',
+                borderRadius: '28px',
+                backdropFilter: 'blur(40px)',
+              }} className="p-8 flex items-center gap-8 shadow-2xl relative overflow-hidden"
+            >
+              <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent opacity-50" />
+              
+              {/* Circular progress */}
+              <div className="relative shrink-0" style={{ width: 140, height: 140 }}>
+                <svg width="140" height="140" viewBox="0 0 130 130" style={{ transform: 'rotate(-90deg)' }}>
+                  {/* Track */}
+                  <circle cx="65" cy="65" r="54" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="12" />
+                  {/* Progress */}
+                  <circle
+                    cx="65" cy="65" r="54" fill="none"
+                    stroke={masteryColor}
+                    strokeWidth="12"
+                    strokeLinecap="round"
+                    strokeDasharray={circumference}
+                    strokeDashoffset={circumference * (1 - overallProgress / 100)}
+                    style={{ transition: 'stroke-dashoffset 1.2s cubic-bezier(0.4,0,0.2,1)', filter: `drop-shadow(0 0 12px ${masteryColor}60)` }}
+                  />
+                </svg>
+                <div className="absolute inset-0 flex flex-col items-center justify-center">
+                  <span className="text-[36px] font-black text-white" style={{ letterSpacing: '-1.5px', lineHeight: 1 }}>{overallProgress}</span>
+                  <span className="text-[12px] text-white/50 font-bold mt-1 tracking-wider">%</span>
+                </div>
+              </div>
+              {/* Label */}
+              <div className="flex flex-col gap-4 flex-1 min-w-0">
+                <div>
+                  <div className="flex items-center gap-2.5 mb-2">
+                    <div className="w-2 h-2 rounded-full shadow-lg" style={{ background: masteryColor, boxShadow: `0 0 10px ${masteryColor}` }} />
+                    <span className="text-[12px] font-bold tracking-widest text-white/50 uppercase">{masteryLabel}</span>
+                  </div>
+                  <p className="text-[17px] font-medium text-white/90 leading-relaxed max-w-xl">
+                    {overallProgress < 20 ? 'Start reading, quiz yourself, and review flashcards to build progress.' :
+                     overallProgress < 50 ? 'Good momentum. Keep practicing to strengthen your retention.' :
+                     overallProgress < 80 ? "You're close to full mastery of this topic." :
+                     'You have thoroughly covered this material. 🎓'}
+                  </p>
+                </div>
+                {/* Mini progress segments */}
+                <div className="space-y-2 mt-2 w-full max-w-md">
+                  {[
+                    { label: 'Reading', value: readingScore > 0 ? Math.round((readingScore/40)*100) : 0, color: '#0A84FF' },
+                    { label: 'Flashcards', value: flashcardProgress, color: '#30D158' },
+                    { label: 'Quiz', value: lastQuizScore ? Math.round((lastQuizScore.score / lastQuizScore.total) * 100) : 0, color: '#FF9F0A' },
+                  ].map(({ label, value, color }) => (
+                    <div key={label} className="flex items-center gap-3">
+                      <span className="text-[11px] text-white/40 w-20 font-semibold tracking-wide">{label}</span>
+                      <div className="flex-1 h-1.5 rounded-full" style={{ background: 'rgba(255,255,255,0.06)' }}>
+                        <div className="h-full rounded-full" style={{ width: `${value}%`, background: color, transition: 'width 1s ease', boxShadow: `0 0 8px ${color}50` }} />
+                      </div>
+                      <span className="text-[11px] text-white/40 w-10 text-right font-bold">{value}%</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Stats Bento Grid */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {[
+                { icon: <BookOpen className="w-5 h-5" />, label: 'Pages Read', value: pagesRead.length, sub: 'pages visited', color: '#0A84FF', bg: 'rgba(10, 132, 255, 0.15)' },
+                { icon: <Highlighter className="w-5 h-5" />, label: 'Highlights', value: highlightsCount, sub: 'annotations', color: '#BF5AF2', bg: 'rgba(191, 90, 242, 0.15)' },
+                { icon: <CheckSquare className="w-5 h-5" />, label: 'Quiz Attempts', value: quizScores.length, sub: quizScores.length > 0 ? `avg ${avgQuizScore}%` : 'none yet', color: '#FF9F0A', bg: 'rgba(255, 159, 10, 0.15)' },
+                { icon: <MessageSquare className="w-5 h-5" />, label: 'AI Chat', value: chatInteractionsCount, sub: 'messages sent', color: '#FF375F', bg: 'rgba(255, 55, 95, 0.15)' },
+              ].map(({ icon, label, value, sub, color, bg }, i) => (
+                <motion.div 
+                  initial={{ opacity: 0, y: 15 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1 + (i * 0.05), duration: 0.5 }}
+                  key={label} 
+                  className="p-5 flex flex-col gap-3 relative overflow-hidden group hover:scale-[1.02] transition-transform duration-300 shadow-xl"
+                  style={{
+                    background: 'rgba(28,28,30,0.4)',
+                    border: '1px solid rgba(255,255,255,0.06)',
+                    borderRadius: '24px',
+                    backdropFilter: 'blur(30px)',
+                  }}
+                >
+                  <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent opacity-50" />
+                  
+                  <div className="flex items-center justify-between">
+                    <span className="text-[11px] font-bold tracking-widest text-white/40 uppercase">{label}</span>
+                    <div className="w-9 h-9 rounded-[10px] flex items-center justify-center transition-colors group-hover:bg-white/10" style={{ background: bg, color }}>
+                      {icon}
+                    </div>
+                  </div>
+                  <div className="mt-2">
+                    <p className="text-[34px] font-black text-white tracking-tight leading-none mb-1.5">{value}</p>
+                    <p className="text-[12px] text-white/40 font-medium">{sub}</p>
+                  </div>
+                </motion.div>
+              ))}
             </div>
+
+            {/* Bottom Row - Redesigned */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+              {/* Flashcard Confidence */}
+              {totalFlashcards > 0 && (
+                <motion.div 
+                  initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
+                  style={{
+                    background: 'rgba(28,28,30,0.3)',
+                    border: '1px solid rgba(255,255,255,0.05)',
+                    borderRadius: '24px',
+                    backdropFilter: 'blur(40px)',
+                  }} className="p-8 relative overflow-hidden shadow-2xl flex flex-col justify-between group"
+                >
+                  <div className="absolute top-0 right-0 w-64 h-64 bg-green-500/5 blur-[80px] rounded-full translate-x-1/2 -translate-y-1/2 pointer-events-none" />
+                  
+                  <div>
+                     <div className="flex items-center justify-between mb-8 relative z-10">
+                       <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-2xl bg-[#30D158]/10 flex items-center justify-center border border-[#30D158]/20">
+                             <Layers className="w-5 h-5 text-[#30D158]" />
+                          </div>
+                          <div>
+                             <h3 className="text-[16px] font-bold text-white tracking-tight">Flashcard Recall</h3>
+                             <p className="text-[12px] text-white/40 font-medium">{totalFlashcards} cards in deck</p>
+                          </div>
+                       </div>
+                     </div>
+
+                     <div className="flex items-end justify-between mb-6 relative z-10">
+                        <div className="flex flex-col">
+                           <span className="text-[48px] font-black text-white leading-none tracking-tighter">{gotItCount}</span>
+                           <span className="text-[13px] font-bold text-[#30D158] uppercase tracking-wider mt-1">Mastered</span>
+                        </div>
+                        <div className="flex flex-col text-right">
+                           <span className="text-[28px] font-bold text-white/60 leading-none">{needReviewCount}</span>
+                           <span className="text-[11px] font-semibold text-[#FF9F0A] uppercase tracking-wider mt-1">Reviewing</span>
+                        </div>
+                     </div>
+                  </div>
+
+                  <div className="relative h-2 rounded-full overflow-hidden bg-white/5 w-full z-10 mt-auto">
+                    <div className="absolute left-0 top-0 h-full rounded-full shadow-[0_0_12px_rgba(48,209,88,0.5)]" style={{ width: `${(gotItCount / totalFlashcards) * 100}%`, background: '#30D158', transition: 'width 1s cubic-bezier(0.4,0,0.2,1)' }} />
+                    <div className="absolute top-0 h-full rounded-full shadow-[0_0_12px_rgba(255,159,10,0.5)]" style={{
+                      left: `${(gotItCount / totalFlashcards) * 100}%`,
+                      width: `${(needReviewCount / totalFlashcards) * 100}%`,
+                      background: '#FF9F0A',
+                      transition: 'all 1s cubic-bezier(0.4,0,0.2,1)'
+                    }} />
+                  </div>
+                </motion.div>
+              )}
+
+              {/* Quiz History */}
+              {quizScores.length > 0 && (
+                <motion.div 
+                  initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}
+                  style={{
+                    background: 'rgba(28,28,30,0.3)',
+                    border: '1px solid rgba(255,255,255,0.05)',
+                    borderRadius: '24px',
+                    backdropFilter: 'blur(40px)',
+                  }} className="p-8 relative overflow-hidden shadow-2xl flex flex-col justify-between group"
+                >
+                  <div className="absolute top-0 right-0 w-64 h-64 bg-orange-500/5 blur-[80px] rounded-full translate-x-1/2 -translate-y-1/2 pointer-events-none" />
+                  
+                  <div>
+                     <div className="flex items-center justify-between mb-8 relative z-10">
+                       <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-2xl bg-[#FF9F0A]/10 flex items-center justify-center border border-[#FF9F0A]/20">
+                             <CheckSquare className="w-5 h-5 text-[#FF9F0A]" />
+                          </div>
+                          <div>
+                             <h3 className="text-[16px] font-bold text-white tracking-tight">Quiz Performance</h3>
+                             <p className="text-[12px] text-white/40 font-medium">Last {Math.min(quizScores.length, 3)} attempts</p>
+                          </div>
+                       </div>
+                       <div className="text-right">
+                          <span className="text-[24px] font-black text-white">{avgQuizScore}%</span>
+                          <p className="text-[10px] font-bold text-white/30 uppercase tracking-widest mt-0.5">Average</p>
+                       </div>
+                     </div>
+
+                     <div className="space-y-4 relative z-10">
+                       {quizScores.slice(-3).reverse().map((s, i) => {
+                         const pct = Math.round((s.score / s.total) * 100);
+                         const barColor = pct >= 80 ? '#30D158' : pct >= 60 ? '#FF9F0A' : '#FF453A';
+                         return (
+                           <div key={i} className="flex items-center gap-4">
+                             <div className="w-8 flex justify-end shrink-0">
+                                <span className="text-[11px] font-bold text-white/30 uppercase">#{quizScores.length - i}</span>
+                             </div>
+                             <div className="flex-1 h-2 rounded-full bg-white/5 relative overflow-hidden">
+                               <div className="absolute left-0 top-0 h-full rounded-full" style={{ width: `${pct}%`, background: barColor, boxShadow: `0 0 10px ${barColor}60` }} />
+                             </div>
+                             <div className="w-10 flex justify-end shrink-0">
+                                <span className="text-[14px] font-bold" style={{ color: barColor }}>{pct}%</span>
+                             </div>
+                           </div>
+                         );
+                       })}
+                     </div>
+                  </div>
+                </motion.div>
+              )}
+            </div>
+
+            {/* Empty state */}
+            {pagesRead.length === 0 && quizScores.length === 0 && totalFlashcards === 0 && (
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col items-center justify-center py-20 text-center gap-4">
+                <div className="w-16 h-16 rounded-2xl bg-white/[0.02] border border-white/[0.05] flex items-center justify-center shadow-lg">
+                  <BarChart3 className="h-6 w-6 text-white/20" />
+                </div>
+                <div>
+                  <p className="text-[16px] font-semibold text-white/60 mb-2">No activity yet</p>
+                  <p className="text-[13px] text-white/30 max-w-[240px] mx-auto leading-relaxed">Read the document, take the quiz, and review flashcards to track your progress.</p>
+                </div>
+              </motion.div>
+            )}
+
+            <div className="h-8" />
           </div>
         </ScrollArea>
       </div>
@@ -1113,6 +1758,7 @@ function ChatPanel({
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const { toast } = useToast();
+  const queryClient = useQueryClient();
 
   const {
     listening,
@@ -1135,6 +1781,16 @@ function ChatPanel({
     if (!input.trim() || !contentItem) return;
     onSendMessage(input.trim());
     setInput("");
+    
+    fetch(`/api/content/${contentItem.id}/stats`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ type: 'chat_interaction' })
+    }).then(() => {
+      queryClient.invalidateQueries({ queryKey: [`/api/content/${contentItem.id}`] });
+      queryClient.invalidateQueries({ queryKey: ["/api/content"] });
+    }).catch(() => {});
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -1162,50 +1818,55 @@ function ChatPanel({
   const messages = session.messages || [];
 
   return (
-    <aside className="w-[400px] flex flex-col bg-background border-l border-border/50 h-full relative">
-      <div className="p-4 border-b border-border/50 flex items-center justify-between bg-card/10">
-        <div className="flex items-center gap-2">
-          <Sparkles className="h-4 w-4 text-primary" />
-          <h2 className="text-sm font-bold text-foreground">AI Assistant</h2>
+    <aside className="w-[400px] shrink-0 flex flex-col bg-background/95 backdrop-blur-3xl lg:bg-background/50 border-l border-border/40 h-full absolute lg:relative right-0 top-0 bottom-0 shadow-[-10px_0_30px_rgba(0,0,0,0.3)] lg:shadow-[-10px_0_30px_rgba(0,0,0,0.1)] z-30">
+      <div className="h-16 flex items-center justify-between px-6 border-b border-white/5 bg-transparent shrink-0">
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-primary to-blue-400 flex items-center justify-center shadow-lg shadow-primary/20">
+            <Sparkles className="h-4 w-4 text-white" />
+          </div>
+          <h2 className="text-[14px] font-bold text-foreground tracking-wide">Nova AI</h2>
         </div>
-        <div className="flex items-center gap-2">
-          <Badge variant="outline" className="text-[10px] font-normal py-0">GPT-4o</Badge>
+        <div className="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-[10px] font-bold tracking-widest uppercase text-white/60">
+          GPT-4o
         </div>
       </div>
 
-      <ScrollArea className="flex-1">
-        <div className="p-4 space-y-4">
+      <ScrollArea className="flex-1 px-4 custom-scrollbar">
+        <div className="py-6 space-y-6">
           {messages.length === 0 ? (
-            <div className="text-center py-8">
-              <div className="w-12 h-12 rounded-2xl bg-primary/5 flex items-center justify-center mx-auto mb-4">
-                <MessageSquare className="h-6 w-6 text-primary/40" />
+            <div className="text-center py-12 flex flex-col items-center justify-center opacity-80">
+              <div className="w-16 h-16 rounded-[24px] bg-gradient-to-br from-white/10 to-transparent flex items-center justify-center mb-5 border border-white/10 shadow-lg">
+                <MessageSquare className="h-7 w-7 text-white/70" />
               </div>
-              <h3 className="text-sm font-semibold text-foreground mb-1">Ask anything about this source</h3>
-              <p className="text-xs text-muted-foreground max-w-[200px] mx-auto">
-                Get summaries, definitions, or clarify complex topics from your notes.
+              <h3 className="text-[15px] font-semibold text-foreground mb-2">How can I help you?</h3>
+              <p className="text-[13px] text-muted-foreground max-w-[220px] mx-auto leading-relaxed">
+                Ask questions, get summaries, or clarify complex topics from your notes.
               </p>
             </div>
           ) : (
             messages.map((msg, idx) => (
               <div
                 key={idx}
-                className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
+                className={`flex w-full ${msg.role === "user" ? "justify-end" : "justify-start"}`}
               >
                 <div
-                  className={`max-w-[85%] rounded-2xl p-3 text-sm ${
+                  className={`max-w-[85%] px-4 py-3 text-[14px] leading-[1.6] shadow-sm ${
                     msg.role === "user"
-                      ? "bg-primary text-primary-foreground shadow-sm"
-                      : "bg-muted/50 text-foreground border border-border/50"
+                      ? "bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-[20px] rounded-br-[4px]"
+                      : "bg-[#1C1C1E] text-[#F2F2F7] rounded-[20px] rounded-bl-[4px] border border-white/5"
                   }`}
                 >
                   <ReactMarkdown
                     remarkPlugins={[remarkGfmPlugin]}
                     components={{
-                      p: ({ node, ...props }: any) => <p className="mb-2 last:mb-0 leading-relaxed" {...props} />,
-                      ul: ({ node, ...props }: any) => <ul className="list-disc ml-4 mb-2" {...props} />,
-                      li: ({ node, ...props }: any) => <li className="mb-1" {...props} />,
-                      h1: ({ node, ...props }: any) => <h4 className="text-base font-bold mt-2 mb-1" {...props} />,
-                      h2: ({ node, ...props }: any) => <h4 className="text-sm font-bold mt-2 mb-1" {...props} />,
+                      p: ({ node, ...props }: any) => <p className="mb-2 last:mb-0" {...props} />,
+                      ul: ({ node, ...props }: any) => <ul className="list-disc ml-4 mb-2 space-y-1" {...props} />,
+                      li: ({ node, ...props }: any) => <li className="" {...props} />,
+                      h1: ({ node, ...props }: any) => <h4 className="font-semibold mt-3 mb-1" {...props} />,
+                      h2: ({ node, ...props }: any) => <h4 className="font-semibold mt-3 mb-1" {...props} />,
+                      code: ({ node, inline, ...props }: any) => 
+                        inline ? <code className="bg-black/20 rounded px-1.5 py-0.5 font-mono text-[12px]" {...props} /> 
+                        : <code className="block bg-black/20 rounded-lg p-3 font-mono text-[12px] overflow-x-auto my-2" {...props} />,
                     }}
                   >
                     {msg.content}
@@ -1214,40 +1875,46 @@ function ChatPanel({
               </div>
             ))
           )}
-          <div ref={messagesEndRef} />
+          <div ref={messagesEndRef} className="h-2" />
         </div>
       </ScrollArea>
 
-      <div className="p-4 bg-background border-t border-border/50">
-        <div className="relative bg-muted/30 rounded-2xl border border-border/50 p-2 focus-within:border-primary/50 transition-colors">
+      {/* macOS Style Input Area */}
+      <div className="p-4 pt-2 shrink-0 bg-transparent">
+        <div className="relative bg-[#1C1C1E]/80 backdrop-blur-2xl rounded-[24px] border border-white/10 p-1 flex items-end shadow-lg transition-all focus-within:border-white/20 focus-within:bg-[#1C1C1E]">
           <Textarea
             ref={textareaRef}
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Ask Anara..."
-            className="min-h-[40px] max-h-[150px] resize-none bg-transparent border-none focus:ring-0 text-sm py-2 pr-10"
+            placeholder="Message Nova..."
+            className="min-h-[44px] max-h-[150px] resize-none bg-transparent border-none focus:ring-0 text-[14px] py-3 pl-4 pr-12 text-[#F2F2F7] placeholder:text-muted-foreground custom-scrollbar"
             disabled={!isReady}
           />
-          <div className="absolute right-2 bottom-2 flex items-center gap-1">
+          <div className="absolute right-2 bottom-2 flex items-center gap-1.5">
             <Button
               type="button"
               variant="ghost"
               size="icon"
+              className={`h-8 w-8 rounded-full transition-all ${listening ? 'bg-red-500/20 text-red-500' : 'text-muted-foreground hover:bg-white/10'}`}
               onClick={toggleListening}
-              className={`h-8 w-8 rounded-lg ${listening ? "text-destructive animate-pulse" : "text-muted-foreground"}`}
+              disabled={!isReady || !browserSupportsSpeech}
+              title={!browserSupportsSpeech ? "Speech recognition not supported in this browser" : listening ? "Stop recording" : "Use microphone"}
             >
-              <Mic className="h-4 w-4" />
+              {listening ? <Mic className="h-4 w-4 animate-pulse" /> : <MicOff className="h-4 w-4" />}
             </Button>
             <Button
               onClick={handleSend}
               disabled={!input.trim() || !isReady}
               size="icon"
-              className="h-8 w-8 rounded-lg bg-primary text-primary-foreground"
+              className="h-8 w-8 rounded-full bg-blue-500 hover:bg-blue-400 text-white disabled:bg-white/5 disabled:text-white/20 transition-all shrink-0"
             >
               <ArrowUp className="h-4 w-4" />
             </Button>
           </div>
+        </div>
+        <div className="text-center mt-3">
+          <p className="text-[10px] text-muted-foreground font-medium">Nova AI can make mistakes. Consider verifying important information.</p>
         </div>
       </div>
     </aside>
@@ -1263,13 +1930,13 @@ function RightColumn({ contentItem, selectedView, onSelectView }: {
 }) {
   const isReady = contentItem?.status === "completed";
   const tools = [
-    { id: "summary", label: "General", icon: FileText },
-    { id: "preview", label: "Source", icon: Search },
-    { id: "flashcards", label: "Review", icon: BookOpen },
-    { id: "mindmap", label: "Map", icon: Layers },
-    { id: "quiz", label: "Practice", icon: Grid },
-    { id: "audio", label: "Listen", icon: Headphones },
-    { id: "reports", label: "Stats", icon: BarChart3 },
+    { id: "summary", label: "Summary", icon: AlignLeft },
+    { id: "preview", label: "Original Document", icon: FileText },
+    { id: "flashcards", label: "Flashcards", icon: BookMarked },
+    { id: "mindmap", label: "Mind Map", icon: BrainCircuit },
+    { id: "quiz", label: "Quiz", icon: Check },
+    { id: "audio", label: "Audio", icon: Headphones },
+    { id: "reports", label: "Reports", icon: BarChart3 },
   ] as const;
 
   return (
@@ -1306,15 +1973,6 @@ function RightColumn({ contentItem, selectedView, onSelectView }: {
           })}
           
           <div className="mt-auto pt-4 border-t border-border/50 w-full flex flex-col items-center gap-4">
-            <button
-              onClick={() => onSelectView("canvas")}
-              className={`p-3 rounded-xl transition-all duration-200 group relative ${
-                selectedView === "canvas" ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-muted"
-              }`}
-              title="Canvas"
-            >
-              <SquarePen className="h-5 w-5" />
-            </button>
           </div>
         </>
       )}
@@ -1775,6 +2433,7 @@ function Canvas({ initialContent, title }: { initialContent?: string; title: str
 export default function Workspace() {
   const [activeMainNavTab, setActiveMainNavTab] = useState("library");
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isRightSidebarOpen, setIsRightSidebarOpen] = useState(true);
   const [selectedSession, setSelectedSession] = useState<ChatSession | undefined>();
   const [selectedView, setSelectedView] = useState<string>("summary");
   const [showUpload, setShowUpload] = useState(false);
@@ -2281,7 +2940,7 @@ export default function Workspace() {
             {/* Sidebar Toggle Button */}
             <button 
               onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-              className={`absolute z-10 top-1/2 -track-y-1/2 flex items-center justify-center w-5 h-10 bg-background border border-border/50 rounded-r-lg hover:bg-muted transition-all shadow-sm ${
+              className={`absolute z-40 top-1/2 -translate-y-1/2 flex items-center justify-center w-5 h-10 bg-background border border-border/50 rounded-r-lg hover:bg-muted transition-all shadow-sm ${
                 isSidebarOpen ? "left-[288px]" : "left-0"
               }`}
             >
@@ -2291,44 +2950,33 @@ export default function Workspace() {
             {/* 3. Main Stage (Content + AI Tools) */}
             <div className="flex-1 flex flex-col overflow-hidden min-w-0">
               {/* Main Stage Header */}
-              <div className="h-16 border-b border-border/50 flex items-center justify-between px-6 bg-navbar/5 backdrop-blur-sm">
-                <div className="flex items-center gap-4">
+              <div className="h-16 border-b border-white/5 flex items-center justify-between px-8 bg-transparent shrink-0 min-w-0">
+                <div className="flex items-center gap-4 min-w-0">
                   {selectedSession ? (
                     <>
-                      <Folder className="h-4 w-4 text-muted-foreground" />
-                      <h1 className="text-sm font-bold text-foreground truncate max-w-[300px]">{selectedSession.title}</h1>
-                      <Badge variant="secondary" className="bg-primary/5 text-primary border-primary/10 text-[10px] h-5">Selected</Badge>
+                      <div className="flex items-center gap-3 min-w-0">
+                        <FileText className="h-4 w-4 text-primary shrink-0" />
+                        <h1 className="text-[14px] font-semibold text-foreground tracking-wide truncate max-w-[400px]">
+                          {selectedSession.title}
+                        </h1>
+                      </div>
+                      <div className="px-3 py-1 bg-primary/10 border border-primary/20 rounded-full flex items-center gap-1.5">
+                        <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+                        <span className="text-[10px] font-bold text-primary uppercase tracking-widest">Active</span>
+                      </div>
                     </>
                   ) : (
-                    <h1 className="text-sm font-bold text-foreground">Select a source</h1>
+                    <h1 className="text-[14px] font-semibold text-foreground tracking-wide">Select a source</h1>
                   )}
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="h-6 w-[1px] bg-border/50 mx-2" />
-                  <div className="flex items-center gap-1 bg-muted/50 p-1 rounded-lg">
-                    <Button 
-                      variant={selectedView === "summary" ? "secondary" : "ghost"} 
-                      size="sm" 
-                      className="h-7 px-3 text-[11px] font-medium"
-                      onClick={() => setSelectedView("summary")}
-                    >
-                      Summary
-                    </Button>
-                    <Button 
-                      variant={selectedView === "canvas" ? "secondary" : "ghost"} 
-                      size="sm" 
-                      className="h-7 px-3 text-[11px] font-medium"
-                      onClick={() => setSelectedView("canvas")}
-                    >
-                      Canvas
-                    </Button>
-                  </div>
                 </div>
               </div>
 
-              <div className="flex-1 flex overflow-hidden">
+              <div className="flex-1 flex overflow-hidden min-w-0">
                 {/* Left part of Main Stage: Content Viewer */}
-                <div className="flex-1 flex flex-col overflow-hidden border-r border-border/50">
+                <div className="flex-1 flex flex-col overflow-hidden border-r border-border/50 min-w-0">
                   {selectedView === "canvas" ? (
                     <Canvas 
                       title={selectedSession?.title || "Draft"} 
@@ -2354,12 +3002,24 @@ export default function Workspace() {
               </div>
             </div>
 
+            {/* Right Sidebar Toggle Button */}
+            <button
+              onClick={() => setIsRightSidebarOpen(!isRightSidebarOpen)}
+              className={`absolute z-40 top-1/2 -translate-y-1/2 flex items-center justify-center w-5 h-10 bg-background border border-border/50 rounded-l-lg hover:bg-muted transition-all shadow-sm ${
+                isRightSidebarOpen ? (selectedSession ? "right-[400px]" : "right-80") : "right-0"
+              }`}
+            >
+              {isRightSidebarOpen ? <ChevronRight className="h-3 w-3" /> : <ChevronLeft className="h-3 w-3" />}
+            </button>
+
             {/* 4. Far Right: Persistent AI Chat Panel */}
-            <ChatPanel 
-              session={selectedSession}
-              contentItem={contentItem || undefined}
-              onSendMessage={handleSendMessage}
-            />
+            {isRightSidebarOpen && (
+              <ChatPanel 
+                session={selectedSession}
+                contentItem={contentItem || undefined}
+                onSendMessage={handleSendMessage}
+              />
+            )}
           </>
         ) : activeMainNavTab === "models" ? (
           <div className="flex-1 flex flex-col items-center justify-center p-12 text-center">

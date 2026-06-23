@@ -487,6 +487,92 @@ ${text}`;
   }
 }
 
+export async function generateRegeneratedQuiz(text: string): Promise<Array<{ question: string; options: string[]; correctAnswer: number }>> {
+  try {
+    const prompt = `You are an educational quiz generator. Create accessible multiple-choice questions that test understanding of key concepts.
+CRITICAL: These must be a COMPLETELY NEW set of questions, distinct from the most obvious ones. Focus on different aspects, deeper reasoning, or alternative facts from the text.
+Respond with JSON in this format: { "questions": [{ "question": "string", "options": ["string"], "correctAnswer": number }] }
+
+Content: ${text.substring(0, 15000)}`;
+
+    const parseQuizResponse = (jsonText: string) => {
+      try {
+        const parsed = JSON.parse(jsonText.replace(/```json\n?|\n?```/g, ''));
+        return Array.isArray(parsed.questions) ? parsed.questions : null;
+      } catch { return null; }
+    };
+
+    if (deepseek) {
+      try {
+        const jsonText = await deepseekJSON("You are an educational quiz generator. Respond with JSON: { \"questions\": [{ \"question\": \"string\", \"options\": [\"string\"], \"correctAnswer\": number }] }", prompt);
+        const parsed = parseQuizResponse(jsonText);
+        if (parsed) return parsed;
+      } catch (err) {
+        console.warn("DeepSeek regenerated quiz generation failed:", describeError(err));
+      }
+    }
+
+    if (googleAI) {
+      try {
+        const jsonText = await geminiGenerateJSON(prompt, "gemini-1.5-pro");
+        const parsed = parseQuizResponse(jsonText);
+        if (parsed) return parsed;
+      } catch (err) {
+        console.warn("Google regenerated quiz generation failed:", describeError(err));
+      }
+    }
+
+    throw new Error("Failed to generate regenerated quiz with any provider");
+  } catch (error: any) {
+    throw new Error(`Failed to generate regenerated quiz: ${error?.message || 'Unknown error'}`);
+  }
+}
+
+export async function generateRegeneratedFlashcards(text: string): Promise<Array<{ question: string; answer: string }>> {
+  try {
+    const prompt = `You are an expert educational content creator.
+Generate EXACTLY 10 highly distinct, world-class flashcards based on the text.
+CRITICAL: These must be a COMPLETELY NEW set of flashcards, testing different concepts, details, or reasoning than the most obvious ones. Dig deeper into the text.
+Format as JSON: {"flashcards": [{"question": "...", "answer": "..."}]}
+
+Content: ${text.substring(0, 15000)}`;
+
+    const parseFlashcardsResponse = (jsonText: string) => {
+      try {
+        const parsed = JSON.parse(jsonText.replace(/```json\n?|\n?```/g, ''));
+        if (Array.isArray(parsed.flashcards)) {
+            return parsed.flashcards.map((f: any) => ({ question: String(f.question || ""), answer: String(f.answer || "") })).slice(0, 10);
+        }
+        return null;
+      } catch { return null; }
+    };
+
+    if (deepseek) {
+      try {
+        const jsonText = await deepseekJSON("You are an expert educational content creator. Return ONLY a valid JSON object.", prompt);
+        const parsed = parseFlashcardsResponse(jsonText);
+        if (parsed) return parsed;
+      } catch (err) {
+        console.warn("DeepSeek regenerated flashcards generation failed:", describeError(err));
+      }
+    }
+
+    if (googleAI) {
+      try {
+        const jsonText = await geminiGenerateJSON(prompt, "gemini-1.5-pro");
+        const parsed = parseFlashcardsResponse(jsonText);
+        if (parsed) return parsed;
+      } catch (err) {
+        console.warn("Google regenerated flashcards generation failed:", describeError(err));
+      }
+    }
+
+    throw new Error("Failed to generate regenerated flashcards with any provider");
+  } catch (error: any) {
+    throw new Error(`Failed to generate regenerated flashcards: ${error?.message || 'Unknown error'}`);
+  }
+}
+
 export async function transcribeAudio(audioBuffer: Buffer, mimeType: string): Promise<string> {
   try {
     if (!openai) {

@@ -78,27 +78,31 @@ export default function Header() {
                   </Avatar>
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-56 glass-card border-white/10 bg-[#0a0a0a]" align="end" forceMount>
-                <DropdownMenuLabel className="font-normal font-serif">
+              <DropdownMenuContent 
+                className="w-64 bg-black/40 backdrop-blur-3xl border border-white/10 shadow-2xl rounded-2xl p-2 mt-2" 
+                align="end" 
+                forceMount
+              >
+                <DropdownMenuLabel className="font-normal p-3">
                   <div className="flex flex-col space-y-1">
-                    <p className="text-sm font-bold leading-none text-white">{user.name || user.username}</p>
-                    <p className="text-xs leading-none text-white/50">{user.username}</p>
+                    <p className="text-base font-semibold text-white/90 tracking-tight">{user.name || user.username}</p>
+                    <p className="text-xs text-white/50">{user.username}</p>
                   </div>
                 </DropdownMenuLabel>
-                <DropdownMenuSeparator className="bg-white/10" />
-                <DropdownMenuItem className="text-white focus:bg-white/5 cursor-pointer" asChild>
+                <DropdownMenuSeparator className="bg-white/5 mx-2 my-1" />
+                <DropdownMenuItem className="text-white/80 focus:text-white focus:bg-white/10 cursor-pointer rounded-xl py-2.5 px-3 transition-colors" asChild>
                   <Link href="/workspace">Workspace</Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem className="text-white focus:bg-white/5 cursor-pointer" asChild>
+                <DropdownMenuItem className="text-white/80 focus:text-white focus:bg-white/10 cursor-pointer rounded-xl py-2.5 px-3 transition-colors" asChild>
                   <Link href="/history">History</Link>
                 </DropdownMenuItem>
-                <DropdownMenuSeparator className="bg-white/10" />
+                <DropdownMenuSeparator className="bg-white/5 mx-2 my-1" />
                 <DropdownMenuItem 
-                  className="text-destructive focus:bg-destructive/10 cursor-pointer flex items-center gap-2"
+                  className="text-[#FF453A] focus:text-[#FF453A] focus:bg-[#FF453A]/10 cursor-pointer flex items-center gap-2 rounded-xl py-2.5 px-3 transition-colors"
                   onClick={() => logoutMutation.mutate()}
                 >
                   <LogOut className="h-4 w-4" />
-                  <span>Log out</span>
+                  <span className="font-medium">Log out</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

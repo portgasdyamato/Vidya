@@ -128,7 +128,7 @@ export default function SummaryPanel({ summary, title, summaryTestId, previewOnl
       <CardContent className="space-y-6">
         <div className="space-y-3">
           {summaryText && (
-              <div className="rounded-lg p-3 bg-primary/10 text-primary-foreground">
+              <div className="rounded-lg p-3 bg-primary/10 text-primary-foreground break-words w-full overflow-hidden">
                 <div className="text-xs font-semibold uppercase tracking-wide mb-1">Study AI</div>
                 <div className="text-sm">
                   <ReactMarkdown

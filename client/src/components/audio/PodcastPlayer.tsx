@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useMemo, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { Card, CardContent } from "@/components/ui/card";
@@ -43,7 +43,7 @@ export default function PodcastPlayer({ audioUrl, title, transcript, summary, us
   const [volume, setVolume] = useState(0.85);
   const [playbackRate, setPlaybackRate] = useState(1);
   const [showSubtitles, setShowSubtitles] = useState(true);
-  const [currentSubtitle, setCurrentSubtitle] = useState("");
+  const [subtitleData, setSubtitleData] = useState<{words: string[], activeIndex: number} | null>(null);
   const [speechProgress, setSpeechProgress] = useState(0);
   const [isExpanded, setIsExpanded] = useState(false);
   
@@ -64,6 +64,40 @@ export default function PodcastPlayer({ audioUrl, title, transcript, summary, us
       setDuration(estimatedDuration);
     }
   }, [useWebSpeech, textToSpeak]);
+
+  const sentencesData = useMemo(() => {
+    if (!textToSpeak) return [];
+    const allWords = textToSpeak.split(/\s+/);
+    const sentences: { words: string[], startIndex: number, endIndex: number }[] = [];
+    let currentSentenceWords: string[] = [];
+    let startIndex = 0;
+
+    allWords.forEach((word, index) => {
+      currentSentenceWords.push(word);
+      if (/[.!?:,;]$/.test(word) || currentSentenceWords.length >= 15 || index === allWords.length - 1) {
+        sentences.push({
+          words: [...currentSentenceWords],
+          startIndex: startIndex,
+          endIndex: index
+        });
+        currentSentenceWords = [];
+        startIndex = index + 1;
+      }
+    });
+    return sentences;
+  }, [textToSpeak]);
+
+  const updateSubtitles = useCallback((currentWordIdx: number) => {
+    if (!showSubtitles || !sentencesData.length) return;
+    const activeSentence = sentencesData.find(s => currentWordIdx >= s.startIndex && currentWordIdx <= s.endIndex);
+    if (activeSentence) {
+      setSubtitleData({
+        words: activeSentence.words,
+        activeIndex: currentWordIdx - activeSentence.startIndex
+      });
+    }
+  }, [showSubtitles, sentencesData]);
+
 
   // Audio / Speech Effects
   useEffect(() => {
@@ -88,11 +122,11 @@ export default function PodcastPlayer({ audioUrl, title, transcript, summary, us
     if (textToSpeak && showSubtitles) {
       const interval = setInterval(() => {
         if (audio.duration && !audio.paused) {
-          const words = textToSpeak.split(/\s+/);
-          const currentIdx = Math.floor((audio.currentTime / audio.duration) * words.length);
-          setCurrentSubtitle(words.slice(Math.max(0, currentIdx - 8), currentIdx + 8).join(" "));
+          const wordsLength = textToSpeak.split(/\s+/).length;
+          const currentIdx = Math.floor((audio.currentTime / audio.duration) * wordsLength);
+          updateSubtitles(currentIdx);
         }
-      }, 300);
+      }, 150);
       return () => {
         clearInterval(interval);
         audio.removeEventListener("timeupdate", updateTime);
@@ -139,9 +173,8 @@ export default function PodcastPlayer({ audioUrl, title, transcript, summary, us
              
              // Update subtitles for Web Speech
              if (showSubtitles) {
-               const words = textToSpeak.split(/\s+/);
-               const currentWordIdx = textToSpeak.substring(0, e.charIndex).split(/\s+/).length;
-               setCurrentSubtitle(words.slice(Math.max(0, currentWordIdx - 8), currentWordIdx + 8).join(" "));
+               const currentWordIdx = textToSpeak.substring(0, e.charIndex).split(/\s+/).length - 1;
+               updateSubtitles(Math.max(0, currentWordIdx));
              }
           }
         };
@@ -178,17 +211,46 @@ export default function PodcastPlayer({ audioUrl, title, transcript, summary, us
           <div className="flex flex-col lg:flex-row items-center gap-12">
             
             {/* Left Visual Area */}
-            <div className="relative group">
-              <div className="w-56 h-56 md:w-64 md:h-64 rounded-3xl bg-black/60 relative overflow-hidden shadow-2xl ring-1 ring-white/10 group-hover:ring-primary/40 transition-all duration-500">
-                <img 
-                  src={isPlaying ? "/talk.gif" : "/stop.gif"} 
-                  alt="AI Personalities" 
-                  className={`w-full h-full object-cover transition-all duration-1000 ${isPlaying ? "scale-110 grayscale-0" : "scale-100 grayscale opacity-40"}`}
-                />
+            <div className="relative group shrink-0">
+              <div className="w-48 h-48 md:w-64 md:h-64 rounded-[2rem] bg-[#0a0a0a] relative overflow-hidden shadow-2xl ring-1 ring-white/10 group-hover:ring-primary/40 transition-all duration-500">
                 
+                {/* Premium Audio Visualizer */}
+                <div className="absolute inset-0 flex items-center justify-center overflow-hidden">
+                  {/* Glowing orb background */}
+                  <motion.div 
+                    animate={{
+                      scale: isPlaying ? [1, 1.5, 1] : 1,
+                      opacity: isPlaying ? [0.4, 0.7, 0.4] : 0.2,
+                    }}
+                    transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                    className="absolute w-32 h-32 rounded-full bg-gradient-to-tr from-blue-600 via-indigo-500 to-purple-500 blur-[40px]"
+                  />
+                  
+                  {/* Animated Bars */}
+                  <div className="flex items-center justify-center gap-2 z-10 h-24">
+                    {[...Array(7)].map((_, i) => (
+                      <motion.div
+                        key={i}
+                        animate={{
+                          height: isPlaying 
+                            ? [16, Math.random() * 60 + 20, Math.random() * 60 + 20, 16] 
+                            : 16,
+                        }}
+                        transition={{
+                          duration: Math.random() * 0.5 + 0.5,
+                          repeat: Infinity,
+                          ease: "easeInOut",
+                          delay: Math.abs(i - 3) * 0.1, // Symmetric delay
+                        }}
+                        className={`w-3 rounded-full ${isPlaying ? 'bg-white shadow-[0_0_15px_rgba(255,255,255,0.8)]' : 'bg-white/20'}`}
+                      />
+                    ))}
+                  </div>
+                </div>
+
                 {/* Overlay Controls */}
-                <div className="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                   <Maximize2 className="w-8 h-8 text-white/40" />
+                <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-20 backdrop-blur-[2px]">
+                   <Maximize2 className="w-8 h-8 text-white/70" />
                 </div>
               </div>
               
@@ -204,13 +266,13 @@ export default function PodcastPlayer({ audioUrl, title, transcript, summary, us
             </div>
 
             {/* Right Controls & Info */}
-            <div className="flex-1 w-full space-y-8 text-center lg:text-left">
+            <div className="flex-1 min-w-0 w-full space-y-8 text-center lg:text-left">
               <div className="space-y-3">
                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary uppercase text-[10px] font-black tracking-widest mb-2">
                   <Sparkles className="w-3 h-3" />
                   <span>Vidya AI Broadcast</span>
                 </div>
-                <h2 className="text-3xl md:text-4xl font-black text-white font-serif tracking-tight leading-tight line-clamp-2">
+                <h2 className="text-3xl md:text-4xl font-black text-white font-serif tracking-tight leading-tight line-clamp-2 break-all md:break-words">
                   {title}
                 </h2>
                 <div className="flex items-center justify-center lg:justify-start gap-3 text-white/50 text-sm font-medium">
@@ -279,7 +341,7 @@ export default function PodcastPlayer({ audioUrl, title, transcript, summary, us
 
           {/* Expanded Subtitle Bar */}
           <AnimatePresence>
-            {showSubtitles && isPlaying && currentSubtitle && (
+            {showSubtitles && isPlaying && subtitleData && (
               <motion.div 
                 initial={{ height: 0, opacity: 0 }}
                 animate={{ height: 'auto', opacity: 1 }}
@@ -287,12 +349,19 @@ export default function PodcastPlayer({ audioUrl, title, transcript, summary, us
                 className="mt-12 p-8 rounded-[2rem] bg-primary/5 border border-primary/10 text-center"
               >
                  <motion.p 
-                    key={currentSubtitle}
+                    key={subtitleData.words.join(" ")}
                     initial={{ y: 20, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
-                    className="text-xl md:text-2xl font-serif text-primary italic leading-relaxed"
+                    className="text-lg md:text-xl font-serif text-white/40 leading-relaxed max-w-3xl mx-auto"
                  >
-                    "{currentSubtitle}"
+                    {subtitleData.words.map((word, i) => (
+                      <span 
+                        key={i} 
+                        className={`transition-all duration-300 ${i === subtitleData.activeIndex ? "text-white font-bold drop-shadow-[0_0_12px_rgba(255,255,255,0.8)]" : "text-white/30"}`}
+                      >
+                        {word}{" "}
+                      </span>
+                    ))}
                  </motion.p>
               </motion.div>
             )}

@@ -7,6 +7,7 @@ import { relations } from "drizzle-orm";
 export const users = pgTable("users", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   username: text("username").notNull().unique(),
+  displayName: text("display_name"),
   password: text("password").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
@@ -33,6 +34,7 @@ export const contentItems = pgTable("content_items", {
   processingOptions: jsonb("processing_options").notNull(),
   errorMessage: text("error_message"),
   mindMap: jsonb("mind_map"),
+  stats: jsonb("stats").default('{"pagesRead": [], "highlightsCount": 0, "quizScores": [], "flashcardsConfidence": {}}'),
   progress: integer("progress").default(0),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),

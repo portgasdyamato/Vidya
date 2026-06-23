@@ -94,6 +94,32 @@ export function setupGoogleAuth(app: Express) {
     res.json({ user: req.user || null });
   });
 
+  app.patch("/api/auth/user", async (req, res) => {
+    if (!req.user) return res.status(401).json({ message: "Not authenticated" });
+    const { displayName } = req.body;
+    try {
+      const updatedUser = await storage.updateUser((req.user as any).id, { displayName });
+      
+      // Update the session user object
+      if (updatedUser) {
+        const sessionUser = {
+          ...req.user,
+          ...updatedUser,
+          name: updatedUser.displayName || (req.user as any).name,
+        };
+        req.login(sessionUser, (err) => {
+          if (err) return res.status(500).json({ message: "Failed to update session" });
+          res.json({ user: sessionUser });
+        });
+      } else {
+        res.status(404).json({ message: "User not found" });
+      }
+    } catch (error) {
+      console.error("Failed to update user:", error);
+      res.status(500).json({ message: "Failed to update user" });
+    }
+  });
+
   // Guest login implementation
   app.get("/auth/guest", async (req, res) => {
     try {

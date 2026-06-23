@@ -120,10 +120,32 @@ export default async (req: Request, res: Response) => {
 
 // Local startup
 if (!isVercel) {
-  const port = parseInt(process.env.PORT || "5000", 10);
-  app.listen(port, "0.0.0.0", () => {
-    log(`✨ Local server running at: http://localhost:${port}`);
-  });
+  (async () => {
+    log("📊 Initializing local server...");
+    await ensureSchema();
+    const { storage } = await import("./storage.js");
+    await storage.ensureDefaultUser();
+    await registerRoutes(app);
+    
+    const { createServer: createHttpServer } = await import("http");
+    const server = createHttpServer(app);
+    
+    if (app.get("env") !== "development") {
+      serveStatic(app);
+    } else {
+      await setupVite(app, server);
+    }
+    
+    app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
+      const status = err.status || err.statusCode || 500;
+      res.status(status).json({ message: err.message || "Internal Server Error" });
+    });
+    
+    const port = parseInt(process.env.PORT || "5000", 10);
+    server.listen(port, "0.0.0.0", () => {
+      log(`✨ Local server running at: http://localhost:${port}`);
+    });
+  })();
 }
 
 export { app };

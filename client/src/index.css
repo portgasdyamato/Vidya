@@ -1,37 +1,39 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Outfit:wght@100..900&display=swap');
+@import 'react-quill-new/dist/quill.snow.css';
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  --background: #0a0a0b;
-  --foreground: hsl(0, 0%, 98%);
-  --card: rgba(255, 255, 255, 0.04);
-  --card-foreground: hsl(0, 0%, 98%);
-  --popover: #18181b;
-  --popover-foreground: hsl(0, 0%, 98%);
-  --primary: #00a3b6;
-  --primary-foreground: hsl(0, 0%, 100%);
-  --secondary: rgba(255, 255, 255, 0.06);
-  --secondary-foreground: hsl(0, 0%, 95%);
-  --muted: rgba(255, 255, 255, 0.08);
-  --muted-foreground: hsl(0, 0%, 63%);
-  --accent: rgba(0, 163, 182, 0.15);
-  --accent-foreground: #22d3ee;
-  --destructive: hsl(0, 84%, 60%);
-  --destructive-foreground: hsl(0, 0%, 100%);
-  --border: rgba(255, 255, 255, 0.08);
-  --input: rgba(255, 255, 255, 0.06);
-  --ring: #00a3b6;
-  --radius: 1rem;
+  --background: #0B0F19;
+  --foreground: #f8fafc;
+  --card: rgba(255, 255, 255, 0.03);
+  --card-foreground: #f8fafc;
+  --popover: #0f172a;
+  --popover-foreground: #f8fafc;
+  --primary: #3b82f6;
+  --primary-foreground: #ffffff;
+  --secondary: rgba(59, 130, 246, 0.15);
+  --secondary-foreground: #f8fafc;
+  --muted: rgba(255, 255, 255, 0.05);
+  --muted-foreground: #94a3b8;
+  --accent: rgba(59, 130, 246, 0.2);
+  --accent-foreground: #60a5fa;
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+  --border: rgba(255, 255, 255, 0.05);
+  --input: rgba(255, 255, 255, 0.05);
+  --ring: #3b82f6;
+  --radius: 1.25rem;
   --radius-lg: 1.5rem;
   
   --font-sans: 'Outfit', 'Inter', ui-sans-serif, system-ui;
   --font-serif: 'Libre Baskerville', Georgia, serif;
-  --glass-bg: rgba(255, 255, 255, 0.03);
+  --glass-bg: rgba(255, 255, 255, 0.015);
   --glass-border: rgba(255, 255, 255, 0.08);
-  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  --glow-primary: 0 0 24px rgba(59, 130, 246, 0.4);
 }
 
 @layer base {
@@ -43,13 +45,13 @@
     @apply min-h-screen font-sans antialiased text-foreground;
     background-color: var(--background);
     background-image: 
-      radial-gradient(ellipse at 50% 0%, rgba(0, 163, 182, 0.08) 0%, transparent 50%),
-      radial-gradient(ellipse at 100% 100%, rgba(0, 163, 182, 0.04) 0%, transparent 50%);
+      radial-gradient(ellipse at 10% 10%, rgba(59, 130, 246, 0.12) 0%, transparent 40%),
+      radial-gradient(ellipse at 90% 90%, rgba(14, 165, 233, 0.08) 0%, transparent 40%);
     background-attachment: fixed;
   }
 
   ::selection {
-    background-color: rgba(0, 163, 182, 0.35);
+    background-color: rgba(59, 130, 246, 0.35);
     color: white;
   }
 
@@ -89,12 +91,12 @@
 
   .glass-button-primary {
     @apply glass-button text-white;
-    background: linear-gradient(135deg, #0891b2 0%, #00a3b6 50%, #22d3ee 100%);
-    border: 1px solid rgba(0, 163, 182, 0.4);
+    background: linear-gradient(135deg, #1d4ed8 0%, #3b82f6 50%, #0ea5e9 100%);
+    border: 1px solid rgba(59, 130, 246, 0.4);
   }
 
   .glass-button-primary:not(:disabled):hover {
-    box-shadow: 0 0 24px rgba(0, 163, 182, 0.35);
+    box-shadow: var(--glow-primary);
   }
 
   .premium-sidebar-item {
@@ -102,13 +104,13 @@
   }
 
   .premium-sidebar-item.active {
-    @apply text-primary;
-    background-color: rgba(0, 163, 182, 0.1);
-    border-color: rgba(0, 163, 182, 0.25);
+    @apply text-white;
+    background: linear-gradient(90deg, rgba(139, 92, 246, 0.2) 0%, transparent 100%);
+    border-left: 3px solid var(--primary);
   }
 
   .premium-sidebar-item:not(.active):hover {
-    @apply text-white/80;
+    @apply text-white/90;
     background-color: rgba(255, 255, 255, 0.05);
   }
 
@@ -120,8 +122,8 @@
 
   .bubble-sent {
     @apply p-4 rounded-2xl rounded-tr-none max-w-[85%] text-white ml-auto shadow-lg;
-    background: linear-gradient(135deg, rgba(0, 163, 182, 0.35) 0%, rgba(0, 163, 182, 0.2) 100%);
-    border: 1px solid rgba(0, 163, 182, 0.3);
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.35) 0%, rgba(59, 130, 246, 0.2) 100%);
+    border: 1px solid rgba(139, 92, 246, 0.3);
   }
 
   .source-item-active {
@@ -129,20 +131,21 @@
   }
 
   .gradient-bg {
-    background: linear-gradient(180deg, rgba(0, 163, 182, 0.12) 0%, var(--background) 100%);
+    background: linear-gradient(180deg, rgba(139, 92, 246, 0.1) 0%, var(--background) 100%);
   }
 
   .card-hover {
-    transition: border-color 0.2s, box-shadow 0.2s;
+    transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
   }
   .card-hover:hover {
-    border-color: rgba(0, 163, 182, 0.3);
-    box-shadow: 0 0 24px rgba(0, 163, 182, 0.08);
+    border-color: rgba(139, 92, 246, 0.4);
+    box-shadow: var(--glow-primary);
+    transform: translateY(-2px);
   }
   .focus-ring:focus {
     outline: 2px solid transparent;
     outline-offset: 2px;
-    box-shadow: 0 0 0 2px var(--background), 0 0 0 4px rgba(0, 163, 182, 0.5);
+    box-shadow: 0 0 0 2px var(--background), 0 0 0 4px rgba(139, 92, 246, 0.5);
   }
 
   .backface-hidden {
@@ -158,11 +161,11 @@
 @keyframes pulse-glow {
   0%, 100% {
     opacity: 1;
-    filter: drop-shadow(0 0 5px rgba(0, 163, 182, 0.4));
+    filter: drop-shadow(0 0 5px rgba(139, 92, 246, 0.4));
   }
   50% {
-    opacity: .7;
-    filter: drop-shadow(0 0 15px rgba(0, 163, 182, 0.8));
+    opacity: .8;
+    filter: drop-shadow(0 0 15px rgba(139, 92, 246, 0.8));
   }
 }
 
@@ -194,4 +197,139 @@
 .scrollbar-hide {
   -ms-overflow-style: none;  /* IE and Edge */
   scrollbar-width: none;  /* Firefox */
+}
+
+/* React Quill World-Class Dark Theme */
+body .quill-dark-theme {
+  display: flex;
+  flex-direction: column;
+  background: rgba(20, 20, 25, 0.4);
+  border-radius: 16px;
+}
+
+body .quill-dark-theme .quill,
+body .quill-dark-theme .ql-container,
+body .quill-dark-theme .ql-editor,
+body .quill-dark-theme .ql-toolbar {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+body .quill-dark-theme .ql-toolbar.ql-snow {
+  border: none !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+  background-color: transparent !important;
+  padding: 12px 16px !important;
+  font-family: inherit;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+body .quill-dark-theme .ql-container.ql-snow {
+  border: none !important;
+  font-family: inherit;
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+body .quill-dark-theme .ql-editor {
+  min-height: 500px;
+  padding: 24px;
+  line-height: 1.7;
+}
+
+/* Pickers (Dropdowns) */
+body .quill-dark-theme .ql-snow .ql-picker {
+  color: rgba(255, 255, 255, 0.95) !important;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+body .quill-dark-theme .ql-snow .ql-picker-label {
+  padding-left: 12px;
+  border-radius: 6px;
+  transition: all 0.2s;
+  border: 1px solid transparent;
+  color: rgba(255, 255, 255, 0.95) !important;
+}
+
+body .quill-dark-theme .ql-snow .ql-picker-label::before {
+  color: rgba(255, 255, 255, 0.95) !important;
+}
+
+body .quill-dark-theme .ql-snow .ql-picker-label:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: white !important;
+}
+
+body .quill-dark-theme .ql-snow .ql-picker-options {
+  background-color: #18181b !important; /* Zinc 900 */
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5) !important;
+  padding: 8px !important;
+  margin-top: 8px;
+  z-index: 50;
+}
+
+body .quill-dark-theme .ql-snow .ql-picker-item {
+  color: rgba(255, 255, 255, 0.9) !important;
+  border-radius: 6px;
+  padding: 6px 12px !important;
+  transition: all 0.2s;
+}
+
+body .quill-dark-theme .ql-snow .ql-picker-item:hover,
+body .quill-dark-theme .ql-snow .ql-picker-item.ql-selected {
+  background-color: rgba(59, 130, 246, 0.15) !important;
+  color: #3b82f6 !important;
+}
+
+/* Buttons */
+body .quill-dark-theme .ql-snow .ql-toolbar button {
+  border-radius: 6px;
+  transition: all 0.2s;
+  width: 32px !important;
+  height: 32px !important;
+}
+
+body .quill-dark-theme .ql-snow .ql-toolbar button:hover {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+body .quill-dark-theme .ql-snow .ql-toolbar button.ql-active {
+  background-color: rgba(59, 130, 246, 0.15) !important;
+}
+
+/* SVG Icons inside buttons */
+body .quill-dark-theme .ql-snow .ql-stroke {
+  stroke: rgba(255, 255, 255, 0.95) !important;
+  transition: all 0.2s;
+}
+
+body .quill-dark-theme .ql-snow .ql-fill {
+  fill: rgba(255, 255, 255, 0.95) !important;
+  transition: all 0.2s;
+}
+
+body .quill-dark-theme .ql-snow .ql-picker-label:hover .ql-stroke,
+body .quill-dark-theme .ql-snow .ql-toolbar button:hover .ql-stroke {
+  stroke: rgba(255, 255, 255, 1) !important;
+}
+
+body .quill-dark-theme .ql-snow .ql-picker-label:hover .ql-fill,
+body .quill-dark-theme .ql-snow .ql-toolbar button:hover .ql-fill {
+  fill: rgba(255, 255, 255, 1) !important;
+}
+
+body .quill-dark-theme .ql-snow .ql-toolbar button.ql-active .ql-stroke,
+body .quill-dark-theme .ql-snow .ql-picker-label.ql-active .ql-stroke {
+  stroke: #3b82f6 !important;
+}
+
+body .quill-dark-theme .ql-snow .ql-toolbar button.ql-active .ql-fill,
+body .quill-dark-theme .ql-snow .ql-picker-label.ql-active .ql-fill {
+  fill: #3b82f6 !important;
 }

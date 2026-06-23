@@ -24,9 +24,10 @@ interface Flashcard {
 
 interface FlashcardDrillProps {
   flashcards: Flashcard[];
+  contentId?: string;
 }
 
-export default function FlashcardDrill({ flashcards }: FlashcardDrillProps) {
+export default function FlashcardDrill({ flashcards, contentId }: FlashcardDrillProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
   const [results, setResults] = useState<Record<number, "correct" | "wrong">>({});
@@ -43,6 +44,21 @@ export default function FlashcardDrill({ flashcards }: FlashcardDrillProps) {
   const goNext = (result?: "correct" | "wrong") => {
     if (result) {
       setResults((prev) => ({ ...prev, [currentIndex]: result }));
+      // Report confidence to stats endpoint
+      if (contentId) {
+        fetch(`/api/content/${contentId}/stats`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({
+            type: 'flashcard_confidence',
+            payload: {
+              flashcardId: String(currentIndex),
+              confidence: result === 'correct' ? 'got_it' : 'need_review'
+            }
+          })
+        }).catch(() => {});
+      }
     }
 
     if (currentIndex === total - 1) {
@@ -288,15 +304,6 @@ export default function FlashcardDrill({ flashcards }: FlashcardDrillProps) {
           </div>
         )}
 
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => goNext()}
-          disabled={currentIndex === total - 1}
-          className="w-12 h-12 rounded-2xl border border-white/8 hover:bg-white/5 text-white/50 disabled:opacity-30"
-        >
-          <ChevronRight className="w-5 h-5" />
-        </Button>
       </div>
 
       {/* Card dots navigation */}
