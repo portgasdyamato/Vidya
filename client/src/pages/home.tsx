@@ -10,8 +10,7 @@ import {
   Plus,
   Monitor,
   Layout,
-  MessageSquare,
-  GraduationCap
+  MessageSquare
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/lib/auth";
@@ -37,7 +36,7 @@ export default function Home() {
         <Link href="/">
           <div className="flex items-center gap-3 cursor-pointer transition-transform hover:scale-105 active:scale-95 group">
             <div className="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center group-hover:bg-primary/30 transition-colors">
-              <GraduationCap className="text-primary w-5 h-5" strokeWidth={2.5} />
+              <img src="/logo.png" alt="Vidya Logo" className="w-5 h-5 object-contain" />
             </div>
             <h1 className="text-2xl font-bold font-serif">Vidya</h1>
           </div>

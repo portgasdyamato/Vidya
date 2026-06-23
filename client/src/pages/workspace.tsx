@@ -25,7 +25,7 @@ import type { ContentItem } from "@shared/schema";
 import { useAuth } from "@/lib/auth";
 import { 
   FileText, BrainCircuit, Headphones, LayoutDashboard, LayoutTemplate, Share2, 
-  Settings, Loader2, Sparkles, MessageSquare, ArrowUp, Send, Check, X, GraduationCap,
+  Settings, Loader2, Sparkles, MessageSquare, ArrowUp, Send, Check, X,
   Search, BookOpen, Layers, Grid, BarChart3, Presentation, BookMarked, AlignLeft,
   Pin, ThumbsUp, ThumbsDown, Plus, CheckCircle2, AlertCircle, Trash2, Clock, 
   MoreVertical, Mic, MicOff, Copy, Download, ShieldCheck, Home, SquarePen, 
@@ -254,7 +254,7 @@ function MainNav({ activeTab, onTabChange }: { activeTab: string; onTabChange: (
         </div>
 
         <div className="w-11 h-11 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center mb-4 shadow-[0_0_20px_rgba(255,255,255,0.05)] relative z-10">
-          <GraduationCap className="h-6 w-6 text-white" strokeWidth={2.5} />
+          <img src="/logo.png" alt="Vidya Logo" className="w-6 h-6 object-contain" />
         </div>
         
         <div className="flex-1 flex flex-col gap-4 relative z-10 w-full px-3">
@@ -701,7 +701,7 @@ function CenterColumn({
           <div className="max-w-lg w-full text-center space-y-10">
             <div className="space-y-4">
               <div className="w-20 h-20 rounded-3xl bg-primary/10 border border-primary/20 flex items-center justify-center mx-auto shadow-2xl shadow-primary/10">
-                <GraduationCap className="h-10 w-10 text-primary" strokeWidth={2.5} />
+                <img src="/logo.png" alt="Vidya Logo" className="w-10 h-10 object-contain" />
               </div>
               <div className="space-y-2">
                 <h3 className="text-2xl font-black text-foreground font-serif">Ready to learn?</h3>
@@ -1802,7 +1802,7 @@ function ChatPanel({
           <h2 className="text-sm font-bold text-foreground">AI Assistant</h2>
         </div>
         <div className="flex-1 flex flex-col items-center justify-center p-6 text-center">
-          <GraduationCap className="h-8 w-8 text-muted-foreground/30 mb-2" strokeWidth={2.5} />
+          <img src="/logo.png" alt="Vidya Logo" className="w-8 h-8 object-contain opacity-30 mb-2" />
           <p className="text-xs text-muted-foreground">Select a source to start chatting</p>
         </div>
       </aside>
