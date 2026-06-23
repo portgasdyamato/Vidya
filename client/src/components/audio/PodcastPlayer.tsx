@@ -37,6 +37,8 @@ function cleanForSpeech(raw: string): string {
 
 export default function PodcastPlayer({ audioUrl, title, transcript, summary, useWebSpeech = false }: PodcastPlayerProps) {
   const audioRef = useRef<HTMLAudioElement>(null);
+  const currentCharIndexRef = useRef(0);
+  const isRestartingRef = useRef(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
@@ -153,32 +155,60 @@ export default function PodcastPlayer({ audioUrl, title, transcript, summary, us
     }
   }, [volume, playbackRate, useWebSpeech]);
 
+  const startWebSpeech = (startIndex: number = 0, rate: number = playbackRate, vol: number = volume) => {
+    if (!textToSpeak) return;
+    
+    isRestartingRef.current = true;
+    window.speechSynthesis.cancel();
+    isRestartingRef.current = false;
+    
+    const textToPlay = textToSpeak.substring(startIndex);
+    if (!textToPlay) {
+      setIsPlaying(false);
+      return;
+    }
+    
+    const utterance = new SpeechSynthesisUtterance(textToPlay);
+    utterance.rate = rate;
+    utterance.volume = vol;
+    utterance.onstart = () => setIsPlaying(true);
+    utterance.onend = () => { 
+      if (!isRestartingRef.current) {
+        setIsPlaying(false);
+        if (startIndex + textToPlay.length >= textToSpeak.length) {
+           setSpeechProgress(100);
+           currentCharIndexRef.current = 0;
+        }
+      }
+    };
+    utterance.onboundary = (e) => {
+      if (e.charIndex !== undefined) {
+         const absoluteIndex = startIndex + e.charIndex;
+         currentCharIndexRef.current = absoluteIndex;
+         setSpeechProgress((absoluteIndex / textToSpeak.length) * 100);
+         setCurrentTime((absoluteIndex / textToSpeak.length) * duration);
+         
+         if (showSubtitles) {
+           const currentWordIdx = textToSpeak.substring(0, absoluteIndex).split(/\s+/).length - 1;
+           updateSubtitles(Math.max(0, currentWordIdx));
+         }
+      }
+    };
+    window.speechSynthesis.speak(utterance);
+  };
+
+  useEffect(() => {
+    if (useWebSpeech && isPlaying) {
+      startWebSpeech(currentCharIndexRef.current, playbackRate, volume);
+    }
+  }, [playbackRate, volume]);
+
   const togglePlay = () => {
     if (useWebSpeech) {
       if (isPlaying) {
         window.speechSynthesis.cancel();
-        setIsPlaying(false);
       } else {
-        if (!textToSpeak) return;
-        window.speechSynthesis.cancel();
-        const utterance = new SpeechSynthesisUtterance(textToSpeak);
-        utterance.rate = playbackRate;
-        utterance.volume = volume;
-        utterance.onstart = () => setIsPlaying(true);
-        utterance.onend = () => { setIsPlaying(false); setSpeechProgress(100); };
-        utterance.onboundary = (e) => {
-          if (e.charIndex !== undefined) {
-             setSpeechProgress((e.charIndex / textToSpeak.length) * 100);
-             setCurrentTime((e.charIndex / textToSpeak.length) * duration);
-             
-             // Update subtitles for Web Speech
-             if (showSubtitles) {
-               const currentWordIdx = textToSpeak.substring(0, e.charIndex).split(/\s+/).length - 1;
-               updateSubtitles(Math.max(0, currentWordIdx));
-             }
-          }
-        };
-        window.speechSynthesis.speak(utterance);
+        startWebSpeech(currentCharIndexRef.current, playbackRate, volume);
       }
     } else {
       if (!audioRef.current) return;
@@ -256,7 +286,7 @@ export default function PodcastPlayer({ audioUrl, title, transcript, summary, us
                 whileHover={{ scale: 1.15, rotate: 5 }}
                 whileTap={{ scale: 0.9 }}
                 onClick={togglePlay}
-                className="absolute -bottom-6 -right-6 w-20 h-20 bg-primary text-primary-foreground rounded-2xl shadow-2xl shadow-primary/30 flex items-center justify-center z-20 group/play"
+                className="absolute -bottom-6 -right-6 w-20 h-20 bg-white/5 text-white backdrop-blur-md border border-white/10 rounded-2xl shadow-2xl shadow-black/50 flex items-center justify-center z-20 group/play hover:bg-white/10 transition-all"
               >
                 {isPlaying ? <Pause className="w-10 h-10" /> : <Play className="w-10 h-10 ml-1 fill-current" />}
               </motion.button>
