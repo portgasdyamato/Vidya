@@ -27,11 +27,11 @@ interface MermaidChartProps {
 // ── Constants & Parser ────────────────────────────────────────────────────────
 const RADII = [0, 200, 400, 600, 800];
 const DEPTH = [
-  { stroke: '#0369a1' },
-  { stroke: '#be185d' },
-  { stroke: '#15803d' },
-  { stroke: '#7e22ce' },
-  { stroke: '#c2410c' },
+  { stroke: '#ec4899' },
+  { stroke: '#22d3ee' },
+  { stroke: '#a78bfa' },
+  { stroke: '#34d399' },
+  { stroke: '#fb923c' },
 ];
 
 function parseMindmap(chart: string): TreeNode | null {
@@ -256,7 +256,7 @@ export default function MermaidChart({ data, onExplainNode }: MermaidChartProps)
         </span>
       </div>
 
-      <div className="w-full h-full rounded-3xl overflow-hidden border border-border/20 shadow-2xl relative bg-background flex-1">
+      <div className="w-full h-full rounded-3xl overflow-hidden border border-white/10 shadow-2xl relative bg-black/20 flex-1">
         <ReactFlow
           nodes={nodes}
           edges={edges}
@@ -270,17 +270,17 @@ export default function MermaidChart({ data, onExplainNode }: MermaidChartProps)
           minZoom={0.1}
           maxZoom={1.5}
           proOptions={{ hideAttribution: true }}
-          className="bg-[#fcfbf9]"
+          className="bg-black/20"
           nodesDraggable={true}
         >
-          <Background variant={BackgroundVariant.Dots} gap={24} size={2} color="#00000015" />
-          <Controls className="!bg-transparent !border-none !shadow-xl [&_button]:!bg-white/80 [&_button]:backdrop-blur-md [&_button]:!border-black/10 [&_button]:!border-b [&_button]:!fill-black hover:[&_button]:!bg-white [&_button:first-child]:rounded-t-xl [&_button:last-child]:rounded-b-xl [&_button:last-child]:!border-b-0 overflow-hidden" showInteractive={false} />
+          <Background variant={BackgroundVariant.Dots} gap={24} size={2} color="#ffffff15" />
+          <Controls className="!bg-transparent !border-none !shadow-xl [&_button]:!bg-black/40 [&_button]:backdrop-blur-md [&_button]:!border-white/10 [&_button]:!border-b [&_button]:!fill-white hover:[&_button]:!bg-black/60 [&_button:first-child]:rounded-t-xl [&_button:last-child]:rounded-b-xl [&_button:last-child]:!border-b-0 overflow-hidden" showInteractive={false} />
         </ReactFlow>
 
         {!selectedId && (
-          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center justify-center gap-1.5 pointer-events-none bg-white/60 backdrop-blur-md px-4 py-2 rounded-full border border-black/10 shadow-lg">
-            <Info className="w-3 h-3 text-black/50" />
-            <span className="text-[10px] text-black/70 font-medium">Use mouse to pan and zoom. Click a node to explore.</span>
+          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center justify-center gap-1.5 pointer-events-none bg-black/60 backdrop-blur-md px-4 py-2 rounded-full border border-white/10 shadow-lg">
+            <Info className="w-3 h-3 text-white/50" />
+            <span className="text-[10px] text-white/70 font-medium">Use mouse to pan and zoom. Click a node to explore.</span>
           </div>
         )}
       </div>
@@ -293,11 +293,11 @@ export default function MermaidChart({ data, onExplainNode }: MermaidChartProps)
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 10, scale: 0.95 }}
             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-            className="absolute bottom-8 right-8 md:w-[380px] rounded-[1.25rem] p-5 z-20 backdrop-blur-2xl shadow-xl"
+            className="absolute bottom-8 right-8 md:w-[380px] rounded-[1.25rem] p-5 z-20 backdrop-blur-2xl"
             style={{
-              background: `rgba(255, 255, 255, 0.9)`,
-              border: `1px solid rgba(0, 0, 0, 0.08)`,
-              boxShadow: `0 24px 48px -12px rgba(0,0,0,0.1), inset 0 1px 0 0 rgba(255,255,255,1)`,
+              background: `rgba(9, 9, 11, 0.75)`,
+              border: `1px solid rgba(255, 255, 255, 0.08)`,
+              boxShadow: `0 24px 48px -12px rgba(0,0,0,0.5), inset 0 1px 0 0 rgba(255,255,255,0.05)`,
             }}
           >
             <div className="flex items-start justify-between gap-4">
@@ -310,11 +310,11 @@ export default function MermaidChart({ data, onExplainNode }: MermaidChartProps)
                       boxShadow: `0 0 12px ${selectedColor.stroke}, inset 0 0 4px rgba(255,255,255,0.5)` 
                     }} 
                   />
-                  <h4 className="text-[15px] font-semibold text-slate-800 tracking-wide leading-none">
+                  <h4 className="text-[15px] font-semibold text-slate-100 tracking-wide leading-none">
                     {selectedNode.label}
                   </h4>
                 </div>
-                <p className="text-[13px] text-slate-600 leading-relaxed font-medium pl-[1.125rem] border-l border-black/10">
+                <p className="text-[13px] text-slate-400 leading-relaxed font-medium pl-[1.125rem] border-l border-white/5">
                   {selectedExplanation}
                 </p>
                 {onExplainNode && (

@@ -3,11 +3,11 @@ import { clsx } from 'clsx';
 import { Network } from 'lucide-react';
 
 const DEPTH = [
-  { bgTop: '#f0f9ff', bgBot: '#e0f2fe', border: '#38bdf8', text: '#0369a1', shadow: 'rgba(56, 189, 248, 0.2)' }, // Root (Cyan/Blue)
-  { bgTop: '#fdf2f8', bgBot: '#fce7f3', border: '#f472b6', text: '#be185d', shadow: 'rgba(244, 114, 182, 0.2)' }, // L1 (Pink)
-  { bgTop: '#f0fdf4', bgBot: '#dcfce7', border: '#4ade80', text: '#15803d', shadow: 'rgba(74, 222, 128, 0.2)' }, // L2 (Green)
-  { bgTop: '#faf5ff', bgBot: '#f3e8ff', border: '#c084fc', text: '#7e22ce', shadow: 'rgba(192, 132, 252, 0.2)' }, // L3 (Purple)
-  { bgTop: '#fff7ed', bgBot: '#ffedd5', border: '#fb923c', text: '#c2410c', shadow: 'rgba(251, 146, 60, 0.2)' }, // L4 (Orange)
+  { bgTop: 'rgba(236, 72, 153, 0.25)', bgBot: 'rgba(236, 72, 153, 0.05)', border: 'rgba(236, 72, 153, 0.6)', text: '#ffffff', shadow: 'rgba(236, 72, 153, 0.4)' }, // Root (Pink)
+  { bgTop: 'rgba(34, 211, 238, 0.2)', bgBot: 'rgba(34, 211, 238, 0.05)', border: 'rgba(34, 211, 238, 0.5)', text: '#ffffff', shadow: 'rgba(34, 211, 238, 0.3)' }, // L1 (Cyan)
+  { bgTop: 'rgba(167, 139, 250, 0.2)', bgBot: 'rgba(167, 139, 250, 0.05)', border: 'rgba(167, 139, 250, 0.5)', text: '#ffffff', shadow: 'rgba(167, 139, 250, 0.3)' }, // L2 (Purple)
+  { bgTop: 'rgba(52, 211, 153, 0.2)', bgBot: 'rgba(52, 211, 153, 0.05)', border: 'rgba(52, 211, 153, 0.5)', text: '#ffffff', shadow: 'rgba(52, 211, 153, 0.3)' }, // L3 (Green)
+  { bgTop: 'rgba(251, 146, 60, 0.2)', bgBot: 'rgba(251, 146, 60, 0.05)', border: 'rgba(251, 146, 60, 0.5)', text: '#ffffff', shadow: 'rgba(251, 146, 60, 0.3)' }, // L4 (Orange)
 ];
 
 const dc = (d: number) => DEPTH[Math.min(d, DEPTH.length - 1)];
@@ -28,8 +28,8 @@ export default function MindMapNode({ data, selected }: any) {
         background: `linear-gradient(180deg, ${c.bgTop} 0%, ${c.bgBot} 100%)`,
         border: `1px solid ${selected ? c.text : c.border}`,
         boxShadow: selected 
-          ? `0 10px 40px -10px ${c.shadow}, inset 0 1px 0 0 rgba(255,255,255,0.5)` 
-          : `0 4px 20px -5px rgba(0,0,0,0.05), inset 0 1px 0 0 rgba(255,255,255,0.5)`,
+          ? `0 10px 40px -10px ${c.shadow}, inset 0 1px 0 0 rgba(255,255,255,0.15)` 
+          : `0 4px 20px -5px rgba(0,0,0,0.3), inset 0 1px 0 0 rgba(255,255,255,0.05)`,
         color: c.text,
         ...(selected ? { '--tw-ring-color': c.shadow } as any : {})
       }}
