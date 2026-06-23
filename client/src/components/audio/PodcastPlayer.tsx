@@ -256,7 +256,7 @@ export default function PodcastPlayer({ audioUrl, title, transcript, summary, us
                 whileHover={{ scale: 1.15, rotate: 5 }}
                 whileTap={{ scale: 0.9 }}
                 onClick={togglePlay}
-                className="absolute -bottom-6 -right-6 w-20 h-20 bg-primary text-white rounded-2xl shadow-2xl shadow-primary/30 flex items-center justify-center z-20 group/play"
+                className="absolute -bottom-6 -right-6 w-20 h-20 bg-primary text-primary-foreground rounded-2xl shadow-2xl shadow-primary/30 flex items-center justify-center z-20 group/play"
               >
                 {isPlaying ? <Pause className="w-10 h-10" /> : <Play className="w-10 h-10 ml-1 fill-current" />}
               </motion.button>
@@ -316,7 +316,7 @@ export default function PodcastPlayer({ audioUrl, title, transcript, summary, us
                       <button 
                         key={s} 
                         onClick={() => setPlaybackRate(s)}
-                        className={`text-[10px] font-black px-3 py-1.5 rounded-xl transition-all ${playbackRate === s ? "bg-primary text-white" : "text-white/40 hover:text-white"}`}
+                        className={`text-[10px] font-black px-3 py-1.5 rounded-xl transition-all ${playbackRate === s ? "bg-primary text-primary-foreground" : "text-white/40 hover:text-white"}`}
                       >
                         {s}X
                       </button>
