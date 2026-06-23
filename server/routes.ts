@@ -36,10 +36,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // In a real app, this would come from authentication
       const userId = "default-user";
       const items = await storage.getUserContentItems(userId);
-      res.json(items || []);
+      // Strip large base64 data URIs from the list
+      const cleanItems = items.map(item => {
+        if (item.originalUrl && item.originalUrl.startsWith("data:")) {
+          return { ...item, originalUrl: `/api/content/${item.id}/original` };
+        }
+        return item;
+      });
+      res.json(cleanItems || []);
     } catch (error: any) {
       console.error("Error fetching content items:", error);
-      // Return empty array instead of error to prevent frontend crashes
       res.status(200).json([]);
     }
   });
@@ -60,13 +66,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
         parsedOptions = { generateAudio: true, generateSummary: true, generateMindMap: true, generateQuiz: false };
       }
 
+      // Read file to Base64 to bypass Vercel ephemeral /tmp storage
+      const fs = await import("fs");
+      const fileBuffer = await fs.promises.readFile(req.file.path);
+      const base64Data = `data:${req.file.mimetype};base64,${fileBuffer.toString('base64')}`;
+
       // Create content item
       const contentItem = await storage.createContentItem({
         userId: defaultUserId || "default-user", // In real app, get from auth
         title: title || req.file.originalname,
         type: "document",
         originalFileName: req.file.originalname,
-        originalUrl: req.file.path,
+        originalUrl: base64Data,
         processingOptions: parsedOptions,
       });
 
@@ -209,7 +220,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!item) {
         return res.status(404).json({ message: "Content not found" });
       }
-      res.json(item);
+      
+      const itemResponse = { ...item };
+      if (itemResponse.originalUrl && itemResponse.originalUrl.startsWith("data:")) {
+        itemResponse.originalUrl = `/api/content/${item.id}/original`;
+      }
+      
+      res.json(itemResponse);
     } catch (error: any) {
       res.status(500).json({ message: error?.message || 'Failed to get content item' });
     }
@@ -226,6 +243,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const path = await import("path");
       
       const filePath = item.originalUrl;
+      
+      // Handle base64 encoded data URIs directly stored in the database
+      if (filePath.startsWith("data:")) {
+        const matches = filePath.match(/^data:(.+);base64,(.+)$/);
+        if (matches) {
+          const contentType = matches[1];
+          const buffer = Buffer.from(matches[2], 'base64');
+          res.setHeader("Content-Type", contentType);
+          return res.send(buffer);
+        }
+      }
+      
       if (!fs.existsSync(filePath)) {
          return res.status(404).json({ message: "File missing on disk" });
       }
