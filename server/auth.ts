@@ -21,7 +21,7 @@ export function setupGoogleAuth(app: Express) {
 
   if (GOOGLE_CLIENT_ID && GOOGLE_CLIENT_SECRET) {
     const BASE_URL = ENV_BASE_URL || `http://localhost:${PORT || 5000}`;
-    const callbackURL = `${BASE_URL.replace(/\/$/, "")}/auth/google/callback`;
+    const callbackURL = `${BASE_URL.replace(/\/$/, "")}/api/auth/google/callback`;
     
     console.log(`Setting up Google Auth with callback: ${callbackURL}`);
 
@@ -70,7 +70,7 @@ export function setupGoogleAuth(app: Express) {
   app.use(passport.session());
 
   // Auth routes
-  app.get("/auth/google", (req, res, next) => {
+  app.get("/api/auth/google", (req, res, next) => {
     if (!GOOGLE_CLIENT_ID) {
       return res.status(400).send("Google authentication is not configured on this server.");
     }
@@ -78,7 +78,7 @@ export function setupGoogleAuth(app: Express) {
   });
 
   app.get(
-    "/auth/google/callback",
+    "/api/auth/google/callback",
     passport.authenticate("google", { failureRedirect: "/?auth_failed=true" }),
     (_req, res) => res.redirect("/workspace")
   );

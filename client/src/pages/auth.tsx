@@ -181,10 +181,10 @@ export default function AuthPage() {
 
           {/* Social Logins */}
           <div className="flex flex-col gap-3">
-            <a href="/auth/google" className="w-full">
+            <a href="/api/auth/google" className="w-full">
               <Button
                 variant="outline"
-                className="w-full h-13 rounded-2xl border-white/10 bg-white/4 hover:bg-white/8 text-white hover:text-white gap-3 font-semibold transition-all hover:border-white/20"
+                className="w-full relative h-12 border-white/10 bg-white/5 hover:bg-white/10 hover:border-white/20 text-white shadow-[0_0_20px_rgba(255,255,255,0.03)] hover:shadow-[0_0_25px_rgba(255,255,255,0.1)] transition-all duration-300"
               >
                 <svg className="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24">
                   <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
