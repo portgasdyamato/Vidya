@@ -1816,7 +1816,7 @@ function ChatPanel({
     <aside className="w-[400px] shrink-0 flex flex-col bg-black/20 backdrop-blur-3xl border-l border-white/5 h-full absolute lg:relative right-0 top-0 bottom-0 shadow-[-10px_0_30px_rgba(0,0,0,0.5)] z-30">
       <div className="h-16 flex items-center justify-between px-6 border-b border-white/5 bg-transparent shrink-0">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-primary to-blue-400 flex items-center justify-center shadow-lg shadow-primary/20">
+          <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-white/30 to-white/10 flex items-center justify-center shadow-lg shadow-white/10">
             <Sparkles className="h-4 w-4 text-white" />
           </div>
           <h2 className="text-[14px] font-bold text-foreground tracking-wide">Nova AI</h2>
@@ -1845,10 +1845,10 @@ function ChatPanel({
                 className={`flex w-full ${msg.role === "user" ? "justify-end" : "justify-start"}`}
               >
                 <div
-                  className={`max-w-[85%] px-4 py-3 text-[14px] leading-[1.6] shadow-sm ${
+                  className={`max-w-[85%] px-4 py-3 text-[14px] leading-[1.6] shadow-lg border border-white/10 ${
                     msg.role === "user"
-                      ? "bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-[20px] rounded-br-[4px]"
-                      : "bg-[#1C1C1E] text-[#F2F2F7] rounded-[20px] rounded-bl-[4px] border border-white/5"
+                      ? "bg-gradient-to-br from-white/20 to-white/5 text-white rounded-[20px] rounded-br-[4px]"
+                      : "bg-white/[0.05] text-white/90 rounded-[20px] rounded-bl-[4px]"
                   }`}
                 >
                   <ReactMarkdown
@@ -1902,7 +1902,7 @@ function ChatPanel({
               onClick={handleSend}
               disabled={!input.trim() || !isReady}
               size="icon"
-              className="h-8 w-8 rounded-full bg-blue-500 hover:bg-blue-400 text-white disabled:bg-white/5 disabled:text-white/20 transition-all shrink-0"
+              className="h-8 w-8 rounded-full bg-white/20 hover:bg-white/30 text-white disabled:bg-white/5 disabled:text-white/20 transition-all shrink-0"
             >
               <ArrowUp className="h-4 w-4" />
             </Button>

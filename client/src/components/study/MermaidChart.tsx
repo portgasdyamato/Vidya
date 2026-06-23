@@ -249,7 +249,7 @@ export default function MermaidChart({ data, onExplainNode }: MermaidChartProps)
 
   return (
     <div className="w-full h-full flex flex-col space-y-4 relative">
-      <div className="flex items-center gap-3 flex-wrap z-10 absolute top-4 left-4">
+      <div className="flex items-center gap-3 flex-wrap z-10 absolute top-8 left-6">
         <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-background/80 backdrop-blur-md border border-border/50 text-primary text-[11px] font-bold uppercase tracking-wider shadow-lg">
           <Sparkles className="w-3 h-3" />
           {allNodes.length} nodes · Interactive Canvas
