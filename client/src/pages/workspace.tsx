@@ -2372,7 +2372,7 @@ function Dashboard({ onUpload, onSelectSource }: { onUpload: () => void; onSelec
                 <FileText className="h-10 w-10 text-white/20" />
               </div>
               <p className="text-white/50 mb-6 font-medium text-lg">You haven't uploaded any sources yet.</p>
-              <Button onClick={onUpload} className="bg-primary hover:bg-primary/90 text-white rounded-full px-8 py-6 shadow-[0_8px_24px_-4px_rgba(0,122,255,0.5)] font-bold text-base transition-transform hover:scale-105">
+              <Button onClick={onUpload} className="glass-button-primary px-8 py-6 rounded-full shadow-2xl font-bold text-base">
                 Upload your first source
               </Button>
             </div>
@@ -2828,7 +2828,6 @@ export default function Workspace() {
                       Processing your document... This may take a few moments.
                     </p>
                     <Button
-                      variant="outline"
                       onClick={() => {
                         // Create session immediately if we have the item
                         if (uploadedItem && uploadedItemId) {
@@ -2862,7 +2861,7 @@ export default function Workspace() {
                             : "Processing will continue in background. Check sessions list when ready.",
                         });
                       }}
-                      className="w-full"
+                      className="w-full glass-button-primary"
                     >
                       Go to Workspace (Processing in background)
                     </Button>
@@ -2885,12 +2884,11 @@ export default function Workspace() {
                       <p className="text-xs text-muted-foreground">{uploadedItem.errorMessage}</p>
                     )}
                     <Button
-                      variant="outline"
                       onClick={() => {
                         setShowUpload(false);
                         setUploadedItemId(null);
                       }}
-                      className="w-full mt-2"
+                      className="w-full mt-2 glass-button"
                     >
                       Return to Workspace
                     </Button>

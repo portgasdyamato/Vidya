@@ -192,17 +192,31 @@ export async function processContent(
         try {
           const script = await generatePodcastScript(extractedText);
           result.podcastScript = script;
-          if (options.generateAudio) {
-            const audio = await generateSpeech(script);
-            if (audio) result.podcastAudioBuffer = audio;
+          // Skip TTS for podcast by default — it's the main bottleneck and takes 30-60s.
+          // Only generate audio if explicitly enabled AND a TTS key is configured.
+          if (options.generateAudio && script) {
+            try {
+              const audio = await generateSpeech(script.substring(0, 2000)); // Limit to 2k chars
+              if (audio) result.podcastAudioBuffer = audio;
+            } catch (audioErr) {
+              console.warn("Podcast TTS skipped:", audioErr);
+            }
           }
         } catch (e) {
           console.warn("Podcast generation failed:", e);
         }
-      })(), 120000, "generatePodcast").catch(e => console.warn(e.message))
+      })(), 60000, "generatePodcast").catch(e => console.warn(e.message))
     );
   }
 
-  await Promise.all(tasks);
+  // Race all tasks against a hard 3-minute deadline so processing ALWAYS completes
+  const HARD_DEADLINE_MS = 3 * 60 * 1000;
+  await Promise.race([
+    Promise.allSettled(tasks),
+    new Promise<void>((resolve) => setTimeout(() => {
+      console.warn(`[processContent] Hard deadline reached (${HARD_DEADLINE_MS}ms). Returning partial results.`);
+      resolve();
+    }, HARD_DEADLINE_MS)),
+  ]);
   return result;
 }

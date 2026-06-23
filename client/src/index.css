@@ -192,7 +192,34 @@
   }
 }
 
-/* Custom Scrollbar */
+/* ── Global Glassmorphic Input Override ─────────────────────────────────────── */
+/* Override the default near-black bg-background on all inputs and textareas  */
+input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+textarea,
+select {
+  background: rgba(255, 255, 255, 0.06) !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+  color: white !important;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+}
+
+input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):focus,
+textarea:focus,
+select:focus {
+  background: rgba(255, 255, 255, 0.09) !important;
+  border-color: rgba(255, 255, 255, 0.25) !important;
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.06), 0 4px 16px rgba(0, 0, 0, 0.2) !important;
+  outline: none !important;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: rgba(255, 255, 255, 0.35) !important;
+}
+
+/* ── Custom Scrollbar */
 ::-webkit-scrollbar {
   width: 5px;
   height: 5px;
