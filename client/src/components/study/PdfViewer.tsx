@@ -137,7 +137,8 @@ function PdfPage({
   mode, 
   color, 
   strokes, 
-  setStrokes 
+  setStrokes,
+  contentItemId
 }: { 
   pageNumber: number, 
   scale: number, 
