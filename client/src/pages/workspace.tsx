@@ -253,8 +253,8 @@ function MainNav({ activeTab, onTabChange }: { activeTab: string; onTabChange: (
           <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-white/10 to-transparent" />
         </div>
 
-        <div className="w-11 h-11 rounded-2xl bg-primary flex items-center justify-center mb-4 shadow-[0_0_20px_rgba(var(--primary),0.3)] relative z-10">
-          <Sparkles className="h-6 w-6 text-primary-foreground" />
+        <div className="w-11 h-11 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center mb-4 shadow-[0_0_20px_rgba(255,255,255,0.05)] relative z-10">
+          <Sparkles className="h-6 w-6 text-white" />
         </div>
         
         <div className="flex-1 flex flex-col gap-4 relative z-10 w-full px-3">
@@ -722,7 +722,7 @@ function CenterColumn({
 
             <Button
               onClick={onUpload}
-              className="h-14 px-10 text-base font-black rounded-2xl bg-primary hover:bg-primary/90 text-white shadow-2xl shadow-primary/20 hover:shadow-primary/40 hover:scale-105 active:scale-95 transition-all gap-3"
+              className="h-14 px-10 text-base font-black rounded-2xl glass-button-primary shadow-2xl hover:scale-105 active:scale-95 transition-all gap-3"
             >
               <UploadCloud className="h-5 w-5" />
               Upload Your First Source
