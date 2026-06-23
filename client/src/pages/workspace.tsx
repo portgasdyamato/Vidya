@@ -2680,10 +2680,9 @@ export default function Workspace() {
               queryClient.invalidateQueries({ queryKey: ["/api/content"] });
               toast({
                 title: "Upload successful",
-                description: "Your document is being processed. Please wait...",
+                description: "Your document has been processed successfully.",
               });
             }}
-            hideProgress={true}
           />
         </div>
       </div>

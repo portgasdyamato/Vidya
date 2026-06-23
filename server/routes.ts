@@ -81,8 +81,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         processingOptions: parsedOptions,
       });
 
-      // Process asynchronously in the background so the UI can show progress
-      processContentAsync(contentItem.id, req.file.path, "document", parsedOptions, undefined, req.file.originalname).catch(err => console.error("Background processing failed:", err));
+      // Process synchronously so Vercel does not freeze the background task
+      await processContentAsync(contentItem.id, req.file.path, "document", parsedOptions, undefined, req.file.originalname).catch(err => console.error("Processing failed:", err));
 
       const updatedItem = await storage.getContentItem(contentItem.id);
       res.json(updatedItem);

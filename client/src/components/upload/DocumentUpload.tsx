@@ -68,6 +68,17 @@ export default function DocumentUpload({ onSuccess, hideProgress = false }: Docu
   });
 
   useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (uploadMutation.isPending) {
+      setProgressValue(15);
+      interval = setInterval(() => {
+        setProgressValue((prev) => Math.min(prev + 5, 95));
+      }, 1500);
+    }
+    return () => clearInterval(interval);
+  }, [uploadMutation.isPending]);
+
+  useEffect(() => {
     if (!processingItem || ["completed", "failed"].includes(processingItem.status)) {
       return;
     }
@@ -314,30 +325,32 @@ export default function DocumentUpload({ onSuccess, hideProgress = false }: Docu
           </div>
         </div>
 
-        {processingItem && !hideProgress && (
+        {(processingItem || uploadMutation.isPending) && !hideProgress && (
           <div className="mt-8 rounded-2xl border border-border/60 bg-muted/20 p-6">
             <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
               <div>
                 <p className="text-xs uppercase tracking-wide text-muted-foreground">Processing</p>
-                <h4 className="text-lg font-semibold text-foreground">{processingItem.title}</h4>
+                <h4 className="text-lg font-semibold text-foreground">
+                  {processingItem?.title || title || (files.length > 0 ? files[0].name : "Document")}
+                </h4>
                 <p className="text-sm text-muted-foreground">
                   Status:{" "}
                   <span className="font-medium text-primary">
-                    {processingItem.status === "completed"
+                    {processingItem?.status === "completed"
                       ? "Ready to study"
-                      : processingItem.status === "failed"
+                      : processingItem?.status === "failed"
                         ? "Failed"
                         : "Analyzing content"}
                   </span>
                 </p>
-                {processingItem.errorMessage && (
+                {processingItem?.errorMessage && (
                   <p className="mt-2 text-xs text-destructive">{processingItem.errorMessage}</p>
                 )}
               </div>
               <div className="flex items-center gap-2">
-                {processingItem.status === "completed" ? (
+                {processingItem?.status === "completed" ? (
                   <CheckCircle2 className="h-10 w-10 text-primary" />
-                ) : processingItem.status === "failed" ? (
+                ) : processingItem?.status === "failed" ? (
                   <AlertTriangle className="h-10 w-10 text-destructive" />
                 ) : (
                   <Loader2 className="h-10 w-10 animate-spin text-muted-foreground" />
@@ -350,11 +363,11 @@ export default function DocumentUpload({ onSuccess, hideProgress = false }: Docu
                 We'll automatically refresh this status. You can navigate away and come back anytime.
               </p>
               {!onSuccess && (
-                <Button asChild disabled={processingItem.status !== "completed"}>
-                  <Link href={`/study/${processingItem.id}`}>Continue to Study</Link>
+                <Button asChild disabled={processingItem?.status !== "completed"}>
+                  <Link href={`/study/${processingItem?.id || ''}`}>Continue to Study</Link>
                 </Button>
               )}
-              {onSuccess && processingItem.status === "completed" && (
+              {onSuccess && processingItem?.status === "completed" && (
                 <p className="text-xs text-primary font-medium">
                   ✓ Processing complete! Returning to workspace...
                 </p>
