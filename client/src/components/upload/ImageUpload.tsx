@@ -378,8 +378,8 @@ export default function ImageUpload({ onSuccess, hideProgress = false }: Documen
               </>
             ) : (
               <>
-                <FileText className="inline-block w-5 h-5 mr-2" />
-                Process Documents
+                <ImageIcon className="inline-block w-5 h-5 mr-2" />
+                Process Images
               </>
             )}
           </Button>
