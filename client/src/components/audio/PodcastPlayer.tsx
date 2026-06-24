@@ -147,7 +147,17 @@ export default function PodcastPlayer({ audioUrl, title, transcript, summary, us
     };
   }, [transcript, showSubtitles, audioUrl, useWebSpeech, textToSpeak]);
 
-  // Live Sync volume and playback rate to the audio element when they change
+  // Prime voices for Web Speech API
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.speechSynthesis) {
+      window.speechSynthesis.getVoices();
+      window.speechSynthesis.onvoiceschanged = () => {
+        window.speechSynthesis.getVoices();
+      };
+    }
+  }, []);
+
+  // Set total duration for web speech based on text length
   useEffect(() => {
     if (audioRef.current && !useWebSpeech) {
       audioRef.current.volume = volume;
@@ -169,6 +179,20 @@ export default function PodcastPlayer({ audioUrl, title, transcript, summary, us
     }
     
     const utterance = new SpeechSynthesisUtterance(textToPlay);
+    
+    // Attempt to find a human-like female voice
+    const voices = window.speechSynthesis.getVoices();
+    const preferredVoices = voices.filter(v => 
+      v.lang.startsWith("en") && 
+      (v.name.includes("Female") || v.name.includes("Samantha") || v.name.includes("Google UK English Female") || v.name.includes("Zira") || v.name.includes("Karen") || v.name.includes("Victoria") || v.name.includes("Tessa") || v.name.includes("Moira"))
+    );
+    if (preferredVoices.length > 0) {
+      utterance.voice = preferredVoices[0];
+    } else {
+      const enVoice = voices.find(v => v.lang.startsWith("en"));
+      if (enVoice) utterance.voice = enVoice;
+    }
+
     utterance.rate = rate;
     utterance.volume = vol;
     utterance.onstart = () => setIsPlaying(true);
@@ -206,7 +230,10 @@ export default function PodcastPlayer({ audioUrl, title, transcript, summary, us
   const togglePlay = () => {
     if (useWebSpeech) {
       if (isPlaying) {
+        // Fix for browser bugs: resume then cancel clears stuck state safely
+        window.speechSynthesis.resume();
         window.speechSynthesis.cancel();
+        setIsPlaying(false);
       } else {
         startWebSpeech(currentCharIndexRef.current, playbackRate, volume);
       }

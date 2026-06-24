@@ -304,7 +304,7 @@ function MainNav({ activeTab, onTabChange }: { activeTab: string; onTabChange: (
         <div className="mt-auto relative z-10 flex flex-col items-center gap-4">
           <button 
             onClick={toggle} 
-            className="w-11 h-11 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors flex items-center justify-center text-white hover:text-white"
+            className="w-11 h-11 rounded-2xl bg-white/10 backdrop-blur-xl border border-white/30 hover:bg-white/20 hover:border-white/40 transition-all duration-300 flex items-center justify-center text-white shadow-[inset_0_1px_3px_rgba(255,255,255,0.8),inset_0_-1px_3px_rgba(255,255,255,0.1),0_4px_16px_rgba(0,0,0,0.2)]"
             title="Toggle Theme"
           >
             {theme === "dark" ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
@@ -1794,7 +1794,7 @@ function CenterColumn({
               
               {/* Circular progress */}
               <div className="relative shrink-0" style={{ width: 140, height: 140 }}>
-                <svg width="140" height="140" viewBox="0 0 130 130" style={{ transform: 'rotate(-90deg)' }}>
+                <svg width="140" height="140" viewBox="0 0 130 130" style={{ transform: 'rotate(-90deg)', overflow: 'visible' }}>
                   {/* Track */}
                   <circle cx="65" cy="65" r="54" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="12" />
                   {/* Progress */}
@@ -2157,14 +2157,14 @@ function ChatPanel({
 
       {/* macOS Style Input Area */}
       <div className="p-4 pt-2 shrink-0 bg-transparent">
-        <div className="relative bg-white/20 backdrop-blur-[40px] rounded-[24px] border border-white/20 p-1 flex items-end shadow-[0_8px_32px_rgba(0,0,0,0.1)] transition-all focus-within:border-white/30 focus-within:bg-white/30 focus-within:shadow-[0_8px_32px_rgba(0,0,0,0.15)]">
+        <div className="relative bg-black/20 backdrop-blur-[40px] rounded-[24px] border border-white/10 p-1 flex items-end shadow-[inset_0_2px_8px_rgba(0,0,0,0.2),0_1px_0_rgba(255,255,255,0.1)] transition-all focus-within:border-white/20 focus-within:bg-black/30 focus-within:shadow-[inset_0_2px_8px_rgba(0,0,0,0.3),0_1px_0_rgba(255,255,255,0.2)]">
           <Textarea
             ref={textareaRef}
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder="Message Nova..."
-            className="min-h-[44px] max-h-[150px] resize-none bg-transparent border-none focus:ring-0 text-[14px] py-3 pl-4 pr-12 text-[#F2F2F7] placeholder:text-white custom-scrollbar"
+            className="min-h-[44px] max-h-[150px] resize-none bg-transparent border-none focus:ring-0 text-[14px] py-3 pl-4 pr-12 text-white placeholder:text-white/60 custom-scrollbar"
             disabled={!isReady}
           />
           <div className="absolute right-2 bottom-2 flex items-center gap-1.5">
@@ -2172,7 +2172,7 @@ function ChatPanel({
               type="button"
               variant="ghost"
               size="icon"
-              className={`h-8 w-8 rounded-full transition-all ${listening ? 'bg-red-500/20 text-red-500' : 'text-white hover:bg-white/10'}`}
+              className={`h-8 w-8 rounded-full transition-all ${listening ? 'bg-red-500/20 text-red-500' : 'text-white/80 hover:bg-white/10 hover:text-white'}`}
               onClick={toggleListening}
               disabled={!isReady || !browserSupportsSpeech}
               title={!browserSupportsSpeech ? "Speech recognition not supported in this browser" : listening ? "Stop recording" : "Use microphone"}
@@ -2183,7 +2183,7 @@ function ChatPanel({
               onClick={handleSend}
               disabled={!input.trim() || !isReady}
               size="icon"
-              className="h-8 w-8 rounded-full bg-white/20 hover:bg-white/30 text-white disabled:bg-white/5 disabled:text-white transition-all shrink-0"
+              className="h-8 w-8 rounded-full bg-white/20 hover:bg-white/30 text-white disabled:bg-white/5 disabled:text-white/50 transition-all shrink-0 shadow-[inset_0_1px_2px_rgba(255,255,255,0.3)]"
             >
               <ArrowUp className="h-4 w-4" />
             </Button>
@@ -2678,25 +2678,31 @@ export default function Workspace() {
       timestamp: new Date(),
     };
 
-    const sessions = getStoredSessions();
-    const sessionIndex = sessions.findIndex(s => s.id === selectedSession.id);
+    let sessions = getStoredSessions();
+    let sessionIndex = sessions.findIndex(s => s.id === selectedSession.id);
     
-    if (sessionIndex === -1) return;
+    if (sessionIndex === -1 && selectedSession.contentItemId) {
+      sessionIndex = sessions.findIndex(s => s.contentItemId === selectedSession.contentItemId);
+    }
+    
+    if (sessionIndex === -1) {
+      // Fallback: If somehow not in local storage, add it
+      sessions.unshift(selectedSession);
+      sessionIndex = 0;
+    }
 
-    sessions[sessionIndex].messages.push(userMessage);
-    sessions[sessionIndex].updatedAt = new Date();
-    saveSessions(sessions);
-    setSelectedSession(sessions[sessionIndex]);
-
-    // Add loading message
     const loadingMessage: ChatMessage = {
       role: "assistant",
       content: "Thinking...",
       timestamp: new Date(),
     };
-    sessions[sessionIndex].messages.push(loadingMessage);
+
+    const newMessages = [...sessions[sessionIndex].messages, userMessage, loadingMessage];
+    const updatedSession = { ...sessions[sessionIndex], messages: newMessages, updatedAt: new Date() };
+
+    sessions[sessionIndex] = updatedSession;
     saveSessions(sessions);
-    setSelectedSession({ ...sessions[sessionIndex] });
+    setSelectedSession(updatedSession);
 
     try {
       // Call AI API endpoint
@@ -2721,13 +2727,12 @@ export default function Workspace() {
       );
       // Remove loading message and add actual response
       const updatedSessions = getStoredSessions();
-      const updatedIndex = updatedSessions.findIndex(s => s.id === selectedSession.id);
+      const updatedIndex = updatedSessions.findIndex(s => s.id === updatedSession.id);
       if (updatedIndex !== -1) {
-        // Remove loading message (last assistant message that says "Thinking...")
-        const messages = updatedSessions[updatedIndex].messages;
-        const lastLoadingIndex = messages.length - 1;
-        if (messages[lastLoadingIndex]?.role === "assistant" && messages[lastLoadingIndex]?.content === "Thinking...") {
-          messages.pop();
+        const currentMessages = [...updatedSessions[updatedIndex].messages];
+        const lastLoadingIndex = currentMessages.length - 1;
+        if (currentMessages[lastLoadingIndex]?.role === "assistant" && currentMessages[lastLoadingIndex]?.content === "Thinking...") {
+          currentMessages.pop();
         }
         
         const assistantMessage: ChatMessage = {
@@ -2736,11 +2741,11 @@ export default function Workspace() {
           timestamp: new Date(),
         };
         
-        messages.push(assistantMessage);
-        updatedSessions[updatedIndex].messages = messages;
-        updatedSessions[updatedIndex].updatedAt = new Date();
+        currentMessages.push(assistantMessage);
+        const finalSession = { ...updatedSessions[updatedIndex], messages: currentMessages, updatedAt: new Date() };
+        updatedSessions[updatedIndex] = finalSession;
         saveSessions(updatedSessions);
-        setSelectedSession(updatedSessions[updatedIndex]);
+        setSelectedSession(finalSession);
       }
     } catch (error) {
       console.error("Failed to get AI response:", error);
@@ -2753,13 +2758,12 @@ export default function Workspace() {
       );
 
       const updatedSessions = getStoredSessions();
-      const updatedIndex = updatedSessions.findIndex(s => s.id === selectedSession.id);
+      const updatedIndex = updatedSessions.findIndex(s => s.id === updatedSession.id);
       if (updatedIndex !== -1) {
-        // Remove loading message
-        const messages = updatedSessions[updatedIndex].messages;
-        const lastLoadingIndex = messages.length - 1;
-        if (messages[lastLoadingIndex]?.role === "assistant" && messages[lastLoadingIndex]?.content === "Thinking...") {
-          messages.pop();
+        const currentMessages = [...updatedSessions[updatedIndex].messages];
+        const lastLoadingIndex = currentMessages.length - 1;
+        if (currentMessages[lastLoadingIndex]?.role === "assistant" && currentMessages[lastLoadingIndex]?.content === "Thinking...") {
+          currentMessages.pop();
         }
         
         const assistantMessage: ChatMessage = {
@@ -2768,11 +2772,11 @@ export default function Workspace() {
           timestamp: new Date(),
         };
         
-        messages.push(assistantMessage);
-        updatedSessions[updatedIndex].messages = messages;
-        updatedSessions[updatedIndex].updatedAt = new Date();
+        currentMessages.push(assistantMessage);
+        const finalSession = { ...updatedSessions[updatedIndex], messages: currentMessages, updatedAt: new Date() };
+        updatedSessions[updatedIndex] = finalSession;
         saveSessions(updatedSessions);
-        setSelectedSession(updatedSessions[updatedIndex]);
+        setSelectedSession(finalSession);
       }
     }
   };
