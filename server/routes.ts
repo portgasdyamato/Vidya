@@ -327,11 +327,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Update specific content item (e.g. saving edited summary)
   app.patch("/api/content/:id", async (req, res) => {
     try {
-      const { summary } = req.body;
+      const { summary, chatHistory } = req.body;
       const item = await storage.getContentItem(req.params.id);
       if (!item) return res.status(404).json({ message: "Content not found" });
 
-      const updated = await storage.updateContentItem(item.id, { summary: summary as any });
+      const updates: any = {};
+      if (summary !== undefined) updates.summary = summary;
+      if (chatHistory !== undefined) updates.chatHistory = chatHistory;
+
+      const updated = await storage.updateContentItem(item.id, updates);
       res.json(updated);
     } catch (error: any) {
       res.status(500).json({ message: error?.message || 'Failed to update content item' });

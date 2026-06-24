@@ -658,6 +658,7 @@ function SessionsPanel({
   activeNotebookId?: string | null;
   activeNotebookName?: string | null;
 }) {
+  const { user } = useAuth();
   const [searchSources, setSearchSources] = useState("");
   const { data: items, refetch: refetchItems } = useQuery<ContentItem[]>({ 
     queryKey: ["/api/content"],
@@ -695,7 +696,7 @@ function SessionsPanel({
         title: item.title,
         createdAt: new Date(item.createdAt),
         updatedAt: new Date(item.updatedAt),
-        messages: [],
+        messages: (user && user.username !== "default-user" && Array.isArray(item.chatHistory)) ? item.chatHistory : [],
         progress: item.status === "completed" ? 100 : item.status === "processing" ? 50 : 0,
       }));
 
@@ -716,6 +717,9 @@ function SessionsPanel({
         ...session,
         title: item.title,
         updatedAt: new Date(item.updatedAt),
+        messages: (user && user.username !== "default-user" && Array.isArray(item.chatHistory) && item.chatHistory.length >= session.messages.length) 
+          ? item.chatHistory 
+          : session.messages,
         progress: item.status === "completed" ? 100 : item.status === "processing" ? 50 : 0,
       };
     });
@@ -2598,6 +2602,7 @@ function Canvas({ initialContent, title }: { initialContent?: string; title: str
 }
 
 export default function Workspace() {
+  const { user } = useAuth();
   const [activeMainNavTab, setActiveMainNavTab] = useState("notebooks"); // Start on notebooks view usually, but wait, library is default
   const [activeNotebookId, setActiveNotebookId] = useState<string | null>(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -2704,6 +2709,15 @@ export default function Workspace() {
     saveSessions(sessions);
     setSelectedSession(updatedSession);
 
+    if (user && user.username !== "default-user") {
+      const dbMessages = updatedSession.messages.filter(m => m.content !== "Thinking...");
+      fetch(`/api/content/${contentItem.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ chatHistory: dbMessages }),
+      }).catch(console.error);
+    }
+
     try {
       // Call AI API endpoint
       const response = await fetch(`/api/content/${contentItem.id}/chat`, {
@@ -2746,6 +2760,14 @@ export default function Workspace() {
         updatedSessions[updatedIndex] = finalSession;
         saveSessions(updatedSessions);
         setSelectedSession(finalSession);
+
+        if (user && user.username !== "default-user") {
+          fetch(`/api/content/${contentItem.id}`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ chatHistory: finalSession.messages }),
+          }).catch(console.error);
+        }
       }
     } catch (error) {
       console.error("Failed to get AI response:", error);
@@ -2777,6 +2799,14 @@ export default function Workspace() {
         updatedSessions[updatedIndex] = finalSession;
         saveSessions(updatedSessions);
         setSelectedSession(finalSession);
+
+        if (user && user.username !== "default-user") {
+          fetch(`/api/content/${contentItem.id}`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ chatHistory: finalSession.messages }),
+          }).catch(console.error);
+        }
       }
     }
   };

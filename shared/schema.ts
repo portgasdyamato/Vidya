@@ -44,6 +44,7 @@ export const contentItems = pgTable("content_items", {
   processingOptions: jsonb("processing_options").notNull(),
   errorMessage: text("error_message"),
   mindMap: jsonb("mind_map"),
+  chatHistory: jsonb("chat_history").default('[]'),
   stats: jsonb("stats").default('{"pagesRead": [], "highlightsCount": 0, "quizScores": [], "flashcardsConfidence": {}}'),
   progress: integer("progress").default(0),
   createdAt: timestamp("created_at").defaultNow().notNull(),
