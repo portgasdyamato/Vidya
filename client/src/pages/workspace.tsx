@@ -280,13 +280,13 @@ function MainNav({ activeTab, onTabChange }: { activeTab: string; onTabChange: (
               onClick={() => onTabChange(id)}
               className={`w-full aspect-square flex items-center justify-center rounded-2xl transition-all duration-300 group relative ${
                 activeTab === id 
-                  ? "bg-white/10 text-white shadow-inner border border-white/5" 
-                  : "text-white hover:bg-white/5 hover:text-white"
+                  ? "bg-white/20 text-white shadow-[inset_0_1px_4px_rgba(255,255,255,0.8),0_4px_12px_rgba(0,0,0,0.05)] border border-white/30" 
+                  : "text-white hover:bg-white/5 hover:text-white border border-transparent"
               }`}
               title={label}
             >
               <Icon className={`w-5 h-5 transition-transform duration-300 ${activeTab === id ? 'scale-110' : 'group-hover:scale-110'}`} />
-              <span className="absolute left-[70px] bg-white/10 backdrop-blur-xl border border-white/10 text-white text-[12px] font-semibold px-3 py-1.5 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap shadow-xl pointer-events-none">
+              <span className="absolute left-[70px] bg-white/20 backdrop-blur-xl border border-white/30 text-white text-[13px] font-bold tracking-wide px-4 py-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap shadow-[inset_0_1px_4px_rgba(255,255,255,0.8),0_8px_32px_rgba(0,0,0,0.15)] pointer-events-none">
                 {label}
               </span>
             </button>
@@ -2225,15 +2225,15 @@ function RightColumn({ contentItem, selectedView, onSelectView }: {
               <button
                 key={id}
                 onClick={() => onSelectView(id)}
-                className={`p-3 rounded-xl transition-all duration-200 group relative ${
+                className={`p-3 rounded-2xl transition-all duration-200 group relative ${
                   isSelected 
-                    ? "bg-white/10 text-white shadow-lg" 
-                    : "text-white hover:bg-white/5"
+                    ? "bg-white/20 text-white shadow-[inset_0_1px_4px_rgba(255,255,255,0.8),0_4px_12px_rgba(0,0,0,0.05)] border border-white/30" 
+                    : "text-white hover:bg-white/5 border border-transparent"
                 }`}
                 title={label}
               >
                 <Icon className="h-5 w-5" />
-                <span className="absolute right-14 bg-black text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-50 pointer-events-none">
+                <span className="absolute right-14 bg-white/20 backdrop-blur-xl border border-white/30 text-white text-[12px] font-bold tracking-wide px-3 py-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-50 shadow-[inset_0_1px_4px_rgba(255,255,255,0.8),0_8px_32px_rgba(0,0,0,0.15)] pointer-events-none">
                   {label}
                 </span>
               </button>
