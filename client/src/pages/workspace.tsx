@@ -2157,7 +2157,7 @@ function ChatPanel({
 
       {/* macOS Style Input Area */}
       <div className="p-4 pt-2 shrink-0 bg-transparent">
-        <div className="relative bg-black/20 backdrop-blur-[40px] rounded-[24px] border border-white/10 p-1 flex items-end shadow-[inset_0_2px_8px_rgba(0,0,0,0.2),0_1px_0_rgba(255,255,255,0.1)] transition-all focus-within:border-white/20 focus-within:bg-black/30 focus-within:shadow-[inset_0_2px_8px_rgba(0,0,0,0.3),0_1px_0_rgba(255,255,255,0.2)]">
+        <div className="relative bg-white/10 dark:bg-black/20 backdrop-blur-[40px] rounded-[24px] border border-white/20 p-1 flex items-end shadow-[inset_0_2px_8px_rgba(0,0,0,0.05),0_1px_0_rgba(255,255,255,0.1)] transition-all focus-within:border-white/40 focus-within:bg-white/20 dark:focus-within:bg-black/30 focus-within:shadow-[inset_0_2px_8px_rgba(0,0,0,0.1),0_1px_0_rgba(255,255,255,0.2)]">
           <Textarea
             ref={textareaRef}
             value={input}
