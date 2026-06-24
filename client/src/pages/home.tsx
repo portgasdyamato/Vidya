@@ -116,13 +116,13 @@ export default function Home() {
 
             {/* AI Visual Right Panel */}
             <div className="flex flex-col items-end gap-6 relative">
-              <div className="w-full max-w-sm aspect-square bg-[#00a3b6]/5 rounded-[2.5rem] border border-white/5 flex items-center justify-center overflow-hidden relative group transition-all hover:bg-[#00a3b6]/10 shadow-[0_20px_50px_rgba(0,163,182,0.05)]">
+              <div className="w-full max-w-sm aspect-square bg-transparent dark:bg-[#00a3b6]/5 rounded-[2.5rem] border border-white/5 flex items-center justify-center overflow-hidden relative group transition-all dark:hover:bg-[#00a3b6]/10 shadow-[0_20px_50px_rgba(0,163,182,0.05)]">
                 <img 
                   src="/bg.gif" 
                   alt="AI Assistant Visualization" 
                   className="w-full h-full object-cover opacity-70 group-hover:opacity-100 transition-all duration-700"
                 />
-                <div className="absolute inset-0 bg-gradient-to-tr from-black/10 to-transparent pointer-events-none" />
+                <div className="absolute inset-0 bg-gradient-to-tr from-transparent dark:from-black/10 to-transparent pointer-events-none" />
                 
                 {/* Visual Accent */}
                 <div className="absolute bottom-4 left-4 bg-black/40 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/10 flex items-center gap-2">
@@ -173,7 +173,6 @@ export default function Home() {
         <div className="w-full max-w-5xl glass-card rounded-[2rem] border border-white/10 p-6 flex flex-col md:flex-row items-center justify-between gap-6 overflow-hidden relative group">
           <div className="flex items-center gap-6">
             <div className="w-14 h-14 relative flex items-center justify-center">
-              <div className="absolute inset-0 bg-[#00a3b6]/20 blur-xl rounded-full" />
               <div className="relative w-10 h-10 border-2 border-primary/40 rounded-full flex items-center justify-center animate-[spin_10s_linear_infinite]">
                  <Plus className="w-4 h-4 text-primary" />
                  <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1 h-1 bg-primary rounded-full" />
