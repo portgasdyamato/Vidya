@@ -10,29 +10,25 @@ import {
   Plus,
   Monitor,
   Layout,
-  MessageSquare
+  MessageSquare,
+  Sun,
+  Moon
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/lib/auth";
+import { useTheme } from "@/lib/theme";
 
 export default function Home() {
   const { user } = useAuth();
+  const { theme, toggle } = useTheme();
   const displayName = user ? (user.displayName || user.name || user.username) : '';
   
   return (
-    <div className="min-h-screen bg-white dark:bg-black text-black dark:text-white flex flex-col items-center justify-center p-4 selection:bg-[#00a3b6]/30 relative overflow-hidden transition-colors duration-500">
+    <div className="min-h-screen bg-[#0a0a0a] dark:bg-[#0a0a0a] text-black dark:text-white flex flex-col items-center justify-center p-4 selection:bg-[#00a3b6]/30 relative overflow-hidden transition-colors duration-500">
       {/* Light Mode: Glowing Orb Gradient */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none flex items-center justify-center dark:hidden">
         <div className="w-[800px] h-[800px] rounded-full bg-gradient-to-br from-[#4361EE] via-[#7209B7] to-[#F72585] opacity-30 blur-[100px] animate-pulse" style={{ animationDuration: '4s' }} />
       </div>
-
-      {/* Dark Mode: Cinematic GIF Environment */}
-      <div 
-        className="absolute inset-0 bg-cover bg-center opacity-80 mix-blend-screen pointer-events-none hidden dark:block"
-        style={{ backgroundImage: "url('/bg.gif')" }} 
-      />
-      <div className="absolute inset-0 bg-black/20 pointer-events-none hidden dark:block" />
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/20 to-black/80 pointer-events-none hidden dark:block" />
       
       {/* Main Content wrapper */}
       <div className="relative z-10 flex flex-col w-full items-center">
@@ -48,17 +44,23 @@ export default function Home() {
           </div>
         </Link>
         <div className="flex items-center gap-6">
+          <button 
+            onClick={toggle} 
+            className="p-2 rounded-xl bg-black/5 border border-black/10 hover:bg-black/10 dark:bg-white/5 dark:border-white/10 dark:hover:bg-white/10 transition-colors text-black/70 dark:text-white/70"
+          >
+            {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+          </button>
           {!user ? (
             <Link href="/login">
-              <span className="text-sm font-medium text-white/70 hover:text-white transition-colors cursor-pointer">Login</span>
+              <span className="text-sm font-medium text-black/70 dark:text-white/70 hover:text-black dark:hover:text-white transition-colors cursor-pointer">Login</span>
             </Link>
           ) : (
              <Link href="/workspace">
-              <span className="text-sm font-medium text-white/70 hover:text-white transition-colors cursor-pointer capitalize">Hi, {displayName}</span>
+              <span className="text-sm font-medium text-black/70 dark:text-white/70 hover:text-black dark:hover:text-white transition-colors cursor-pointer capitalize">Hi, {displayName}</span>
             </Link>
           )}
           <Link href="/workspace">
-            <span className="text-sm font-medium text-white/70 hover:text-white transition-colors cursor-pointer">Workspace</span>
+            <span className="text-sm font-medium text-black/70 dark:text-white/70 hover:text-black dark:hover:text-white transition-colors cursor-pointer">Workspace</span>
           </Link>
         </div>
       </header>

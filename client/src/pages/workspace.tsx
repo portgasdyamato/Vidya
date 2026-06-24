@@ -30,7 +30,7 @@ import {
   Pin, ThumbsUp, ThumbsDown, Plus, CheckCircle2, AlertCircle, Trash2, Clock, 
   MoreVertical, Mic, MicOff, Copy, Download, ShieldCheck, Home, SquarePen, 
   Folder, Library, ChevronRight, ChevronLeft, UploadCloud, UserCircle, LogOut,
-  Highlighter, CheckSquare, Book
+  Highlighter, CheckSquare, Book, Sun, Moon
 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfmModule from "remark-gfm";
@@ -39,6 +39,7 @@ import rehypeKatexModule from "rehype-katex";
 import katex from "katex";
 import "katex/dist/katex.min.css";
 import { parseSummary } from "@/lib/summaryUtils";
+import { useTheme } from "@/lib/theme";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -222,6 +223,7 @@ function MainNav({ activeTab, onTabChange }: { activeTab: string; onTabChange: (
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [displayName, setDisplayName] = useState(user?.name || user?.displayName || user?.username || "");
   const [isUpdating, setIsUpdating] = useState(false);
+  const { theme, toggle } = useTheme();
   const queryClient = useQueryClient();
 
   const handleUpdateProfile = async () => {
@@ -291,7 +293,15 @@ function MainNav({ activeTab, onTabChange }: { activeTab: string; onTabChange: (
           ))}
         </div>
         
-        <div className="mt-auto relative z-10">
+        <div className="mt-auto relative z-10 flex flex-col items-center gap-4">
+          <button 
+            onClick={toggle} 
+            className="w-11 h-11 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors flex items-center justify-center text-white/70 hover:text-white"
+            title="Toggle Theme"
+          >
+            {theme === "dark" ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+          </button>
+
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="rounded-full h-11 w-11 p-0 relative hover:scale-105 transition-transform border border-white/10 shadow-lg group">
@@ -470,7 +480,7 @@ function NotebooksView({ onSelectNotebook }: { onSelectNotebook: (id: string) =>
             </h1>
             <p className="text-lg text-white/50 font-medium">Organize your research effectively</p>
           </div>
-          <Button onClick={() => setIsCreating(true)} className="glass-button-primary rounded-full font-bold px-6">
+          <Button onClick={() => setIsCreating(true)} className="glass-button-primary rounded-full font-medium px-6">
             <Plus className="w-4 h-4 mr-2" /> New Notebook
           </Button>
         </header>
@@ -546,7 +556,7 @@ function NotebooksView({ onSelectNotebook }: { onSelectNotebook: (id: string) =>
               <BookMarked className="h-10 w-10 text-white/20" />
             </div>
             <p className="text-white/50 mb-6 font-medium text-lg">You haven't created any notebooks yet.</p>
-            <Button onClick={() => setIsCreating(true)} className="glass-button-primary px-8 py-6 rounded-full shadow-2xl font-bold text-base">
+            <Button onClick={() => setIsCreating(true)} className="glass-button-primary px-8 py-6 rounded-full shadow-2xl font-medium text-base">
               Create your first notebook
             </Button>
           </div>
