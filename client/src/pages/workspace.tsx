@@ -1292,7 +1292,7 @@ function CenterColumn({
             {contentItem.type === "document" ? (
               <PdfViewer url={`/api/content/${contentItem.id}/original`} contentItemId={contentItem.id.toString()} />
             ) : (
-              <div className="p-8 prose prose-sm prose-invert max-w-none border border-border/50 bg-black/40 h-full rounded-2xl">
+              <div className="p-8 prose prose-sm prose-invert max-w-none border border-border/50 bg-white/10 h-full rounded-2xl">
                 <pre className="whitespace-pre-wrap font-sans text-sm leading-relaxed">
                   {contentItem.extractedText || "No text could be extracted from this source."}
                 </pre>
@@ -2086,7 +2086,7 @@ function ChatPanel({
   const messages = session.messages || [];
 
   return (
-    <aside className="w-[400px] shrink-0 flex flex-col bg-black/20 backdrop-blur-3xl border-l border-white/5 h-full absolute lg:relative right-0 top-0 bottom-0 shadow-[-10px_0_30px_rgba(0,0,0,0.5)] z-30">
+    <aside className="w-[400px] shrink-0 flex flex-col bg-white/10 backdrop-blur-3xl border-l border-white/20 h-full absolute lg:relative right-0 top-0 bottom-0 shadow-[-10px_0_30px_rgba(0,0,0,0.1)] z-30">
       <div className="h-16 flex items-center justify-between px-6 border-b border-white/5 bg-transparent shrink-0">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-white/30 to-white/10 flex items-center justify-center shadow-lg shadow-white/10">
@@ -2149,7 +2149,7 @@ function ChatPanel({
 
       {/* macOS Style Input Area */}
       <div className="p-4 pt-2 shrink-0 bg-transparent">
-        <div className="relative bg-white/[0.05] backdrop-blur-[40px] rounded-[24px] border border-white/10 p-1 flex items-end shadow-[0_8px_32px_rgba(0,0,0,0.3)] transition-all focus-within:border-white/20 focus-within:bg-white/[0.08] focus-within:shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
+        <div className="relative bg-white/20 backdrop-blur-[40px] rounded-[24px] border border-white/20 p-1 flex items-end shadow-[0_8px_32px_rgba(0,0,0,0.1)] transition-all focus-within:border-white/30 focus-within:bg-white/30 focus-within:shadow-[0_8px_32px_rgba(0,0,0,0.15)]">
           <Textarea
             ref={textareaRef}
             value={input}
@@ -3140,7 +3140,7 @@ export default function Workspace() {
             {/* Sidebar Toggle Button */}
             <button 
               onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-              className={`absolute z-40 top-1/2 -translate-y-1/2 flex items-center justify-center w-5 h-12 bg-white/[0.05] backdrop-blur-[40px] border border-white/10 rounded-r-[12px] hover:bg-white/10 transition-all shadow-[0_4px_16px_rgba(0,0,0,0.3)] ${
+              className={`absolute z-40 top-1/2 -translate-y-1/2 flex items-center justify-center w-5 h-12 bg-white/20 backdrop-blur-[40px] border border-white/20 rounded-r-[12px] hover:bg-white/30 transition-all shadow-[0_4px_16px_rgba(0,0,0,0.1)] ${
                 isSidebarOpen ? "left-[300px] border-l-transparent shadow-none" : "left-0"
               }`}
             >
@@ -3211,7 +3211,7 @@ export default function Workspace() {
             {/* Right Sidebar Toggle Button */}
             <button
               onClick={() => setIsRightSidebarOpen(!isRightSidebarOpen)}
-              className={`absolute z-40 top-1/2 -translate-y-1/2 flex items-center justify-center w-5 h-12 bg-white/[0.05] backdrop-blur-[40px] border border-white/10 rounded-l-[12px] hover:bg-white/10 transition-all shadow-[0_4px_16px_rgba(0,0,0,0.3)] ${
+              className={`absolute z-40 top-1/2 -translate-y-1/2 flex items-center justify-center w-5 h-12 bg-white/20 backdrop-blur-[40px] border border-white/20 rounded-l-[12px] hover:bg-white/30 transition-all shadow-[0_4px_16px_rgba(0,0,0,0.1)] ${
                 isRightSidebarOpen ? (selectedSession ? "right-[400px] border-r-transparent shadow-none" : "right-[320px] border-r-transparent shadow-none") : "right-0"
               }`}
             >
@@ -3242,7 +3242,7 @@ export default function Workspace() {
               {['GPT-4o (Default)', 'Claude 3.5 Sonnet', 'Gemini 1.5 Pro'].map((model) => (
                 <div key={model} className="p-4 rounded-xl border border-border/50 bg-card/50 flex items-center justify-between">
                   <span className="font-medium">{model}</span>
-                  <Badge variant={model.includes('Default') ? 'default' : 'outline'}>{model.includes('Default') ? 'Active' : 'Unused'}</Badge>
+                  <Badge variant={model.includes('Default') ? 'glass' : 'glass'} className={model.includes('Default') ? 'opacity-100' : 'opacity-50'}>{model.includes('Default') ? 'Active' : 'Unused'}</Badge>
                 </div>
               ))}
             </div>
