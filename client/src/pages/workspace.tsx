@@ -261,7 +261,7 @@ function MainNav({ activeTab, onTabChange }: { activeTab: string; onTabChange: (
     <>
       <nav className="w-[76px] flex flex-col items-center py-6 bg-slate-900/[0.03] dark:bg-white/[0.03] backdrop-blur-[80px] border border-slate-900/10 dark:border-white/10 rounded-[32px] h-full gap-8 z-20 shadow-[0_8px_32px_rgba(0,0,0,0.4)] relative shrink-0">
         <div className="absolute inset-0 pointer-events-none opacity-20 rounded-[32px] overflow-hidden">
-          <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-white/10 to-transparent" />
+          <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-slate-900/10 dark:from-white/10 to-transparent" />
         </div>
 
         <Link href="/">
@@ -306,7 +306,7 @@ function MainNav({ activeTab, onTabChange }: { activeTab: string; onTabChange: (
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="rounded-full h-11 w-11 p-0 relative hover:scale-105 transition-transform border border-slate-900/10 dark:border-white/10 shadow-lg group">
                 <div className="h-2.5 w-2.5 rounded-full bg-[#30D158] absolute bottom-0 right-0 border-2 border-black z-10 shadow-[0_0_8px_#30D158]" />
-                <div className="h-full w-full rounded-full bg-gradient-to-br from-indigo-500 to-blue-600 flex items-center justify-center text-[11px] text-white font-bold overflow-hidden">
+                <div className="h-full w-full rounded-full bg-gradient-to-br from-indigo-500 to-blue-600 flex items-center justify-center text-[11px] text-slate-900 dark:text-white font-bold overflow-hidden">
                   {user?.photo ? (
                     <img src={user.photo} alt={user.name} className="w-full h-full object-cover" />
                   ) : (
@@ -475,7 +475,7 @@ function NotebooksView({ onSelectNotebook }: { onSelectNotebook: (id: string) =>
       <div className="max-w-5xl mx-auto relative z-10">
         <header className="mb-14 flex items-center justify-between">
           <div>
-            <h1 className="text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-br from-white to-white/60 mb-3 tracking-tight font-serif">
+            <h1 className="text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-br from-slate-900 dark:from-white to-slate-900/60 dark:to-white/60 mb-3 tracking-tight font-serif">
               Notebooks
             </h1>
             <p className="text-lg text-slate-900/50 dark:text-white/50 font-medium">Organize your research effectively</p>
@@ -580,7 +580,7 @@ function NotebooksView({ onSelectNotebook }: { onSelectNotebook: (id: string) =>
                     boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.3), inset 0 1px 0 0 rgba(255, 255, 255, 0.1)',
                   }}
                 >
-                  <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+                  <div className="absolute inset-0 bg-gradient-to-br from-slate-900/10 dark:from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
                   
                   <div className="flex items-center justify-between mb-4">
                     <div className="w-12 h-12 rounded-xl flex items-center justify-center text-slate-900 dark:text-white bg-primary/20 border border-primary/30 relative z-10">
@@ -1503,7 +1503,7 @@ function CenterColumn({
                     letterClass = "bg-[#34C759] text-black shadow-[0_0_15px_rgba(52,199,89,0.3)]";
                   } else if (isSelected && !isCorrectOption) {
                     stateClass = "bg-[#2C2C2E]/40 border-transparent text-slate-900/90 dark:text-white/90 opacity-60";
-                    letterClass = "bg-[#FF453A] text-white shadow-[0_0_15px_rgba(255,69,58,0.3)]";
+                    letterClass = "bg-[#FF453A] text-slate-900 dark:text-white shadow-[0_0_15px_rgba(255,69,58,0.3)]";
                   } else {
                     stateClass = "bg-[#2C2C2E]/20 border-transparent opacity-30 cursor-not-allowed text-slate-900/50 dark:text-white/50";
                     letterClass = "bg-black/20 text-slate-900/30 dark:text-white/30";
@@ -1561,7 +1561,7 @@ function CenterColumn({
                   isCorrect ? "bg-[#34C759]/10 text-[#34C759]" : "bg-[#2C2C2E]/60 text-slate-900 dark:text-white"
                 }`}>
                   <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${
-                    isCorrect ? "bg-[#34C759] text-black" : "bg-[#FF453A] text-white shadow-[0_0_15px_rgba(255,69,58,0.2)]"
+                    isCorrect ? "bg-[#34C759] text-black" : "bg-[#FF453A] text-slate-900 dark:text-white shadow-[0_0_15px_rgba(255,69,58,0.2)]"
                   }`}>
                     {isCorrect ? <CheckCircle2 className="w-5 h-5" /> : <X className="w-5 h-5" />}
                   </div>
@@ -2089,7 +2089,7 @@ function ChatPanel({
     <aside className="w-[400px] shrink-0 flex flex-col bg-black/20 backdrop-blur-3xl border-l border-slate-900/5 dark:border-white/5 h-full absolute lg:relative right-0 top-0 bottom-0 shadow-[-10px_0_30px_rgba(0,0,0,0.5)] z-30">
       <div className="h-16 flex items-center justify-between px-6 border-b border-slate-900/5 dark:border-white/5 bg-transparent shrink-0">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-white/30 to-white/10 flex items-center justify-center shadow-lg shadow-white/10">
+          <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-slate-900/30 dark:from-white/30 to-slate-900/10 dark:to-white/10 flex items-center justify-center shadow-lg shadow-white/10">
             <img src="/logo.png" alt="Vidya AI" className="w-4 h-4 object-contain" />
           </div>
           <h2 className="text-[14px] font-bold text-foreground tracking-wide">Vidya AI</h2>
@@ -2103,7 +2103,7 @@ function ChatPanel({
         <div className="py-6 space-y-6">
           {messages.length === 0 ? (
             <div className="text-center py-12 flex flex-col items-center justify-center opacity-80">
-              <div className="w-16 h-16 rounded-[24px] bg-gradient-to-br from-white/10 to-transparent flex items-center justify-center mb-5 border border-slate-900/10 dark:border-white/10 shadow-lg">
+              <div className="w-16 h-16 rounded-[24px] bg-gradient-to-br from-slate-900/10 dark:from-white/10 to-transparent flex items-center justify-center mb-5 border border-slate-900/10 dark:border-white/10 shadow-lg">
                 <img src="/logo.png" alt="Vidya AI" className="w-7 h-7 object-contain opacity-70" />
               </div>
               <h3 className="text-[15px] font-semibold text-foreground mb-2">How can I help you?</h3>
@@ -2120,7 +2120,7 @@ function ChatPanel({
                 <div
                   className={`max-w-[85%] px-4 py-3 text-[14px] leading-[1.6] shadow-lg border border-slate-900/10 dark:border-white/10 ${
                     msg.role === "user"
-                      ? "bg-gradient-to-br from-white/20 to-white/5 text-slate-900 dark:text-white rounded-[20px] rounded-br-[4px]"
+                      ? "bg-gradient-to-br from-slate-900/20 dark:from-white/20 to-slate-900/5 dark:to-white/5 text-slate-900 dark:text-white rounded-[20px] rounded-br-[4px]"
                       : "bg-slate-900/[0.05] dark:bg-white/[0.05] text-slate-900/90 dark:text-white/90 rounded-[20px] rounded-bl-[4px]"
                   }`}
                 >
@@ -2423,7 +2423,7 @@ function Dashboard({
       
       <div className="max-w-5xl mx-auto relative z-10">
         <header className="mb-14">
-          <h1 className="text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-br from-white to-white/60 mb-3 tracking-tight font-serif">
+          <h1 className="text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-br from-slate-900 dark:from-white to-slate-900/60 dark:to-white/60 mb-3 tracking-tight font-serif">
             Welcome back, Student
           </h1>
           <p className="text-lg text-slate-900/50 dark:text-white/50 font-medium">What would you like to research today?</p>
@@ -2446,10 +2446,10 @@ function Dashboard({
                 boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.3), inset 0 1px 0 0 rgba(255, 255, 255, 0.1)',
               }}
             >
-              <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+              <div className="absolute inset-0 bg-gradient-to-br from-slate-900/10 dark:from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
               
               <div 
-                className="w-12 h-12 rounded-xl flex items-center justify-center mb-6 text-white bg-black border border-white/10"
+                className="w-12 h-12 rounded-xl flex items-center justify-center mb-6 text-slate-900 dark:text-white bg-black border border-slate-900/10 dark:border-white/10"
                 style={{ 
                   boxShadow: `0 8px 20px -4px rgba(0,0,0,0.5), inset 0 2px 4px rgba(255,255,255,0.1)`
                 }}
