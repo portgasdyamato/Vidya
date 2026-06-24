@@ -90,7 +90,7 @@ export function setupGoogleAuth(app: Express) {
     (_req, res) => res.redirect("/workspace")
   );
 
-  app.post("/auth/logout", (req, res) => {
+  app.post("/api/auth/logout", (req, res) => {
     req.logout((err: any) => {
       if (err) return res.status(500).json({ error: "Logout failed" });
       res.json({ ok: true });
