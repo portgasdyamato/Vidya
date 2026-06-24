@@ -2431,10 +2431,10 @@ function Dashboard({
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
           {[
-            { title: "New Project", description: "Upload sources and start researching", icon: Plus, action: onUpload, color: "linear-gradient(135deg, #3A0CA3 0%, #F72585 100%)", shadow: "rgba(247, 37, 133, 0.4)" },
-            { title: "New Notebook", description: "Create a notebook to organize your files", icon: Folder, action: onCreateNotebook, color: "linear-gradient(135deg, #FF9500 0%, #E68A00 100%)", shadow: "rgba(255, 149, 0, 0.4)" },
-            { title: "View Library", description: "Browse all your uploaded documents", icon: Library, action: onViewLibrary, color: "linear-gradient(135deg, #AF52DE 0%, #7B33A4 100%)", shadow: "rgba(175, 82, 222, 0.4)" },
-            { title: "Model Settings", description: "Configure your AI assistant", icon: BrainCircuit, action: onOpenModels, color: "linear-gradient(135deg, #34C759 0%, #248A3D 100%)", shadow: "rgba(52, 199, 89, 0.4)" },
+            { title: "New Project", description: "Upload sources and start researching", icon: Plus, action: onUpload },
+            { title: "New Notebook", description: "Create a notebook to organize your files", icon: Folder, action: onCreateNotebook },
+            { title: "View Library", description: "Browse all your uploaded documents", icon: Library, action: onViewLibrary },
+            { title: "Model Settings", description: "Configure your AI assistant", icon: BrainCircuit, action: onOpenModels },
           ].map((card, i) => (
             <button
               key={i}
@@ -2449,10 +2449,9 @@ function Dashboard({
               <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
               
               <div 
-                className="w-12 h-12 rounded-xl flex items-center justify-center mb-6 text-white"
+                className="w-12 h-12 rounded-xl flex items-center justify-center mb-6 text-white bg-black border border-white/10"
                 style={{ 
-                  background: card.color,
-                  boxShadow: `0 8px 20px -4px ${card.shadow}, inset 0 2px 4px rgba(255,255,255,0.3)`
+                  boxShadow: `0 8px 20px -4px rgba(0,0,0,0.5), inset 0 2px 4px rgba(255,255,255,0.1)`
                 }}
               >
                 <card.icon className="h-6 w-6" />
