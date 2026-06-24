@@ -2330,7 +2330,9 @@ function Dashboard({
     return true;
   });
   
-  const recentSessions = filteredSessions.slice(0, 4);
+  const recentSessions = [...filteredSessions]
+    .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
+    .slice(0, 4);
 
   return (
     <div className="flex-1 overflow-y-auto bg-transparent relative p-8 md:p-12 custom-scrollbar">
