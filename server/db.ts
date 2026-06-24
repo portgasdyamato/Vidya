@@ -74,6 +74,14 @@ export async function ensureSchema(): Promise<void> {
     created_at timestamptz NOT NULL DEFAULT NOW()
   );
 
+  CREATE TABLE IF NOT EXISTS notebooks (
+    id varchar PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id varchar NOT NULL REFERENCES users(id),
+    name text NOT NULL,
+    created_at timestamp NOT NULL DEFAULT now(),
+    updated_at timestamp NOT NULL DEFAULT now()
+  );
+
   CREATE TABLE IF NOT EXISTS content_items (
     id varchar PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id varchar REFERENCES users(id) NOT NULL,
@@ -97,6 +105,9 @@ export async function ensureSchema(): Promise<void> {
     created_at timestamptz NOT NULL DEFAULT NOW(),
     updated_at timestamptz NOT NULL DEFAULT NOW()
   );
+
+  ALTER TABLE content_items
+  ADD COLUMN IF NOT EXISTS notebook_id varchar REFERENCES notebooks(id);
 
   ALTER TABLE content_items
   ADD COLUMN IF NOT EXISTS flashcards jsonb;
