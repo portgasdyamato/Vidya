@@ -130,6 +130,9 @@ export async function ensureSchema(): Promise<void> {
   ALTER TABLE users
   ADD COLUMN IF NOT EXISTS display_name text;
 
+  ALTER TABLE users
+  ADD COLUMN IF NOT EXISTS avatar_url text;
+
   CREATE TABLE IF NOT EXISTS "session" (
     "sid" varchar NOT NULL COLLATE "default",
     "sess" json NOT NULL,

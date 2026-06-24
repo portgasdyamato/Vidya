@@ -1639,7 +1639,7 @@ function CenterColumn({
   }
 
   if (selectedView === "mindmap") {
-    const hasMindMap = isReady && contentItem.mindMap;
+    const hasMindMap = isReady && !!contentItem.mindMap;
     const canRegenerate = isReady && !!(contentItem.extractedText as string);
 
     return (
