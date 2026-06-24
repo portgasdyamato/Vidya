@@ -274,19 +274,27 @@ function MainNav({ activeTab, onTabChange }: { activeTab: string; onTabChange: (
         </Link>
         
         <div className="flex-1 flex flex-col gap-4 relative z-10 w-full px-3">
+          {/* Active Background Animation */}
+          <div 
+            className="absolute left-3 w-[52px] h-[52px] bg-white/10 backdrop-blur-xl rounded-2xl transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] shadow-[inset_0_1px_3px_rgba(255,255,255,0.8),inset_0_-1px_3px_rgba(255,255,255,0.1),0_8px_20px_rgba(0,0,0,0.2)] border border-white/30 pointer-events-none z-0"
+            style={{ 
+              top: '0px',
+              transform: `translateY(${Math.max(0, items.findIndex(item => item.id === activeTab)) * 68}px)`
+            }}
+          />
           {items.map(({ id, icon: Icon, label }) => (
             <button
               key={id}
               onClick={() => onTabChange(id)}
-              className={`w-full aspect-square flex items-center justify-center rounded-2xl transition-all duration-300 group relative ${
+              className={`w-full aspect-square flex items-center justify-center rounded-2xl transition-all duration-300 group relative z-10 ${
                 activeTab === id 
-                  ? "bg-white/20 text-white shadow-[inset_0_1px_4px_rgba(255,255,255,0.8),0_4px_12px_rgba(0,0,0,0.05)] border border-white/30" 
-                  : "text-white hover:bg-white/5 hover:text-white border border-transparent"
+                  ? "text-white" 
+                  : "text-white/70 hover:bg-white/5 hover:text-white"
               }`}
               title={label}
             >
-              <Icon className={`w-5 h-5 transition-transform duration-300 ${activeTab === id ? 'scale-110' : 'group-hover:scale-110'}`} />
-              <span className="absolute left-[70px] bg-white/20 backdrop-blur-xl border border-white/30 text-white text-[13px] font-bold tracking-wide px-4 py-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap shadow-[inset_0_1px_4px_rgba(255,255,255,0.8),0_8px_32px_rgba(0,0,0,0.15)] pointer-events-none">
+              <Icon className={`w-5 h-5 transition-all duration-300 ${activeTab === id ? 'scale-110 drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]' : 'group-hover:scale-110'}`} />
+              <span className="absolute left-[70px] bg-white/10 backdrop-blur-xl border border-white/10 text-white text-[12px] font-semibold px-3 py-1.5 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap shadow-xl pointer-events-none">
                 {label}
               </span>
             </button>
@@ -2218,28 +2226,35 @@ function RightColumn({ contentItem, selectedView, onSelectView }: {
           ))}
         </div>
       ) : (
-        <>
+        <div className="flex flex-col items-center gap-4 w-full relative z-10">
+          {/* Active Background Animation */}
+          <div 
+            className="absolute top-0 w-[44px] h-[44px] bg-white/10 backdrop-blur-xl rounded-xl transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] shadow-[inset_0_1px_3px_rgba(255,255,255,0.8),inset_0_-1px_3px_rgba(255,255,255,0.1),0_8px_20px_rgba(0,0,0,0.2)] border border-white/30 pointer-events-none z-0"
+            style={{ 
+              transform: `translateY(${Math.max(0, tools.findIndex(t => t.id === selectedView)) * 60}px)`
+            }}
+          />
           {tools.map(({ id, label, icon: Icon }) => {
             const isSelected = selectedView === id;
             return (
               <button
                 key={id}
                 onClick={() => onSelectView(id)}
-                className={`p-3 rounded-2xl transition-all duration-200 group relative ${
+                className={`p-3 w-[44px] h-[44px] flex items-center justify-center rounded-xl transition-all duration-300 group relative z-10 ${
                   isSelected 
-                    ? "bg-white/20 text-white shadow-[inset_0_1px_4px_rgba(255,255,255,0.8),0_4px_12px_rgba(0,0,0,0.05)] border border-white/30" 
-                    : "text-white hover:bg-white/5 border border-transparent"
+                    ? "text-white" 
+                    : "text-white/70 hover:bg-white/5 hover:text-white"
                 }`}
                 title={label}
               >
-                <Icon className="h-5 w-5" />
-                <span className="absolute right-14 bg-white/20 backdrop-blur-xl border border-white/30 text-white text-[12px] font-bold tracking-wide px-3 py-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-50 shadow-[inset_0_1px_4px_rgba(255,255,255,0.8),0_8px_32px_rgba(0,0,0,0.15)] pointer-events-none">
+                <Icon className={`w-5 h-5 transition-all duration-300 ${isSelected ? 'scale-110 drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]' : 'group-hover:scale-110'}`} />
+                <span className="absolute right-14 bg-black text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-50 pointer-events-none">
                   {label}
                 </span>
               </button>
             );
           })}
-        </>
+        </div>
       )}
     </aside>
   );
