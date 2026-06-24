@@ -2930,10 +2930,8 @@ export default function Workspace() {
   if (showUpload) {
     return (
       <div className="min-h-screen w-full bg-slate-50 dark:bg-black flex overflow-hidden text-slate-900 dark:text-slate-200 relative transition-colors duration-500">
-        {/* Light Mode: Glowing Orb Gradient */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none flex items-center justify-center dark:hidden">
-          <div className="w-[800px] h-[800px] rounded-full bg-gradient-to-br from-[#4361EE] via-[#7209B7] to-[#F72585] opacity-20 blur-[100px] animate-pulse" style={{ animationDuration: '4s' }} />
-        </div>
+        {/* Light Mode: Grayish White Gradient */}
+        <div className="absolute inset-0 bg-gradient-to-br from-gray-200 via-slate-50 to-white dark:hidden" />
 
         {/* Dark Mode: Cinematic GIF Environment */}
         <div 
@@ -3070,10 +3068,8 @@ export default function Workspace() {
 
   return (
     <div className="h-screen w-full bg-slate-50 dark:bg-black flex overflow-hidden text-slate-900 dark:text-slate-200 relative transition-colors duration-500">
-      {/* Light Mode: Glowing Orb Gradient */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none flex items-center justify-center dark:hidden">
-        <div className="w-[800px] h-[800px] rounded-full bg-gradient-to-br from-[#4361EE] via-[#7209B7] to-[#F72585] opacity-20 blur-[100px] animate-pulse" style={{ animationDuration: '4s' }} />
-      </div>
+      {/* Light Mode: Grayish White Gradient */}
+      <div className="absolute inset-0 bg-gradient-to-br from-gray-200 via-slate-50 to-white dark:hidden" />
 
       {/* Dark Mode: Cinematic GIF Environment */}
       <div 
