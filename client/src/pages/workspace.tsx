@@ -30,7 +30,7 @@ import {
   Pin, ThumbsUp, ThumbsDown, Plus, CheckCircle2, AlertCircle, Trash2, Clock, 
   MoreVertical, Mic, MicOff, Copy, Download, ShieldCheck, Home, SquarePen, 
   Folder, Library, ChevronRight, ChevronLeft, UploadCloud, UserCircle, LogOut,
-  Highlighter, CheckSquare
+  Highlighter, CheckSquare, Book
 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfmModule from "remark-gfm";
@@ -406,6 +406,44 @@ function NotebooksView({ onSelectNotebook }: { onSelectNotebook: (id: string) =>
     }
   };
 
+  const handleDelete = async (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!confirm("Are you sure you want to delete this notebook? All associated documents and chats will be permanently deleted.")) return;
+    try {
+      const res = await fetch(`/api/notebooks/${id}`, { method: "DELETE" });
+      if (res.ok) {
+        queryClient.invalidateQueries({ queryKey: ["/api/notebooks"] });
+        queryClient.invalidateQueries({ queryKey: ["/api/content"] });
+        toast({ title: "Notebook deleted" });
+      } else {
+        throw new Error("Failed to delete");
+      }
+    } catch (e) {
+      toast({ title: "Failed to delete notebook", variant: "destructive" });
+    }
+  };
+
+  const handleEdit = async (id: string, currentName: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    const newName = prompt("Enter new notebook name:", currentName);
+    if (!newName || newName === currentName) return;
+    try {
+      const res = await fetch(`/api/notebooks/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: newName })
+      });
+      if (res.ok) {
+        queryClient.invalidateQueries({ queryKey: ["/api/notebooks"] });
+        toast({ title: "Notebook updated" });
+      } else {
+        throw new Error("Failed to update");
+      }
+    } catch (e) {
+      toast({ title: "Failed to update notebook", variant: "destructive" });
+    }
+  };
+
   return (
     <div className="flex-1 overflow-y-auto bg-transparent relative p-8 md:p-12 custom-scrollbar text-white w-full">
       <div className="max-w-5xl mx-auto relative z-10">
@@ -488,6 +526,21 @@ function NotebooksView({ onSelectNotebook }: { onSelectNotebook: (id: string) =>
                     <div className="w-12 h-12 rounded-xl flex items-center justify-center text-white bg-primary/20 border border-primary/30 relative z-10">
                       <BookMarked className="h-6 w-6" />
                     </div>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
+                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity text-white hover:bg-white/10 relative z-20">
+                          <MoreVertical className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="z-[60]">
+                        <DropdownMenuItem onClick={(e) => handleEdit(notebook.id, notebook.name, e)}>
+                          <SquarePen className="h-4 w-4 mr-2" /> Edit Name
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={(e) => handleDelete(notebook.id, e)} className="text-destructive focus:text-destructive">
+                          <Trash2 className="h-4 w-4 mr-2" /> Delete Notebook
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </div>
                   
                   <h3 className="text-xl font-bold text-slate-100 mb-2 truncate relative z-10">{notebook.name}</h3>
@@ -527,6 +580,7 @@ function SessionsPanel({
   onDeleteSession: (sessionId: string) => void;
   autoSelectNew?: boolean;
   activeNotebookId?: string | null;
+  activeNotebookName?: string | null;
 }) {
   const [searchSources, setSearchSources] = useState("");
   const { data: items, refetch: refetchItems } = useQuery<ContentItem[]>({ 
@@ -554,7 +608,7 @@ function SessionsPanel({
     // Filter by notebook if one is selected
     const filteredItems = activeNotebookId 
       ? items.filter(i => i.notebookId === activeNotebookId)
-      : items;
+      : items.filter(i => !i.notebookId);
 
     // Create sessions for content items that don't have one
     const newSessions: ChatSession[] = filteredItems
@@ -575,6 +629,7 @@ function SessionsPanel({
         const item = items.find(i => i.id === session.contentItemId);
         if (!item) return false;
         if (activeNotebookId && item.notebookId !== activeNotebookId) return false;
+        if (!activeNotebookId && item.notebookId) return false;
         return true;
       })
       .map(session => {
@@ -627,7 +682,9 @@ function SessionsPanel({
     <aside className="w-[300px] bg-white/[0.03] backdrop-blur-[80px] border-r border-white/10 flex flex-col h-full z-10 relative shadow-[10px_0_30px_rgba(0,0,0,0.3)] shrink-0">
       <div className="p-4 border-b border-white/10">
         <div className="flex items-center justify-between mb-3">
-          <h2 className="text-base font-bold text-foreground">Sources</h2>
+          <h2 className="text-base font-bold text-foreground">
+            {activeNotebookName ? `${activeNotebookName}` : "Sources"}
+          </h2>
           <Button
             onClick={onNewChat}
             size="sm"
@@ -2422,6 +2479,19 @@ export default function Workspace() {
     console.log("Workspace component mounted");
   }, []);
 
+  const { data: notebooks } = useQuery<any[]>({
+    queryKey: ["/api/notebooks"],
+    queryFn: async () => {
+      const res = await fetch("/api/notebooks");
+      if (!res.ok) return [];
+      return res.json();
+    }
+  });
+
+  const activeNotebookName = activeNotebookId 
+    ? notebooks?.find((n: any) => n.id === activeNotebookId)?.name 
+    : null;
+
   const { data: contentItem, isLoading, refetch } = useQuery<ContentItem>({
     queryKey: ["content-item", selectedSession?.contentItemId],
     queryFn: async () => {
@@ -2897,6 +2967,7 @@ export default function Workspace() {
                 onDeleteSession={handleDeleteSession}
                 autoSelectNew={autoSelectNew}
                 activeNotebookId={activeNotebookId}
+                activeNotebookName={activeNotebookName}
               />
             )}
             
@@ -2927,6 +2998,12 @@ export default function Workspace() {
                         <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
                         <span className="text-[10px] font-bold text-primary uppercase tracking-widest">Active</span>
                       </div>
+                      {activeNotebookName && (
+                        <div className="px-3 py-1 bg-secondary border border-white/10 rounded-full flex items-center gap-1.5 ml-2">
+                          <Book className="h-3 w-3 text-secondary-foreground" />
+                          <span className="text-[10px] font-bold text-secondary-foreground uppercase tracking-widest">{activeNotebookName}</span>
+                        </div>
+                      )}
                     </>
                   ) : (
                     <h1 className="text-[14px] font-semibold text-foreground tracking-wide">Select a source</h1>
