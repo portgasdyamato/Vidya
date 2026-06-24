@@ -50,6 +50,53 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get user notebooks
+  app.get("/api/notebooks", async (req, res) => {
+    try {
+      const userId = defaultUserId || "default-user";
+      const notebooks = await storage.getNotebooksByUserId(userId);
+      res.json(notebooks);
+    } catch (error: any) {
+      res.status(500).json({ message: error?.message || "Failed to fetch notebooks" });
+    }
+  });
+
+  // Create notebook
+  app.post("/api/notebooks", async (req, res) => {
+    try {
+      const { name } = req.body;
+      if (!name) return res.status(400).json({ message: "Name is required" });
+      const userId = defaultUserId || "default-user";
+      const notebook = await storage.createNotebook({ name, userId });
+      res.json(notebook);
+    } catch (error: any) {
+      res.status(500).json({ message: error?.message || "Failed to create notebook" });
+    }
+  });
+
+  // Update notebook
+  app.patch("/api/notebooks/:id", async (req, res) => {
+    try {
+      const { name } = req.body;
+      const notebook = await storage.updateNotebook(req.params.id, { name });
+      if (!notebook) return res.status(404).json({ message: "Notebook not found" });
+      res.json(notebook);
+    } catch (error: any) {
+      res.status(500).json({ message: error?.message || "Failed to update notebook" });
+    }
+  });
+
+  // Delete notebook
+  app.delete("/api/notebooks/:id", async (req, res) => {
+    try {
+      const success = await storage.deleteNotebook(req.params.id);
+      if (!success) return res.status(404).json({ message: "Notebook not found" });
+      res.json({ message: "Notebook deleted successfully" });
+    } catch (error: any) {
+      res.status(500).json({ message: error?.message || "Failed to delete notebook" });
+    }
+  });
+
   // Upload and process document
   app.post("/api/content/document", upload.single("file"), async (req, res) => {
     try {
@@ -57,7 +104,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "No file uploaded" });
       }
 
-      const { title, processingOptions } = req.body;
+      const { title, processingOptions, notebookId } = req.body;
       let parsedOptions;
       try {
         parsedOptions = processingOptionsSchema.parse(typeof processingOptions === 'string' ? JSON.parse(processingOptions) : (processingOptions || {}));
@@ -74,6 +121,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Create content item
       const contentItem = await storage.createContentItem({
         userId: defaultUserId || "default-user", // In real app, get from auth
+        notebookId: notebookId || null,
         title: title || req.file.originalname,
         type: "document",
         originalFileName: req.file.originalname,
@@ -98,7 +146,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "No image uploaded" });
       }
 
-      const { title, processingOptions } = req.body;
+      const { title, processingOptions, notebookId } = req.body;
       let parsedOptions;
       try {
         parsedOptions = processingOptionsSchema.parse(typeof processingOptions === 'string' ? JSON.parse(processingOptions) : (processingOptions || {}));
@@ -109,6 +157,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const contentItem = await storage.createContentItem({
         userId: defaultUserId || "default-user",
+        notebookId: notebookId || null,
         title: title || req.file.originalname,
         type: "image",
         originalFileName: req.file.originalname,
@@ -128,7 +177,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Process video URL
   app.post("/api/content/video", async (req, res) => {
     try {
-      const { title, url, processingOptions } = req.body;
+      const { title, url, processingOptions, notebookId } = req.body;
       
       if (!url || typeof url !== 'string' || url.trim().length === 0) {
         return res.status(400).json({ message: 'Video URL is required and must be a valid string' });
@@ -166,6 +215,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const contentItem = await storage.createContentItem({
         userId: defaultUserId,
+        notebookId: notebookId || null,
         title: title || "Video Content",
         type: "video",
         originalUrl: url.trim(),
@@ -191,11 +241,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "No audio file uploaded" });
       }
 
-      const { title, processingOptions } = req.body;
+      const { title, processingOptions, notebookId } = req.body;
       const parsedOptions = processingOptionsSchema.parse(JSON.parse(processingOptions || "{}"));
 
       const contentItem = await storage.createContentItem({
         userId: defaultUserId || "default-user",
+        notebookId: notebookId || null,
         title: title || req.file.originalname,
         type: "document", // Store as document type but process as audio
         originalFileName: req.file.originalname,

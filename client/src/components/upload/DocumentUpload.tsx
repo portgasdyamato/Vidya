@@ -21,9 +21,10 @@ type ProcessingState = {
 interface DocumentUploadProps {
   onSuccess?: (contentItem: { id: string; title: string; status: string }) => void;
   hideProgress?: boolean; // Hide internal progress when used in workspace
+  notebookId?: string;
 }
 
-export default function DocumentUpload({ onSuccess, hideProgress = false }: DocumentUploadProps = {}) {
+export default function DocumentUpload({ onSuccess, hideProgress = false, notebookId }: DocumentUploadProps = {}) {
   const [dragActive, setDragActive] = useState(false);
   const [files, setFiles] = useState<File[]>([]);
   const [title, setTitle] = useState("");
@@ -168,6 +169,9 @@ export default function DocumentUpload({ onSuccess, hideProgress = false }: Docu
       generateMindMap,
       generateQuiz,
     }));
+    if (notebookId) {
+      formData.append("notebookId", notebookId);
+    }
 
     uploadMutation.mutate(formData);
   };

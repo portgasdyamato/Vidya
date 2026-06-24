@@ -12,12 +12,21 @@ export const users = pgTable("users", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
+export const notebooks = pgTable("notebooks", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").references(() => users.id).notNull(),
+  name: text("name").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
 export const contentTypeEnum = pgEnum("content_type", ["document", "image", "video"]);
 export const processingStatusEnum = pgEnum("processing_status", ["pending", "processing", "completed", "failed"]);
 
 export const contentItems = pgTable("content_items", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   userId: varchar("user_id").references(() => users.id).notNull(),
+  notebookId: varchar("notebook_id").references(() => notebooks.id),
   title: text("title").notNull(),
   type: contentTypeEnum("type").notNull(),
   originalFileName: text("original_file_name"),
@@ -45,10 +54,23 @@ export const contentItemsRelations = relations(contentItems, ({ one }) => ({
     fields: [contentItems.userId],
     references: [users.id],
   }),
+  notebook: one(notebooks, {
+    fields: [contentItems.notebookId],
+    references: [notebooks.id],
+  }),
+}));
+
+export const notebooksRelations = relations(notebooks, ({ one, many }) => ({
+  user: one(users, {
+    fields: [notebooks.userId],
+    references: [users.id],
+  }),
+  contentItems: many(contentItems),
 }));
 
 export const usersRelations = relations(users, ({ many }) => ({
   contentItems: many(contentItems),
+  notebooks: many(notebooks),
 }));
 
 export const insertUserSchema = createInsertSchema(users).pick({
@@ -62,6 +84,7 @@ export const insertContentItemSchema = createInsertSchema(contentItems).pick({
   originalFileName: true,
   originalUrl: true,
   processingOptions: true,
+  notebookId: true,
 });
 
 export const processingOptionsSchema = z.object({
@@ -77,3 +100,5 @@ export type User = typeof users.$inferSelect;
 export type ContentItem = typeof contentItems.$inferSelect;
 export type InsertContentItem = z.infer<typeof insertContentItemSchema>;
 export type ProcessingOptions = z.infer<typeof processingOptionsSchema>;
+export type Notebook = typeof notebooks.$inferSelect;
+export type InsertNotebook = typeof notebooks.$inferInsert;

@@ -21,7 +21,7 @@ import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 import { useAudio } from "@/lib/AudioContext";
 import { useSpeechRecognition } from "@/hooks/useSpeechRecognition";
-import type { ContentItem } from "@shared/schema";
+import type { ContentItem, Notebook } from "@shared/schema";
 import { useAuth } from "@/lib/auth";
 import { 
   FileText, BrainCircuit, Headphones, LayoutDashboard, LayoutTemplate, Share2, 
@@ -242,7 +242,7 @@ function MainNav({ activeTab, onTabChange }: { activeTab: string; onTabChange: (
     { id: "home", icon: Home, label: "Home" },
     { id: "library", icon: Library, label: "Library" },
     { id: "models", icon: BrainCircuit, label: "Models" },
-    { id: "settings", icon: Settings, label: "Settings" },
+    { id: "notebooks", icon: BookMarked, label: "Notebooks" },
   ];
 
   return (
@@ -370,19 +370,163 @@ function MainNav({ activeTab, onTabChange }: { activeTab: string; onTabChange: (
   );
 }
 
+// Notebooks View
+function NotebooksView({ onSelectNotebook }: { onSelectNotebook: (id: string) => void }) {
+  const [isCreating, setIsCreating] = useState(false);
+  const [newNotebookName, setNewNotebookName] = useState("");
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
+
+  const { data: notebooks = [], isLoading } = useQuery<Notebook[]>({
+    queryKey: ["/api/notebooks"],
+  });
+
+  const { data: items = [] } = useQuery<ContentItem[]>({
+    queryKey: ["/api/content"],
+  });
+
+  const handleCreate = async () => {
+    if (!newNotebookName.trim()) return;
+    try {
+      const res = await fetch("/api/notebooks", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: newNotebookName }),
+      });
+      if (res.ok) {
+        queryClient.invalidateQueries({ queryKey: ["/api/notebooks"] });
+        setNewNotebookName("");
+        setIsCreating(false);
+        toast({ title: "Notebook created" });
+      } else {
+        throw new Error("Failed to create notebook");
+      }
+    } catch (e) {
+      toast({ title: "Failed to create notebook", variant: "destructive" });
+    }
+  };
+
+  return (
+    <div className="flex-1 overflow-y-auto bg-transparent relative p-8 md:p-12 custom-scrollbar text-white w-full">
+      <div className="max-w-5xl mx-auto relative z-10">
+        <header className="mb-14 flex items-center justify-between">
+          <div>
+            <h1 className="text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-br from-white to-white/60 mb-3 tracking-tight font-serif">
+              Notebooks
+            </h1>
+            <p className="text-lg text-white/50 font-medium">Organize your research effectively</p>
+          </div>
+          <Button onClick={() => setIsCreating(true)} className="glass-button-primary">
+            <Plus className="w-4 h-4 mr-2" /> New Notebook
+          </Button>
+        </header>
+
+        {isCreating && (
+          <Card className="mb-8 bg-white/5 border-white/10 backdrop-blur-xl">
+            <CardContent className="p-6">
+              <h3 className="text-lg font-semibold mb-4 text-white">Create New Notebook</h3>
+              <div className="flex items-center gap-4">
+                <Input
+                  autoFocus
+                  placeholder="Notebook Name"
+                  value={newNotebookName}
+                  onChange={(e) => setNewNotebookName(e.target.value)}
+                  className="bg-white/10 border-white/20 text-white placeholder:text-white/30"
+                  onKeyDown={(e) => e.key === "Enter" && handleCreate()}
+                />
+                <Button onClick={handleCreate} className="glass-button-primary shrink-0">Create</Button>
+                <Button variant="ghost" onClick={() => setIsCreating(false)} className="shrink-0 text-white hover:bg-white/10">Cancel</Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {isLoading ? (
+          <div className="flex items-center justify-center p-12">
+            <Loader2 className="h-8 w-8 text-primary animate-spin" />
+          </div>
+        ) : notebooks.length === 0 ? (
+          <div 
+            className="rounded-[32px] border border-white/10 p-16 text-center"
+            style={{
+              background: 'rgba(255, 255, 255, 0.02)',
+              backdropFilter: 'blur(40px)',
+              boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.2), inset 0 1px 0 0 rgba(255, 255, 255, 0.05)',
+            }}
+          >
+            <div className="w-20 h-20 rounded-3xl bg-white/5 border border-white/10 flex items-center justify-center mx-auto mb-6">
+              <BookMarked className="h-10 w-10 text-white/20" />
+            </div>
+            <p className="text-white/50 mb-6 font-medium text-lg">You haven't created any notebooks yet.</p>
+            <Button onClick={() => setIsCreating(true)} className="glass-button-primary px-8 py-6 rounded-full shadow-2xl font-bold text-base">
+              Create your first notebook
+            </Button>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {notebooks.map(notebook => {
+              const notebookItems = items.filter(item => item.notebookId === notebook.id);
+              const docsCount = notebookItems.length;
+              const completedDocs = notebookItems.filter(item => item.status === "completed").length;
+              const progress = docsCount > 0 ? Math.round((completedDocs / docsCount) * 100) : 0;
+              const chatCount = docsCount;
+
+              return (
+                <div
+                  key={notebook.id}
+                  onClick={() => onSelectNotebook(notebook.id)}
+                  className="group relative rounded-[32px] p-7 text-left transition-all duration-300 hover:scale-[1.02] border border-white/10 overflow-hidden cursor-pointer"
+                  style={{
+                    background: 'rgba(255, 255, 255, 0.03)',
+                    backdropFilter: 'blur(40px)',
+                    boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.3), inset 0 1px 0 0 rgba(255, 255, 255, 0.1)',
+                  }}
+                >
+                  <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+                  
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="w-12 h-12 rounded-xl flex items-center justify-center text-white bg-primary/20 border border-primary/30 relative z-10">
+                      <BookMarked className="h-6 w-6" />
+                    </div>
+                  </div>
+                  
+                  <h3 className="text-xl font-bold text-slate-100 mb-2 truncate relative z-10">{notebook.name}</h3>
+                  <div className="flex gap-4 text-xs text-slate-400 font-medium mb-4 relative z-10">
+                    <span>{docsCount} Documents</span>
+                    <span>{chatCount} Chats</span>
+                  </div>
+                  <div className="space-y-1 relative z-10">
+                    <div className="flex justify-between text-xs text-slate-400">
+                      <span>Study Progress</span>
+                      <span>{progress}%</span>
+                    </div>
+                    <Progress value={progress} className="h-1.5 bg-white/10" />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 // Left Column: Sources Panel (matches reference UI)
 function SessionsPanel({ 
   activeSessionId, 
   onSelectSession, 
   onNewChat,
   onDeleteSession,
-  autoSelectNew 
+  autoSelectNew,
+  activeNotebookId
 }: { 
   activeSessionId?: string; 
   onSelectSession: (session: ChatSession) => void;
   onNewChat: () => void;
   onDeleteSession: (sessionId: string) => void;
   autoSelectNew?: boolean;
+  activeNotebookId?: string | null;
 }) {
   const [searchSources, setSearchSources] = useState("");
   const { data: items, refetch: refetchItems } = useQuery<ContentItem[]>({ 
@@ -407,8 +551,13 @@ function SessionsPanel({
     
     const existingSessions = getStoredSessions();
     
+    // Filter by notebook if one is selected
+    const filteredItems = activeNotebookId 
+      ? items.filter(i => i.notebookId === activeNotebookId)
+      : items;
+
     // Create sessions for content items that don't have one
-    const newSessions: ChatSession[] = items
+    const newSessions: ChatSession[] = filteredItems
       .filter(item => !existingSessions.find(s => s.contentItemId === item.id))
       .map(item => ({
         id: `session-${item.id}`,
@@ -420,8 +569,15 @@ function SessionsPanel({
         progress: item.status === "completed" ? 100 : item.status === "processing" ? 50 : 0,
       }));
 
-    // Update existing sessions with latest data
-    const updatedSessions = existingSessions.map(session => {
+    // Update existing sessions with latest data, and filter them out if they don't belong to the notebook
+    const updatedSessions = existingSessions
+      .filter(session => {
+        const item = items.find(i => i.id === session.contentItemId);
+        if (!item) return false;
+        if (activeNotebookId && item.notebookId !== activeNotebookId) return false;
+        return true;
+      })
+      .map(session => {
       const item = items.find(i => i.id === session.contentItemId);
       if (!item) return session;
       
@@ -446,7 +602,7 @@ function SessionsPanel({
       onSelectSession(newestSession);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [items, activeSessionId, autoSelectNew]);
+  }, [items, activeSessionId, autoSelectNew, activeNotebookId]);
 
   const handleDelete = (sessionId: string, e: React.MouseEvent) => {
     e.stopPropagation();
@@ -2249,7 +2405,8 @@ function Canvas({ initialContent, title }: { initialContent?: string; title: str
 }
 
 export default function Workspace() {
-  const [activeMainNavTab, setActiveMainNavTab] = useState("library");
+  const [activeMainNavTab, setActiveMainNavTab] = useState("notebooks"); // Start on notebooks view usually, but wait, library is default
+  const [activeNotebookId, setActiveNotebookId] = useState<string | null>(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isRightSidebarOpen, setIsRightSidebarOpen] = useState(true);
   const [selectedSession, setSelectedSession] = useState<ChatSession | undefined>();
@@ -2689,6 +2846,7 @@ export default function Workspace() {
           )}
           
           <DocumentUpload 
+            notebookId={activeNotebookId || undefined}
             onSuccess={(contentItem) => {
               setUploadedItemId(contentItem.id);
               queryClient.invalidateQueries({ queryKey: ["/api/content"] });
@@ -2738,6 +2896,7 @@ export default function Workspace() {
                 onNewChat={handleNewChat}
                 onDeleteSession={handleDeleteSession}
                 autoSelectNew={autoSelectNew}
+                activeNotebookId={activeNotebookId}
               />
             )}
             
@@ -2825,6 +2984,12 @@ export default function Workspace() {
               />
             )}
           </>
+        ) : activeMainNavTab === "notebooks" ? (
+          <NotebooksView onSelectNotebook={(id) => {
+            setActiveNotebookId(id);
+            setSelectedSession(undefined); // Clear active session when switching notebooks
+            setActiveMainNavTab("library");
+          }} />
         ) : activeMainNavTab === "models" ? (
           <div className="flex-1 flex flex-col items-center justify-center p-12 text-center">
             <BrainCircuit className="h-16 w-16 text-primary/20 mb-6" />
