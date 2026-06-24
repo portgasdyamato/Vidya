@@ -20,14 +20,19 @@ export default function Home() {
   const displayName = user ? (user.displayName || user.name || user.username) : '';
   
   return (
-    <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center p-4 selection:bg-[#00a3b6]/30 relative overflow-hidden">
-      {/* VisionOS Cinematic Environment Background */}
+    <div className="min-h-screen bg-white dark:bg-black text-black dark:text-white flex flex-col items-center justify-center p-4 selection:bg-[#00a3b6]/30 relative overflow-hidden transition-colors duration-500">
+      {/* Light Mode: Glowing Orb Gradient */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none flex items-center justify-center dark:hidden">
+        <div className="w-[800px] h-[800px] rounded-full bg-gradient-to-br from-[#4361EE] via-[#7209B7] to-[#F72585] opacity-30 blur-[100px] animate-pulse" style={{ animationDuration: '4s' }} />
+      </div>
+
+      {/* Dark Mode: Cinematic GIF Environment */}
       <div 
-        className="absolute inset-0 bg-cover bg-center opacity-80 mix-blend-screen pointer-events-none"
+        className="absolute inset-0 bg-cover bg-center opacity-80 mix-blend-screen pointer-events-none hidden dark:block"
         style={{ backgroundImage: "url('/bg.gif')" }} 
       />
-      <div className="absolute inset-0 bg-black/20 pointer-events-none" />
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/20 to-black/80 pointer-events-none" />
+      <div className="absolute inset-0 bg-black/20 pointer-events-none hidden dark:block" />
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/20 to-black/80 pointer-events-none hidden dark:block" />
       
       {/* Main Content wrapper */}
       <div className="relative z-10 flex flex-col w-full items-center">

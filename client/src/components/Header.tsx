@@ -43,10 +43,10 @@ export default function Header() {
   );
 
   return (
-    <header className="border-b border-border/10 h-16 flex items-center bg-[#0a0a0a]/80 backdrop-blur-xl sticky top-0 z-50 px-6">
+    <header className="border-b border-border/10 h-16 flex items-center bg-white/80 dark:bg-[#0a0a0a]/80 backdrop-blur-xl sticky top-0 z-50 px-6 transition-colors duration-500">
       <div className="flex-1 flex items-center justify-between max-w-7xl mx-auto w-full">
         <Link href="/">
-          <h1 className="text-xl font-bold text-white cursor-pointer font-serif flex items-center gap-2 group">
+          <h1 className="text-xl font-bold text-black dark:text-white cursor-pointer font-serif flex items-center gap-2 group">
             <div className="flex items-center justify-center group-hover:scale-105 transition-transform">
               <img src="/logo.png" alt="Vidya" className="w-8 h-8 object-contain" />
             </div>
@@ -56,14 +56,14 @@ export default function Header() {
 
         <div className="flex items-center gap-4">
           {!isWorkspace && (
-            <div className="hidden md:flex items-center gap-2 mr-4 border-r border-white/10 pr-4">
+            <div className="hidden md:flex items-center gap-2 mr-4 border-r border-black/10 dark:border-white/10 pr-4">
               <NavContent />
             </div>
           )}
 
           <button 
             onClick={toggle} 
-            className="p-2 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors text-white/70"
+            className="p-2 rounded-xl bg-black/5 border border-black/10 hover:bg-black/10 dark:bg-white/5 dark:border-white/10 dark:hover:bg-white/10 transition-colors text-black/70 dark:text-white/70"
           >
             {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
           </button>
