@@ -281,7 +281,7 @@ function MainNav({ activeTab, onTabChange }: { activeTab: string; onTabChange: (
               className={`w-full aspect-square flex items-center justify-center rounded-2xl transition-all duration-300 group relative ${
                 activeTab === id 
                   ? "bg-white/10 text-white shadow-inner border border-white/5" 
-                  : "text-white/40 hover:bg-white/5 hover:text-white/80"
+                  : "text-white hover:bg-white/5 hover:text-white"
               }`}
               title={label}
             >
@@ -296,7 +296,7 @@ function MainNav({ activeTab, onTabChange }: { activeTab: string; onTabChange: (
         <div className="mt-auto relative z-10 flex flex-col items-center gap-4">
           <button 
             onClick={toggle} 
-            className="w-11 h-11 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors flex items-center justify-center text-white/70 hover:text-white"
+            className="w-11 h-11 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors flex items-center justify-center text-white hover:text-white"
             title="Toggle Theme"
           >
             {theme === "dark" ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
@@ -318,7 +318,7 @@ function MainNav({ activeTab, onTabChange }: { activeTab: string; onTabChange: (
             <DropdownMenuContent align="start" side="right" sideOffset={16} className="w-60 p-2 bg-white/[0.05] backdrop-blur-[80px] border border-white/10 text-white rounded-[24px] shadow-[0_8px_32px_rgba(0,0,0,0.5)]">
               <div className={`px-3 py-3 flex flex-col gap-0.5 ${user?.username !== "default-user" ? "mb-2 border-b border-white/10" : ""}`}>
                 <p className="text-[14px] font-bold tracking-tight truncate text-white">{user?.name || user?.displayName || user?.username}</p>
-                <p className="text-[11px] font-medium tracking-wide text-white/40 uppercase truncate">
+                <p className="text-[11px] font-medium tracking-wide text-white uppercase truncate">
                   {user?.username === "default-user" ? "Guest Account" : "Student Account"}
                 </p>
               </div>
@@ -349,22 +349,22 @@ function MainNav({ activeTab, onTabChange }: { activeTab: string; onTabChange: (
         <DialogContent className="bg-white/[0.05] backdrop-blur-[120px] border border-white/10 text-white sm:rounded-[32px] sm:max-w-md p-8 shadow-[0_16px_64px_rgba(0,0,0,0.5)]">
           <DialogHeader className="space-y-3 mb-6">
             <div className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center mb-2 shadow-inner">
-              <UserCircle className="w-6 h-6 text-white/70" />
+              <UserCircle className="w-6 h-6 text-white" />
             </div>
             <DialogTitle className="text-2xl font-bold tracking-tight">Edit Profile</DialogTitle>
-            <DialogDescription className="text-white/50 text-[14px] leading-relaxed">
+            <DialogDescription className="text-white text-[14px] leading-relaxed">
               Choose how you want your name to appear across Vidya.
             </DialogDescription>
           </DialogHeader>
           
           <div className="space-y-4 py-2">
             <div className="space-y-2">
-              <Label htmlFor="name" className="text-white/60 text-[12px] font-bold uppercase tracking-wider">Display Name</Label>
+              <Label htmlFor="name" className="text-white text-[12px] font-bold uppercase tracking-wider">Display Name</Label>
               <Input
                 id="name"
                 value={displayName}
                 onChange={(e) => setDisplayName(e.target.value)}
-                className="bg-white/5 border-white/10 text-white placeholder:text-white/20 h-12 rounded-xl text-[15px] focus-visible:ring-1 focus-visible:ring-white/30 focus-visible:border-white/30 transition-all"
+                className="bg-white/5 border-white/10 text-white placeholder:text-white h-12 rounded-xl text-[15px] focus-visible:ring-1 focus-visible:ring-white/30 focus-visible:border-white/30 transition-all"
                 placeholder="Enter your name"
               />
             </div>
@@ -478,7 +478,7 @@ function NotebooksView({ onSelectNotebook }: { onSelectNotebook: (id: string) =>
             <h1 className="text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-br from-white to-white/60 mb-3 tracking-tight font-serif">
               Notebooks
             </h1>
-            <p className="text-lg text-white/50 font-medium">Organize your research effectively</p>
+            <p className="text-lg text-white font-medium">Organize your research effectively</p>
           </div>
           <Button onClick={() => setIsCreating(true)} className="glass-button-primary rounded-full font-medium px-6">
             <Plus className="w-4 h-4 mr-2" /> New Notebook
@@ -495,7 +495,7 @@ function NotebooksView({ onSelectNotebook }: { onSelectNotebook: (id: string) =>
                   placeholder="Notebook Name"
                   value={newNotebookName}
                   onChange={(e) => setNewNotebookName(e.target.value)}
-                  className="bg-white/10 border-white/20 text-white placeholder:text-white/30"
+                  className="bg-white/10 border-white/20 text-white placeholder:text-white"
                   onKeyDown={(e) => e.key === "Enter" && handleCreate()}
                 />
                 <Button onClick={() => handleCreate()} className="glass-button-primary rounded-full shrink-0">Create</Button>
@@ -528,7 +528,7 @@ function NotebooksView({ onSelectNotebook }: { onSelectNotebook: (id: string) =>
           <AlertDialogContent className="bg-background/95 backdrop-blur-xl border-white/10 text-foreground">
             <AlertDialogHeader>
               <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-              <AlertDialogDescription className="text-white/70">
+              <AlertDialogDescription className="text-white">
                 This will permanently delete this notebook and all of its contents. This action cannot be undone.
               </AlertDialogDescription>
             </AlertDialogHeader>
@@ -553,9 +553,9 @@ function NotebooksView({ onSelectNotebook }: { onSelectNotebook: (id: string) =>
             }}
           >
             <div className="w-20 h-20 rounded-3xl bg-white/5 border border-white/10 flex items-center justify-center mx-auto mb-6">
-              <BookMarked className="h-10 w-10 text-white/20" />
+              <BookMarked className="h-10 w-10 text-white" />
             </div>
-            <p className="text-white/50 mb-6 font-medium text-lg">You haven't created any notebooks yet.</p>
+            <p className="text-white mb-6 font-medium text-lg">You haven't created any notebooks yet.</p>
             <Button onClick={() => setIsCreating(true)} className="glass-button-primary px-8 py-6 rounded-full shadow-2xl font-medium text-base">
               Create your first notebook
             </Button>
@@ -594,7 +594,7 @@ function NotebooksView({ onSelectNotebook }: { onSelectNotebook: (id: string) =>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end" className="z-[60]">
                         <DropdownMenuItem 
-                          className="text-white/70 focus:text-white focus:bg-white/10 py-2"
+                          className="text-white focus:text-white focus:bg-white/10 py-2"
                           onClick={(e) => { e.stopPropagation(); setEditingNotebook({ id: String(notebook.id), name: notebook.name }); }}
                         >
                           <SquarePen className="w-4 h-4 mr-2" />
@@ -611,12 +611,12 @@ function NotebooksView({ onSelectNotebook }: { onSelectNotebook: (id: string) =>
                   </div>
                   
                   <h3 className="text-xl font-bold text-white mb-2 truncate relative z-10">{notebook.name}</h3>
-                  <div className="flex gap-4 text-xs text-white/70 font-medium mb-4 relative z-10">
+                  <div className="flex gap-4 text-xs text-white font-medium mb-4 relative z-10">
                     <span>{docsCount} Documents</span>
                     <span>{chatCount} Chats</span>
                   </div>
                   <div className="space-y-1 relative z-10">
-                    <div className="flex justify-between text-xs text-white/70">
+                    <div className="flex justify-between text-xs text-white">
                       <span>Study Progress</span>
                       <span>{progress}%</span>
                     </div>
@@ -764,12 +764,12 @@ function SessionsPanel({
           </Button>
         </div>
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white" />
           <Input
             placeholder="Search sources"
             value={searchSources}
             onChange={(e) => setSearchSources(e.target.value)}
-            className="pl-9 h-9 rounded-xl bg-white/5 border-border/50 text-foreground placeholder:text-muted-foreground"
+            className="pl-9 h-9 rounded-xl bg-white/5 border-border/50 text-foreground placeholder:text-white"
           />
         </div>
       </div>
@@ -778,16 +778,16 @@ function SessionsPanel({
         <div className="p-3 space-y-4">
           {sessions.length === 0 ? (
             <div className="text-center py-12 px-4">
-              <FileText className="h-10 w-10 text-muted-foreground mx-auto mb-3 opacity-50" />
-              <p className="text-sm text-muted-foreground mb-1">No sources yet</p>
-              <p className="text-xs text-muted-foreground">Upload a document to get started</p>
+              <FileText className="h-10 w-10 text-white mx-auto mb-3 opacity-50" />
+              <p className="text-sm text-white mb-1">No sources yet</p>
+              <p className="text-xs text-white">Upload a document to get started</p>
             </div>
           ) : dateKeys.length === 0 ? (
-            <p className="text-sm text-muted-foreground px-2">No matching sources</p>
+            <p className="text-sm text-white px-2">No matching sources</p>
           ) : (
             dateKeys.map((dateKey) => (
               <div key={dateKey}>
-                <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider px-2 mb-2">{dateKey}</p>
+                <p className="text-[10px] font-semibold text-white uppercase tracking-wider px-2 mb-2">{dateKey}</p>
                 <div className="space-y-1">
                   {byDate[dateKey].map((session) => {
                     const isActive = activeSessionId === session.id;
@@ -805,7 +805,7 @@ function SessionsPanel({
                         <div className="flex items-start justify-between gap-2">
                           <div className="flex-1 min-w-0">
                             <h3 
-                              className={`text-[13px] tracking-wide ${isActive ? "text-white font-bold" : "text-white/70 font-medium"}`} 
+                              className={`text-[13px] tracking-wide ${isActive ? "text-white font-bold" : "text-white font-medium"}`} 
                               style={{
                                 display: "-webkit-box",
                                 WebkitLineClamp: 2,
@@ -993,7 +993,7 @@ function CenterColumn({
               </div>
               <div className="space-y-2">
                 <h3 className="text-2xl font-black text-foreground font-serif">Ready to learn?</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed max-w-sm mx-auto">
+                <p className="text-sm text-white leading-relaxed max-w-sm mx-auto">
                   Upload any document. Vidya AI will instantly generate summaries, mind maps, flashcards, and a podcast.
                 </p>
               </div>
@@ -1002,7 +1002,7 @@ function CenterColumn({
             {/* Feature Pills */}
             <div className="flex flex-wrap gap-2 justify-center">
               {["AI Summary", "Mind Map", "Flashcards", "Quiz", "AI Podcast", "Chat"].map((f) => (
-                <div key={f} className="px-3 py-1.5 rounded-full bg-white/5 border border-white/8 text-[11px] font-bold text-white/50 uppercase tracking-wider">
+                <div key={f} className="px-3 py-1.5 rounded-full bg-white/5 border border-white/8 text-[11px] font-bold text-white uppercase tracking-wider">
                   {f}
                 </div>
               ))}
@@ -1016,7 +1016,7 @@ function CenterColumn({
               Upload Your First Source
             </Button>
 
-            <p className="text-[11px] text-white/20">
+            <p className="text-[11px] text-white">
               Supports PDF, DOCX, TXT
             </p>
           </div>
@@ -1086,7 +1086,7 @@ function CenterColumn({
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-8 w-8 text-muted-foreground hover:text-foreground"
+                className="h-8 w-8 text-white hover:text-foreground"
                 onClick={handleEditSummary}
               >
                 <SquarePen className="h-4 w-4" />
@@ -1095,7 +1095,7 @@ function CenterColumn({
             <Button
               variant="ghost"
               size="icon"
-              className="h-8 w-8 text-muted-foreground hover:text-foreground"
+              className="h-8 w-8 text-white hover:text-foreground"
               onClick={() => {
                 const parsed = parseSummary(contentItem.summary as any);
                 const text = parsed.text || "";
@@ -1110,7 +1110,7 @@ function CenterColumn({
             <Button
               variant="ghost"
               size="icon"
-              className="h-8 w-8 text-muted-foreground hover:text-foreground"
+              className="h-8 w-8 text-white hover:text-foreground"
               onClick={() => {
                 const parsed = parseSummary(contentItem.summary as any);
                 const text = parsed.text || "";
@@ -1165,8 +1165,8 @@ function CenterColumn({
                     if (!summaryText || summaryText.length < 10) {
                       return (
                         <div className="text-center py-12">
-                          <Loader2 className="h-8 w-8 text-muted-foreground animate-spin mx-auto mb-3" />
-                          <p className="text-muted-foreground">Summary is being generated...</p>
+                          <Loader2 className="h-8 w-8 text-white animate-spin mx-auto mb-3" />
+                          <p className="text-white">Summary is being generated...</p>
                         </div>
                       );
                     }
@@ -1212,7 +1212,7 @@ function CenterColumn({
                                   ) : (
                                     <code className="block bg-muted/80 px-1.5 py-0.5 rounded text-xs font-mono text-foreground border border-border/50" {...props} />
                                   ),
-                                blockquote: ({ node, ...props }: any) => <blockquote className="border-l-4 border-primary/50 pl-4 italic text-muted-foreground mb-3 bg-muted/30 py-2 rounded-r" {...props} />,
+                                blockquote: ({ node, ...props }: any) => <blockquote className="border-l-4 border-primary/50 pl-4 italic text-white mb-3 bg-muted/30 py-2 rounded-r" {...props} />,
                                 hr: ({ node, ...props }: any) => <hr className="my-4 border-border" {...props} />,
                                 a: ({ node, ...props }: any) => <a className="text-primary hover:underline font-medium" {...props} />,
                               }}
@@ -1239,9 +1239,9 @@ function CenterColumn({
                     return (
                       <>
                         <section className="rounded-[32px] border border-white/10 bg-white/[0.04] backdrop-blur-[60px] p-8 shadow-[0_8px_32px_rgba(0,0,0,0.3)] break-words w-full overflow-hidden">
-                          <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-2">Summary Overview</p>
+                          <p className="text-xs font-semibold uppercase tracking-wide text-white mb-2">Summary Overview</p>
                           <h1 className="text-3xl font-bold text-foreground leading-tight">{heroTitle}</h1>
-                          <p className="mt-3 text-base text-muted-foreground leading-relaxed max-w-3xl">{heroDescription}</p>
+                          <p className="mt-3 text-base text-white leading-relaxed max-w-3xl">{heroDescription}</p>
                         </section>
 
                         <section className="rounded-[32px] border border-white/10 bg-white/[0.02] backdrop-blur-[40px] p-8 break-words w-full overflow-hidden shadow-[0_8px_32px_rgba(0,0,0,0.2)]">
@@ -1259,13 +1259,13 @@ function CenterColumn({
               <div className="text-center py-12">
                 {isReady ? (
                   <>
-                    <FileText className="h-8 w-8 text-muted-foreground mx-auto mb-3 opacity-50" />
-                    <p className="text-sm text-muted-foreground">No summary available. Enable “Create Summary & Flashcards” when uploading to generate one.</p>
+                    <FileText className="h-8 w-8 text-white mx-auto mb-3 opacity-50" />
+                    <p className="text-sm text-white">No summary available. Enable “Create Summary & Flashcards” when uploading to generate one.</p>
                   </>
                 ) : (
                   <>
-                    <Loader2 className="h-8 w-8 text-muted-foreground animate-spin mx-auto mb-3" />
-                    <p className="text-sm text-muted-foreground">Summary is being generated...</p>
+                    <Loader2 className="h-8 w-8 text-white animate-spin mx-auto mb-3" />
+                    <p className="text-sm text-white">Summary is being generated...</p>
                   </>
                 )}
               </div>
@@ -1355,7 +1355,7 @@ function CenterColumn({
           <div className="flex items-center gap-2">
             <BookMarked className="h-4 w-4 text-primary" />
             <h2 className="text-base font-semibold text-foreground">Flashcards</h2>
-            {flashcards.length > 0 && <span className="text-xs text-muted-foreground font-medium">{flashcards.length} cards</span>}
+            {flashcards.length > 0 && <span className="text-xs text-white font-medium">{flashcards.length} cards</span>}
           </div>
           {isReady && flashcards.length > 0 && <RegenerateFlashcardsButton />}
         </div>
@@ -1365,11 +1365,11 @@ function CenterColumn({
               <FlashcardDrill flashcards={flashcards} contentId={contentItem.id} />
             ) : (
               <div className="text-center py-12">
-                <BookOpen className="h-8 w-8 text-muted-foreground mx-auto mb-3 opacity-50" />
-                <p className="text-sm text-muted-foreground">
+                <BookOpen className="h-8 w-8 text-white mx-auto mb-3 opacity-50" />
+                <p className="text-sm text-white">
                   {isReady ? "No flashcards available yet" : "Flashcards are being generated..."}
                 </p>
-                {!isReady && <Loader2 className="h-6 w-6 text-muted-foreground animate-spin mx-auto mt-3" />}
+                {!isReady && <Loader2 className="h-6 w-6 text-white animate-spin mx-auto mt-3" />}
               </div>
             )}
           </div>
@@ -1428,12 +1428,12 @@ function CenterColumn({
               />
             ) : (
               <div className="text-center py-12">
-                <Headphones className="h-8 w-8 text-muted-foreground mx-auto mb-3 opacity-50" />
-                <p className="text-sm text-muted-foreground">
+                <Headphones className="h-8 w-8 text-white mx-auto mb-3 opacity-50" />
+                <p className="text-sm text-white">
                   {isReady ? "No audio available for this document" : "Audio is being generated..."}
                 </p>
                 {!isReady && (
-                  <Loader2 className="h-6 w-6 text-muted-foreground animate-spin mx-auto mt-3" />
+                  <Loader2 className="h-6 w-6 text-white animate-spin mx-auto mt-3" />
                 )}
               </div>
             )}
@@ -1480,7 +1480,7 @@ function CenterColumn({
           <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent opacity-50" />
           
           <div className="flex items-start gap-4 mb-8">
-            <span className="flex items-center justify-center w-8 h-8 rounded-full bg-white/5 text-white/40 text-[13px] font-bold border border-white/5 shrink-0 mt-0.5">
+            <span className="flex items-center justify-center w-8 h-8 rounded-full bg-white/5 text-white text-[13px] font-bold border border-white/5 shrink-0 mt-0.5">
               {questionIndex + 1}
             </span>
             <h3 className="text-[17px] font-medium text-[#F2F2F7] leading-relaxed tracking-wide">
@@ -1494,19 +1494,19 @@ function CenterColumn({
                 const isSelected = selectedOption === idx;
                 const isCorrectOption = Number(q.correctAnswer) === idx;
                 
-                let stateClass = "bg-[#2C2C2E]/40 border-transparent hover:bg-[#3A3A3C]/60 text-white/90";
-                let letterClass = "bg-white/10 text-white/50";
+                let stateClass = "bg-[#2C2C2E]/40 border-transparent hover:bg-[#3A3A3C]/60 text-white";
+                let letterClass = "bg-white/10 text-white";
                 
                 if (isAnswered) {
                   if (isCorrectOption) {
                     stateClass = "bg-[#34C759]/10 border-transparent text-[#34C759]";
                     letterClass = "bg-[#34C759] text-black shadow-[0_0_15px_rgba(52,199,89,0.3)]";
                   } else if (isSelected && !isCorrectOption) {
-                    stateClass = "bg-[#2C2C2E]/40 border-transparent text-white/90 opacity-60";
+                    stateClass = "bg-[#2C2C2E]/40 border-transparent text-white opacity-60";
                     letterClass = "bg-[#FF453A] text-white shadow-[0_0_15px_rgba(255,69,58,0.3)]";
                   } else {
-                    stateClass = "bg-[#2C2C2E]/20 border-transparent opacity-30 cursor-not-allowed text-white/50";
-                    letterClass = "bg-black/20 text-white/30";
+                    stateClass = "bg-[#2C2C2E]/20 border-transparent opacity-30 cursor-not-allowed text-white";
+                    letterClass = "bg-black/20 text-white";
                   }
                 }
 
@@ -1633,10 +1633,10 @@ function CenterColumn({
             ) : (
               <div className="text-center py-16 flex flex-col items-center">
                 <div className="w-16 h-16 rounded-3xl bg-muted/30 flex items-center justify-center mb-4">
-                  <Check className="h-8 w-8 text-muted-foreground opacity-50" />
+                  <Check className="h-8 w-8 text-white opacity-50" />
                 </div>
                 <h3 className="text-lg font-semibold text-foreground mb-2">No Quiz Available</h3>
-                <p className="text-sm text-muted-foreground max-w-[250px]">
+                <p className="text-sm text-white max-w-[250px]">
                   {isReady ? "Enable “Create Quiz” when uploading to generate interactive questions." : "Quiz is being generated..."}
                 </p>
                 {!isReady && <Loader2 className="h-6 w-6 text-primary animate-spin mt-6" />}
@@ -1678,7 +1678,7 @@ function CenterColumn({
               </div>
               <div>
                 <h3 className="text-lg font-bold text-white mb-2">No Mind Map Yet</h3>
-                <p className="text-sm text-muted-foreground max-w-sm">
+                <p className="text-sm text-white max-w-sm">
                   {isReady
                     ? "Click \"Generate Mind Map\" to create an interactive knowledge map from your document."
                     : "Mind map is being generated from your document…"}
@@ -1756,7 +1756,7 @@ function CenterColumn({
       <div className="flex-1 flex flex-col bg-transparent overflow-hidden h-full min-w-0" style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", system-ui, sans-serif' }}>
         {/* Header */}
         <div className="px-8 pt-8 pb-6 bg-white/[0.02] backdrop-blur-3xl border-b border-white/10">
-          <p className="text-[12px] font-bold tracking-[0.2em] text-white/40 uppercase mb-2">Progress</p>
+          <p className="text-[12px] font-bold tracking-[0.2em] text-white uppercase mb-2">Progress</p>
           <h2 className="text-[28px] font-bold text-white tracking-tight" style={{ letterSpacing: '-0.5px' }}>
             Learning Analytics
           </h2>
@@ -1802,7 +1802,7 @@ function CenterColumn({
                 </svg>
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
                   <span className="text-[36px] font-black text-white" style={{ letterSpacing: '-1.5px', lineHeight: 1 }}>{overallProgress}</span>
-                  <span className="text-[12px] text-white/50 font-bold mt-1 tracking-wider">%</span>
+                  <span className="text-[12px] text-white font-bold mt-1 tracking-wider">%</span>
                 </div>
               </div>
               {/* Label */}
@@ -1810,9 +1810,9 @@ function CenterColumn({
                 <div>
                   <div className="flex items-center gap-2.5 mb-2">
                     <div className="w-2 h-2 rounded-full shadow-lg" style={{ background: masteryColor, boxShadow: `0 0 10px ${masteryColor}` }} />
-                    <span className="text-[12px] font-bold tracking-widest text-white/50 uppercase">{masteryLabel}</span>
+                    <span className="text-[12px] font-bold tracking-widest text-white uppercase">{masteryLabel}</span>
                   </div>
-                  <p className="text-[17px] font-medium text-white/90 leading-relaxed max-w-xl">
+                  <p className="text-[17px] font-medium text-white leading-relaxed max-w-xl">
                     {overallProgress < 20 ? 'Start reading, quiz yourself, and review flashcards to build progress.' :
                      overallProgress < 50 ? 'Good momentum. Keep practicing to strengthen your retention.' :
                      overallProgress < 80 ? "You're close to full mastery of this topic." :
@@ -1827,11 +1827,11 @@ function CenterColumn({
                     { label: 'Quiz', value: lastQuizScore ? Math.round((lastQuizScore.score / lastQuizScore.total) * 100) : 0, color: '#FF9F0A', show: hasQuiz },
                   ].filter(x => x.show).map(({ label, value, color }) => (
                     <div key={label} className="flex items-center gap-3">
-                      <span className="text-[11px] text-white/40 w-20 font-semibold tracking-wide">{label}</span>
+                      <span className="text-[11px] text-white w-20 font-semibold tracking-wide">{label}</span>
                       <div className="flex-1 h-1.5 rounded-full" style={{ background: 'rgba(255,255,255,0.06)' }}>
                         <div className="h-full rounded-full" style={{ width: `${value}%`, background: color, transition: 'width 1s ease', boxShadow: `0 0 8px ${color}50` }} />
                       </div>
-                      <span className="text-[11px] text-white/40 w-10 text-right font-bold">{value}%</span>
+                      <span className="text-[11px] text-white w-10 text-right font-bold">{value}%</span>
                     </div>
                   ))}
                 </div>
@@ -1862,14 +1862,14 @@ function CenterColumn({
                   <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent opacity-50" />
                   
                   <div className="flex items-center justify-between">
-                    <span className="text-[11px] font-bold tracking-widest text-white/40 uppercase">{label}</span>
+                    <span className="text-[11px] font-bold tracking-widest text-white uppercase">{label}</span>
                     <div className="w-9 h-9 rounded-[10px] flex items-center justify-center transition-colors shadow-md group-hover:brightness-110" style={{ background: color, color: '#ffffff' }}>
                       {icon}
                     </div>
                   </div>
                   <div className="mt-2">
                     <p className="text-[34px] font-black text-white tracking-tight leading-none mb-1.5">{value}</p>
-                    <p className="text-[12px] text-white/40 font-medium">{sub}</p>
+                    <p className="text-[12px] text-white font-medium">{sub}</p>
                   </div>
                 </motion.div>
               ))}
@@ -1898,7 +1898,7 @@ function CenterColumn({
                           </div>
                           <div>
                              <h3 className="text-[16px] font-bold text-white tracking-tight">Flashcard Recall</h3>
-                             <p className="text-[12px] text-white/40 font-medium">{totalFlashcards} cards in deck</p>
+                             <p className="text-[12px] text-white font-medium">{totalFlashcards} cards in deck</p>
                           </div>
                        </div>
                      </div>
@@ -1909,7 +1909,7 @@ function CenterColumn({
                            <span className="text-[13px] font-bold text-[#30D158] uppercase tracking-wider mt-1">Mastered</span>
                         </div>
                         <div className="flex flex-col text-right">
-                           <span className="text-[28px] font-bold text-white/60 leading-none">{needReviewCount}</span>
+                           <span className="text-[28px] font-bold text-white leading-none">{needReviewCount}</span>
                            <span className="text-[11px] font-semibold text-[#FF9F0A] uppercase tracking-wider mt-1">Reviewing</span>
                         </div>
                      </div>
@@ -1948,12 +1948,12 @@ function CenterColumn({
                           </div>
                           <div>
                              <h3 className="text-[16px] font-bold text-white tracking-tight">Quiz Performance</h3>
-                             <p className="text-[12px] text-white/40 font-medium">Last {Math.min(quizScores.length, 3)} attempts</p>
+                             <p className="text-[12px] text-white font-medium">Last {Math.min(quizScores.length, 3)} attempts</p>
                           </div>
                        </div>
                        <div className="text-right">
                           <span className="text-[24px] font-black text-white">{avgQuizScore}%</span>
-                          <p className="text-[10px] font-bold text-white/30 uppercase tracking-widest mt-0.5">Average</p>
+                          <p className="text-[10px] font-bold text-white uppercase tracking-widest mt-0.5">Average</p>
                        </div>
                      </div>
 
@@ -1964,7 +1964,7 @@ function CenterColumn({
                          return (
                            <div key={i} className="flex items-center gap-4">
                              <div className="w-8 flex justify-end shrink-0">
-                                <span className="text-[11px] font-bold text-white/30 uppercase">#{quizScores.length - i}</span>
+                                <span className="text-[11px] font-bold text-white uppercase">#{quizScores.length - i}</span>
                              </div>
                              <div className="flex-1 h-2 rounded-full bg-white/5 relative overflow-hidden">
                                <div className="absolute left-0 top-0 h-full rounded-full" style={{ width: `${pct}%`, background: barColor, boxShadow: `0 0 10px ${barColor}60` }} />
@@ -1985,11 +1985,11 @@ function CenterColumn({
             {pagesRead.length === 0 && quizScores.length === 0 && totalFlashcards === 0 && (
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col items-center justify-center py-20 text-center gap-4">
                 <div className="w-16 h-16 rounded-2xl bg-white/[0.02] border border-white/[0.05] flex items-center justify-center shadow-lg">
-                  <BarChart3 className="h-6 w-6 text-white/20" />
+                  <BarChart3 className="h-6 w-6 text-white" />
                 </div>
                 <div>
-                  <p className="text-[16px] font-semibold text-white/60 mb-2">No activity yet</p>
-                  <p className="text-[13px] text-white/30 max-w-[240px] mx-auto leading-relaxed">Read the document, take the quiz, and review flashcards to track your progress.</p>
+                  <p className="text-[16px] font-semibold text-white mb-2">No activity yet</p>
+                  <p className="text-[13px] text-white max-w-[240px] mx-auto leading-relaxed">Read the document, take the quiz, and review flashcards to track your progress.</p>
                 </div>
               </motion.div>
             )}
@@ -2003,9 +2003,9 @@ function CenterColumn({
 
   return (
     <div className="flex-1 flex flex-col items-center justify-center p-6 text-center bg-transparent">
-      <FileText className="h-16 w-16 text-muted-foreground opacity-50 mb-4" />
+      <FileText className="h-16 w-16 text-white opacity-50 mb-4" />
       <h3 className="text-lg font-semibold text-foreground mb-2">Select a tool to explore content</h3>
-      <p className="text-sm text-muted-foreground max-w-sm">
+      <p className="text-sm text-white max-w-sm">
         Use the tools on the right to generate a summary, flashcards, or take a quiz based on your source.
       </p>
     </div>
@@ -2076,7 +2076,7 @@ function ChatPanel({
         </div>
         <div className="flex-1 flex flex-col items-center justify-center p-6 text-center">
           <img src="/logo.png" alt="Vidya Logo" className="w-8 h-8 object-contain opacity-30 mb-2" />
-          <p className="text-xs text-muted-foreground">Select a source to start chatting</p>
+          <p className="text-xs text-white">Select a source to start chatting</p>
         </div>
       </aside>
     );
@@ -2094,7 +2094,7 @@ function ChatPanel({
           </div>
           <h2 className="text-[14px] font-bold text-foreground tracking-wide">Vidya AI</h2>
         </div>
-        <div className="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-[10px] font-bold tracking-widest uppercase text-white/60">
+        <div className="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-[10px] font-bold tracking-widest uppercase text-white">
           GPT-4o
         </div>
       </div>
@@ -2107,7 +2107,7 @@ function ChatPanel({
                 <img src="/logo.png" alt="Vidya AI" className="w-7 h-7 object-contain opacity-70" />
               </div>
               <h3 className="text-[15px] font-semibold text-foreground mb-2">How can I help you?</h3>
-              <p className="text-[13px] text-muted-foreground max-w-[220px] mx-auto leading-relaxed">
+              <p className="text-[13px] text-white max-w-[220px] mx-auto leading-relaxed">
                 Ask questions, get summaries, or clarify complex topics from your notes.
               </p>
             </div>
@@ -2121,7 +2121,7 @@ function ChatPanel({
                   className={`max-w-[85%] px-4 py-3 text-[14px] leading-[1.6] shadow-lg border border-white/10 ${
                     msg.role === "user"
                       ? "bg-gradient-to-br from-white/20 to-white/5 text-white rounded-[20px] rounded-br-[4px]"
-                      : "bg-white/[0.05] text-white/90 rounded-[20px] rounded-bl-[4px]"
+                      : "bg-white/[0.05] text-white rounded-[20px] rounded-bl-[4px]"
                   }`}
                 >
                   <ReactMarkdown
@@ -2156,7 +2156,7 @@ function ChatPanel({
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder="Message Nova..."
-            className="min-h-[44px] max-h-[150px] resize-none bg-transparent border-none focus:ring-0 text-[14px] py-3 pl-4 pr-12 text-[#F2F2F7] placeholder:text-muted-foreground custom-scrollbar"
+            className="min-h-[44px] max-h-[150px] resize-none bg-transparent border-none focus:ring-0 text-[14px] py-3 pl-4 pr-12 text-[#F2F2F7] placeholder:text-white custom-scrollbar"
             disabled={!isReady}
           />
           <div className="absolute right-2 bottom-2 flex items-center gap-1.5">
@@ -2164,7 +2164,7 @@ function ChatPanel({
               type="button"
               variant="ghost"
               size="icon"
-              className={`h-8 w-8 rounded-full transition-all ${listening ? 'bg-red-500/20 text-red-500' : 'text-muted-foreground hover:bg-white/10'}`}
+              className={`h-8 w-8 rounded-full transition-all ${listening ? 'bg-red-500/20 text-red-500' : 'text-white hover:bg-white/10'}`}
               onClick={toggleListening}
               disabled={!isReady || !browserSupportsSpeech}
               title={!browserSupportsSpeech ? "Speech recognition not supported in this browser" : listening ? "Stop recording" : "Use microphone"}
@@ -2175,14 +2175,14 @@ function ChatPanel({
               onClick={handleSend}
               disabled={!input.trim() || !isReady}
               size="icon"
-              className="h-8 w-8 rounded-full bg-white/20 hover:bg-white/30 text-white disabled:bg-white/5 disabled:text-white/20 transition-all shrink-0"
+              className="h-8 w-8 rounded-full bg-white/20 hover:bg-white/30 text-white disabled:bg-white/5 disabled:text-white transition-all shrink-0"
             >
               <ArrowUp className="h-4 w-4" />
             </Button>
           </div>
         </div>
         <div className="text-center mt-3">
-          <p className="text-[10px] text-muted-foreground font-medium">Vidya AI can make mistakes. Consider verifying important information.</p>
+          <p className="text-[10px] text-white font-medium">Vidya AI can make mistakes. Consider verifying important information.</p>
         </div>
       </div>
     </aside>
@@ -2228,7 +2228,7 @@ function RightColumn({ contentItem, selectedView, onSelectView }: {
                 className={`p-3 rounded-xl transition-all duration-200 group relative ${
                   isSelected 
                     ? "bg-white/10 text-white shadow-lg" 
-                    : "text-muted-foreground hover:bg-white/5"
+                    : "text-white hover:bg-white/5"
                 }`}
                 title={label}
               >
@@ -2426,7 +2426,7 @@ function Dashboard({
           <h1 className="text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-br from-white to-white/60 mb-3 tracking-tight font-serif">
             Welcome back, Student
           </h1>
-          <p className="text-lg text-white/50 font-medium">What would you like to research today?</p>
+          <p className="text-lg text-white font-medium">What would you like to research today?</p>
         </header>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
@@ -2457,7 +2457,7 @@ function Dashboard({
                 <card.icon className="h-6 w-6 text-white" />
               </div>
               <h3 className="text-xl font-bold text-white mb-2 tracking-tight">{card.title}</h3>
-              <p className="text-sm text-white/70 font-medium leading-relaxed">{card.description}</p>
+              <p className="text-sm text-white font-medium leading-relaxed">{card.description}</p>
             </button>
           ))}
         </div>
@@ -2465,7 +2465,7 @@ function Dashboard({
         <section>
           <div className="flex items-center justify-between mb-8">
             <h2 className="text-2xl font-bold text-white tracking-tight font-serif">Recent Sources</h2>
-            <Button variant="ghost" size="sm" className="text-white/60 hover:text-white hover:bg-white/10 rounded-full px-4">
+            <Button variant="ghost" size="sm" className="text-white hover:text-white hover:bg-white/10 rounded-full px-4">
               View Library
             </Button>
           </div>
@@ -2480,9 +2480,9 @@ function Dashboard({
               }}
             >
               <div className="w-20 h-20 rounded-3xl bg-white/5 border border-white/10 flex items-center justify-center mx-auto mb-6">
-                <FileText className="h-10 w-10 text-white/20" />
+                <FileText className="h-10 w-10 text-white" />
               </div>
-              <p className="text-white/50 mb-6 font-medium text-lg">You haven't uploaded any sources yet.</p>
+              <p className="text-white mb-6 font-medium text-lg">You haven't uploaded any sources yet.</p>
               <Button onClick={onUpload} className="glass-button-primary px-8 py-6 rounded-full shadow-2xl font-bold text-base">
                 Upload your first source
               </Button>
@@ -2512,7 +2512,7 @@ function Dashboard({
                   <div className="flex-1 min-w-0 relative z-10">
                     <h4 className="font-bold text-white truncate tracking-tight text-base">{session.title}</h4>
                     <div className="flex items-center gap-2 mt-1">
-                      <p className="text-xs text-white/50 font-medium">{new Date(session.updatedAt).toLocaleDateString()}</p>
+                      <p className="text-xs text-white font-medium">{new Date(session.updatedAt).toLocaleDateString()}</p>
                       {notebook && (
                         <div className="px-2 py-0.5 rounded text-[10px] bg-secondary/20 text-secondary-foreground border border-secondary/20 truncate max-w-[100px] font-medium">
                           <Book className="h-3 w-3 inline mr-1 opacity-70" />
@@ -2521,7 +2521,7 @@ function Dashboard({
                       )}
                     </div>
                   </div>
-                  <ChevronRight className="h-5 w-5 text-white/20 group-hover:text-white/60 transition-colors group-hover:translate-x-1 duration-300 relative z-10" />
+                  <ChevronRight className="h-5 w-5 text-white group-hover:text-white transition-colors group-hover:translate-x-1 duration-300 relative z-10" />
                 </div>
                 );
               })}
@@ -2560,7 +2560,7 @@ function Canvas({ initialContent, title }: { initialContent?: string; title: str
           <h2 className="text-sm font-semibold text-foreground truncate max-w-[200px]">Scratchpad: {title}</h2>
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-[10px] text-muted-foreground">
+          <span className="text-[10px] text-white">
             {isSaved ? "Saved" : "Unsaved changes"}
           </span>
           <Button size="sm" variant="ghost" className="h-8 px-3 text-xs" onClick={handleSave} disabled={isSaved}>
@@ -2574,7 +2574,7 @@ function Canvas({ initialContent, title }: { initialContent?: string; title: str
             value={content}
             onChange={handleChange}
             placeholder="Start writing your research notes here..."
-            className="w-full h-full resize-none bg-transparent border-none focus:outline-none text-base leading-relaxed text-foreground placeholder:text-muted-foreground/30 font-serif"
+            className="w-full h-full resize-none bg-transparent border-none focus:outline-none text-base leading-relaxed text-foreground placeholder:text-white font-serif"
           />
         </div>
       </div>
@@ -2928,7 +2928,7 @@ export default function Workspace() {
 
   if (showUpload) {
     return (
-      <div className="min-h-screen w-full bg-white dark:bg-black flex overflow-hidden text-white dark:text-slate-200 relative transition-colors duration-500">
+      <div className="min-h-screen w-full bg-white dark:bg-black flex overflow-hidden text-white dark:text-white relative transition-colors duration-500">
         {/* Light Mode: Dynamic Colorful Flowy Background */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none dark:hidden z-0 bg-white/10 backdrop-blur-3xl">
           <div className="absolute w-[120vw] h-[120vh] -top-[10%] -left-[10%] bg-pink-400 rounded-full filter blur-[120px] opacity-60 animate-pulse" style={{ animationDuration: '12s' }} />
@@ -2963,7 +2963,7 @@ export default function Workspace() {
                 <div className="flex items-center justify-between mb-4">
                   <div>
                     <h3 className="text-lg font-semibold text-foreground">{uploadedItem.title}</h3>
-                    <p className="text-sm text-muted-foreground mt-1">
+                    <p className="text-sm text-white mt-1">
                       Status: <span className="font-medium text-primary capitalize">{uploadedItem.status}</span>
                     </p>
                   </div>
@@ -2980,7 +2980,7 @@ export default function Workspace() {
                 {uploadedItem.status === "processing" && (
                   <div className="space-y-3">
                     <Progress value={75} className="h-2" />
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-xs text-white">
                       Processing your document... This may take a few moments.
                     </p>
                     <Button
@@ -3037,7 +3037,7 @@ export default function Workspace() {
                       Processing failed. Please try uploading again.
                     </p>
                     {uploadedItem.errorMessage && (
-                      <p className="text-xs text-muted-foreground">{uploadedItem.errorMessage}</p>
+                      <p className="text-xs text-white">{uploadedItem.errorMessage}</p>
                     )}
                     <Button
                       onClick={() => {
@@ -3071,7 +3071,7 @@ export default function Workspace() {
   }
 
   return (
-    <div className="h-screen w-full bg-white dark:bg-black flex overflow-hidden text-white dark:text-slate-200 relative transition-colors duration-500">
+    <div className="h-screen w-full bg-white dark:bg-black flex overflow-hidden text-white dark:text-white relative transition-colors duration-500">
       {/* Light Mode: Dynamic Colorful Flowy Background */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none dark:hidden z-0 bg-white/10 backdrop-blur-3xl">
         <div className="absolute w-[120vw] h-[120vh] -top-[10%] -left-[10%] bg-pink-400 rounded-full filter blur-[120px] opacity-60 animate-pulse" style={{ animationDuration: '12s' }} />
@@ -3237,7 +3237,7 @@ export default function Workspace() {
           <div className="flex-1 flex flex-col items-center justify-center p-12 text-center">
             <BrainCircuit className="h-16 w-16 text-primary/20 mb-6" />
             <h2 className="text-2xl font-bold mb-2">Model Settings</h2>
-            <p className="text-muted-foreground max-w-sm">Manage which AI models power your research assistant.</p>
+            <p className="text-white max-w-sm">Manage which AI models power your research assistant.</p>
             <div className="mt-8 grid grid-cols-1 gap-4 max-w-md w-full">
               {['GPT-4o (Default)', 'Claude 3.5 Sonnet', 'Gemini 1.5 Pro'].map((model) => (
                 <div key={model} className="p-4 rounded-xl border border-border/50 bg-card/50 flex items-center justify-between">
@@ -3251,7 +3251,7 @@ export default function Workspace() {
           <div className="flex-1 flex flex-col items-center justify-center p-12 text-center">
             <Settings className="h-16 w-16 text-primary/20 mb-6" />
             <h2 className="text-2xl font-bold mb-2">Settings</h2>
-            <p className="text-muted-foreground">General application settings and profile management.</p>
+            <p className="text-white">General application settings and profile management.</p>
           </div>
         )}
         </div>

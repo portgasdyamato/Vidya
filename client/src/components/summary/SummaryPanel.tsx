@@ -63,7 +63,7 @@ export default function SummaryPanel({ summary, title, summaryTestId, previewOnl
         <h4 className="mt-6 border-l-4 border-primary/30 pl-3 text-xl font-semibold text-foreground" {...props} />
       ),
       h3: (props: any) => <h5 className="mt-4 text-lg font-semibold text-foreground" {...props} />,
-      p: (props: any) => <p className="mb-3 text-sm leading-relaxed text-muted-foreground" {...props} />,
+      p: (props: any) => <p className="mb-3 text-sm leading-relaxed text-white" {...props} />,
       ul: (props: any) => <ul className="ml-5 list-disc space-y-2 text-sm text-foreground" {...props} />,
       ol: (props: any) => <ol className="ml-5 list-decimal space-y-2 text-sm text-foreground" {...props} />,
       li: (props: any) => <li className="leading-relaxed" {...props} />,
@@ -88,7 +88,7 @@ export default function SummaryPanel({ summary, title, summaryTestId, previewOnl
         <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
           <div>
             <CardTitle className="text-2xl font-semibold text-foreground">AI Summary</CardTitle>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-white">
               Structured highlights with clear headings, subpoints, and bold callouts.
             </p>
           </div>
@@ -172,7 +172,7 @@ function FlashcardItem({ card, index }: { card: Flashcard; index: number }) {
       >
         <div className="text-xs font-semibold uppercase tracking-wide text-primary/80">Card {index + 1}</div>
         <div className="mt-2 text-sm font-semibold text-foreground">{card.question || "Untitled concept"}</div>
-        <div className={`mt-3 text-sm text-muted-foreground transition-max-height duration-300 overflow-hidden ${showAnswer ? 'max-h-96' : 'max-h-0'}`}>
+        <div className={`mt-3 text-sm text-white transition-max-height duration-300 overflow-hidden ${showAnswer ? 'max-h-96' : 'max-h-0'}`}>
           {isMultipleChoice && card.options ? (
             <ul className="list-disc pl-5 space-y-1 text-xs">
               {card.options.map((option, idx) => (

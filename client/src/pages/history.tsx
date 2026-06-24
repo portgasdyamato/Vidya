@@ -165,7 +165,7 @@ export default function History() {
       <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
         <div className="mb-12">
           <h1 className="text-4xl font-bold text-foreground mb-4">Your Learning History</h1>
-          <p className="text-xl text-muted-foreground">
+          <p className="text-xl text-white">
             Access your previously processed materials anytime
           </p>
         </div>
@@ -186,15 +186,15 @@ export default function History() {
               <Button variant={filter === "failed" ? "destructive" : "ghost"} size="sm" onClick={() => setFilter("failed")}>Failed</Button>
             </div>
           </div>
-          <div className="text-sm text-muted-foreground">{contentItems ? contentItems.length : 0} items</div>
+          <div className="text-sm text-white">{contentItems ? contentItems.length : 0} items</div>
         </div>
 
         {!contentItems || contentItems.length === 0 ? (
           <Card>
             <CardContent className="pt-6 text-center py-12">
-              <FileText className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+              <FileText className="h-12 w-12 text-white mx-auto mb-4" />
               <h3 className="text-lg font-semibold text-foreground mb-2">No content yet</h3>
-              <p className="text-muted-foreground mb-4">
+              <p className="text-white mb-4">
                 Upload your first document, image, or video to get started
               </p>
               <Button asChild>
@@ -220,28 +220,28 @@ export default function History() {
                   <CardContent className="p-4">
                     <div className="flex items-center justify-between gap-4">
                       <div className="flex items-center gap-3 flex-1 min-w-0">
-                        <TypeIcon className="h-6 w-6 text-muted-foreground flex-shrink-0" />
+                        <TypeIcon className="h-6 w-6 text-white flex-shrink-0" />
                         <div className="min-w-0">
                           <div className="flex items-center gap-2">
                             <h3 className="font-semibold text-card-foreground truncate" data-testid={`text-title-${item.id}`}>{item.title}</h3>
-                            <span className="text-xs text-muted-foreground">• {item.type}</span>
+                            <span className="text-xs text-white">• {item.type}</span>
                           </div>
-                          <div className="text-xs text-muted-foreground">Uploaded {new Date(item.createdAt).toLocaleString()}</div>
+                          <div className="text-xs text-white">Uploaded {new Date(item.createdAt).toLocaleString()}</div>
                         </div>
                       </div>
 
                       <div className="w-48 flex flex-col items-end">
                         {item.status === "processing" ? (
                           <>
-                            <div className="text-xs text-muted-foreground mb-1">Processing</div>
+                            <div className="text-xs text-white mb-1">Processing</div>
                             <Progress className="w-full" value={typeof (item as any).progress === 'number' ? (item as any).progress : 50} />
                           </>
                         ) : item.status === "completed" ? (
-                          <div className="text-xs text-muted-foreground mb-1">Ready</div>
+                          <div className="text-xs text-white mb-1">Ready</div>
                         ) : item.status === "failed" ? (
                           <div className="text-xs text-destructive mb-1">Failed</div>
                         ) : (
-                          <div className="text-xs text-muted-foreground mb-1">{item.status}</div>
+                          <div className="text-xs text-white mb-1">{item.status}</div>
                         )}
 
                         <div className="mt-3 flex items-center gap-2">
@@ -331,7 +331,7 @@ function ExtractedTextSection({
       <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between mb-3">
         <h4 className="font-medium text-card-foreground">Extracted Text</h4>
         <div className="flex items-center gap-3">
-          <label className="text-xs text-muted-foreground">
+          <label className="text-xs text-white">
             Speech rate:
             <select
               className="ml-2 text-xs px-2 py-1 rounded border bg-white"
@@ -352,7 +352,7 @@ function ExtractedTextSection({
             variant="ghost"
             size="sm"
             onClick={() => speakText(item.extractedText!, textButtonId)}
-            className="text-muted-foreground hover:text-foreground"
+            className="text-white hover:text-foreground"
             data-testid={`button-speak-text-${item.id}`}
           >
             {speakingItemId === textButtonId ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
@@ -361,7 +361,7 @@ function ExtractedTextSection({
         </div>
       </div>
       <div className="bg-muted/20 rounded-lg p-4 max-h-48 overflow-y-auto">
-        <div className="text-xs text-muted-foreground leading-relaxed whitespace-pre-line">
+        <div className="text-xs text-white leading-relaxed whitespace-pre-line">
           {item.extractedText && item.extractedText.length > 1000
             ? `${item.extractedText.substring(0, 1000)}...`
             : item.extractedText}

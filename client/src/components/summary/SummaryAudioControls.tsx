@@ -162,13 +162,13 @@ export default function SummaryAudioControls({ text, title, testId }: SummaryAud
             {isSpeaking ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
             <span className="ml-2 text-sm">{isSpeaking ? "Stop" : "Listen"}</span>
           </Button>
-          <div className="text-xs text-muted-foreground">
+          <div className="text-xs text-white">
             {disabled ? "Speech not supported in this browser" : title || "Summary narration"}
           </div>
         </div>
 
         <div className="flex-1 space-y-1">
-          <div className="flex items-center justify-between text-xs text-muted-foreground">
+          <div className="flex items-center justify-between text-xs text-white">
             <span>Progress</span>
             <span>{Math.round(progressValue)}%</span>
           </div>
@@ -187,7 +187,7 @@ export default function SummaryAudioControls({ text, title, testId }: SummaryAud
         </div>
 
         <div className="flex flex-col gap-1">
-          <span className="text-xs text-muted-foreground">
+          <span className="text-xs text-white">
             Speed {rate.toFixed(1)}x
           </span>
           <Slider

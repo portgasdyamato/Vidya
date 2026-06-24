@@ -302,7 +302,7 @@ export default function PodcastPlayer({ audioUrl, title, transcript, summary, us
                 <h2 className="text-3xl md:text-4xl font-black text-white font-serif tracking-tight leading-tight line-clamp-2 break-all md:break-words">
                   {title}
                 </h2>
-                <div className="flex items-center justify-center lg:justify-start gap-3 text-white/50 text-sm font-medium">
+                <div className="flex items-center justify-center lg:justify-start gap-3 text-white text-sm font-medium">
                   <Headphones className="w-4 h-4 text-primary" />
                   <span>AI Narrator {useWebSpeech ? "(Neural)" : "(HD Studio)"}</span>
                 </div>
@@ -317,7 +317,7 @@ export default function PodcastPlayer({ audioUrl, title, transcript, summary, us
                   onValueChange={handleSeek}
                   className="w-full cursor-pointer h-2"
                 />
-                <div className="flex justify-between font-mono text-[10px] text-white/30 tabular-nums font-bold uppercase tracking-tighter">
+                <div className="flex justify-between font-mono text-[10px] text-white tabular-nums font-bold uppercase tracking-tighter">
                   <span>{formatTime(currentTime)}</span>
                   <div className="flex gap-2 text-primary/40">
                     <span className="w-1 h-1 rounded-full bg-current animate-pulse" />
@@ -330,7 +330,7 @@ export default function PodcastPlayer({ audioUrl, title, transcript, summary, us
               {/* Action Toolbar */}
               <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4">
                  <div className="flex items-center gap-3 bg-white/5 px-4 py-2 rounded-2xl border border-white/5">
-                    <Volume2 className="w-4 h-4 text-white/30" />
+                    <Volume2 className="w-4 h-4 text-white" />
                     <div className="w-24">
                        <Slider 
                         value={[volume]} 
@@ -346,7 +346,7 @@ export default function PodcastPlayer({ audioUrl, title, transcript, summary, us
                       <button 
                         key={s} 
                         onClick={() => setPlaybackRate(s)}
-                        className={`text-[10px] font-black px-3 py-1.5 rounded-xl transition-all ${playbackRate === s ? "bg-primary text-primary-foreground" : "text-white/40 hover:text-white"}`}
+                        className={`text-[10px] font-black px-3 py-1.5 rounded-xl transition-all ${playbackRate === s ? "bg-primary text-primary-foreground" : "text-white hover:text-white"}`}
                       >
                         {s}X
                       </button>
@@ -356,7 +356,7 @@ export default function PodcastPlayer({ audioUrl, title, transcript, summary, us
                  <Button 
                   variant="outline" 
                    onClick={() => setShowSubtitles(!showSubtitles)}
-                   className={`rounded-2xl border-white/10 ${showSubtitles ? "bg-primary/20 text-primary border-primary/40" : "text-white/60"}`}
+                   className={`rounded-2xl border-white/10 ${showSubtitles ? "bg-primary/20 text-primary border-primary/40" : "text-white"}`}
                  >
                    <Subtitles className="w-4 h-4 mr-2" />
                    Subtitles
@@ -379,12 +379,12 @@ export default function PodcastPlayer({ audioUrl, title, transcript, summary, us
                     key={subtitleData.words.join(" ")}
                     initial={{ y: 20, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
-                    className="text-lg md:text-xl font-serif text-white/40 leading-relaxed max-w-3xl mx-auto"
+                    className="text-lg md:text-xl font-serif text-white leading-relaxed max-w-3xl mx-auto"
                  >
                     {subtitleData.words.map((word, i) => (
                       <span 
                         key={i} 
-                        className={`transition-all duration-300 ${i === subtitleData.activeIndex ? "text-white font-bold drop-shadow-[0_0_12px_rgba(255,255,255,0.8)]" : "text-white/30"}`}
+                        className={`transition-all duration-300 ${i === subtitleData.activeIndex ? "text-white font-bold drop-shadow-[0_0_12px_rgba(255,255,255,0.8)]" : "text-white"}`}
                       >
                         {word}{" "}
                       </span>
@@ -405,7 +405,7 @@ export default function PodcastPlayer({ audioUrl, title, transcript, summary, us
             </div>
             <div>
               <h3 className="text-lg font-black text-white font-serif">Podcast Script</h3>
-              <p className="text-[11px] text-white/30">AI-generated from your document</p>
+              <p className="text-[11px] text-white">AI-generated from your document</p>
             </div>
           </div>
           <Button
@@ -426,13 +426,13 @@ export default function PodcastPlayer({ audioUrl, title, transcript, summary, us
             {displayText ? (
               <div className="space-y-4">
                 {displayText.split(/\n\n+/).filter(p => p.trim().length > 0).map((para, i) => (
-                  <p key={i} className="text-base text-white/65 leading-relaxed">
+                  <p key={i} className="text-base text-white leading-relaxed">
                     {para.trim()}
                   </p>
                 ))}
               </div>
             ) : (
-              <p className="text-white/30 italic text-sm">
+              <p className="text-white italic text-sm">
                 No script available yet. Generate a podcast to see the script here.
               </p>
             )}
@@ -443,7 +443,7 @@ export default function PodcastPlayer({ audioUrl, title, transcript, summary, us
         </motion.div>
 
         {displayText && (
-          <p className="text-[10px] text-white/20 text-right">
+          <p className="text-[10px] text-white text-right">
             {displayText.split(/\s+/).filter(Boolean).length} words · Spoken by Vidya AI
           </p>
         )}

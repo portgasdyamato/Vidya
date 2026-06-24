@@ -49,21 +49,21 @@ export default function Home() {
         <div className="flex items-center gap-6">
           <button 
             onClick={toggle} 
-            className="p-2 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors text-white/70 hover:text-white"
+            className="p-2 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors text-white hover:text-white"
             aria-label="Toggle theme"
           >  {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
           </button>
           {!user ? (
             <Link href="/auth">
-              <span className="text-sm font-medium text-white/70 hover:text-white transition-colors cursor-pointer">Login</span>
+              <span className="text-sm font-medium text-white hover:text-white transition-colors cursor-pointer">Login</span>
             </Link>
           ) : (
             <Link href="/workspace">
-              <span className="text-sm font-medium text-white/70 hover:text-white transition-colors cursor-pointer capitalize">Hi, {displayName}</span>
+              <span className="text-sm font-medium text-white hover:text-white transition-colors cursor-pointer capitalize">Hi, {displayName}</span>
             </Link>
           )}
             <Link href="/workspace">
-              <span className="text-sm font-medium text-white/70 hover:text-white transition-colors cursor-pointer">Workspace</span>
+              <span className="text-sm font-medium text-white hover:text-white transition-colors cursor-pointer">Workspace</span>
             </Link>
         </div>
       </header>
@@ -72,10 +72,10 @@ export default function Home() {
         
         {/* Hero Section */}
         <div className="text-center space-y-4">
-          <h2 className="text-5xl font-bold font-serif tracking-tight lg:text-6xl text-white/95">
+          <h2 className="text-5xl font-bold font-serif tracking-tight lg:text-6xl text-white">
             Vidya Web
           </h2>
-          <div className="flex items-center justify-center gap-2 text-white/50 text-sm md:text-base">
+          <div className="flex items-center justify-center gap-2 text-white text-sm md:text-base">
             <Lock className="w-3.5 h-3.5 opacity-60" />
             <p>AI-powered learning companion for accessible education.</p>
           </div>
@@ -87,7 +87,7 @@ export default function Home() {
             
             {/* Steps Left Panel */}
             <div className="space-y-8">
-              <h3 className="text-2xl font-semibold font-serif text-white/90">Steps to start learning</h3>
+              <h3 className="text-2xl font-semibold font-serif text-white">Steps to start learning</h3>
               <ul className="space-y-6">
                 {[
                   { text: "Choose your material type (Document)" },
@@ -99,14 +99,14 @@ export default function Home() {
                     <div className="flex-shrink-0 w-8 h-8 rounded-full bg-white text-black flex items-center justify-center font-bold text-sm shadow-lg group-hover:scale-110 transition-transform">
                       {i + 1}
                     </div>
-                    <p className="text-white/80 font-medium leading-tight group-hover:text-white transition-colors">{step.text}</p>
+                    <p className="text-white font-medium leading-tight group-hover:text-white transition-colors">{step.text}</p>
                   </li>
                 ))}
               </ul>
               
               <div className="pt-4">
                 <Link href="/workspace">
-                  <span className="text-white/80 hover:text-white font-medium flex items-center gap-1 transition-colors cursor-pointer group">
+                  <span className="text-white hover:text-white font-medium flex items-center gap-1 transition-colors cursor-pointer group">
                     Get started with your first source
                     <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                   </span>
@@ -127,7 +127,7 @@ export default function Home() {
                 {/* Visual Accent */}
                 <div className="absolute bottom-4 left-4 bg-black/40 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/10 flex items-center gap-2">
                   <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                  <span className="text-[10px] font-bold uppercase tracking-widest text-white/80">AI Active</span>
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-white">AI Active</span>
                 </div>
               </div>
 
@@ -163,8 +163,8 @@ export default function Home() {
             },
           ].map((feature, i) => (
             <div key={i} className="glass-card rounded-3xl p-6 border border-white/10 flex items-center gap-4 transition-all hover:border-white/20 hover:bg-white/[0.05] group">
-              <feature.icon className="w-7 h-7 text-white/70 group-hover:text-white transition-colors flex-shrink-0" />
-              <p className="text-sm font-medium text-white/80 leading-snug">{feature.title}</p>
+              <feature.icon className="w-7 h-7 text-white group-hover:text-white transition-colors flex-shrink-0" />
+              <p className="text-sm font-medium text-white leading-snug">{feature.title}</p>
             </div>
           ))}
         </div>
@@ -183,7 +183,7 @@ export default function Home() {
             </div>
             <div className="text-center md:text-left">
               <h4 className="text-lg font-bold">Don't have a Vidya account?</h4>
-              <p className="text-sm text-white/50">Start your accessible learning journey today.</p>
+              <p className="text-sm text-white">Start your accessible learning journey today.</p>
             </div>
           </div>
           <Link href={user ? "/workspace" : "/login"}>
@@ -201,7 +201,7 @@ export default function Home() {
 
       {/* Simplified Footer */}
       <footer className="w-full max-w-6xl flex justify-center py-8 opacity-40 hover:opacity-100 transition-opacity">
-        <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-white/60">
+        <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-white">
           Powered by Project Vidya AI 2026
         </p>
       </footer>

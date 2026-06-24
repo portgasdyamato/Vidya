@@ -104,7 +104,7 @@ export default function FlashcardDrill({ flashcards, contentId }: FlashcardDrill
           <span className="text-6xl">{grade.emoji}</span>
           <div>
             <h2 className="text-3xl font-black text-white font-serif">{grade.label}</h2>
-            <p className="text-white/50 mt-1">You scored {score}% on this deck</p>
+            <p className="text-white mt-1">You scored {score}% on this deck</p>
           </div>
           <div className={`text-5xl font-black font-mono ${grade.color}`}>{score}%</div>
         </div>
@@ -118,7 +118,7 @@ export default function FlashcardDrill({ flashcards, contentId }: FlashcardDrill
             <div key={label} className="p-5 rounded-2xl bg-white/5 border border-white/5 flex flex-col items-center gap-2">
               <Icon className={`w-6 h-6 ${color}`} />
               <span className={`text-2xl font-black ${color}`}>{value}</span>
-              <span className="text-xs text-white/40 font-medium">{label}</span>
+              <span className="text-xs text-white font-medium">{label}</span>
             </div>
           ))}
         </div>
@@ -155,7 +155,7 @@ export default function FlashcardDrill({ flashcards, contentId }: FlashcardDrill
       <div className="flex items-center justify-between mb-2">
         <div>
           <h2 className="text-xl font-bold text-white tracking-tight">Flashcard Drill</h2>
-          <p className="text-sm text-white/40 font-medium">Card {currentIndex + 1} of {total}</p>
+          <p className="text-sm text-white font-medium">Card {currentIndex + 1} of {total}</p>
         </div>
         <div className="flex items-center gap-3 text-sm font-bold">
           <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/[0.05] border border-white/10 text-green-400 backdrop-blur-md shadow-[0_4px_12px_rgba(0,0,0,0.1)]">
@@ -201,8 +201,8 @@ export default function FlashcardDrill({ flashcards, contentId }: FlashcardDrill
 
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/8">
-                <BookOpen className="w-3 h-3 text-white/40" />
-                <span className="text-[10px] font-bold text-white/40 uppercase tracking-widest">Question</span>
+                <BookOpen className="w-3 h-3 text-white" />
+                <span className="text-[10px] font-bold text-white uppercase tracking-widest">Question</span>
               </div>
               {cardResult ? (
                 <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-[10px] font-bold uppercase tracking-widest ${cardResult === "correct" ? "bg-green-500/10 border-green-500/20 text-green-400" : "bg-orange-500/10 border-orange-500/20 text-orange-400"}`}>
@@ -223,7 +223,7 @@ export default function FlashcardDrill({ flashcards, contentId }: FlashcardDrill
               </p>
             </div>
 
-            <div className="flex items-center justify-center gap-2 text-white/20 text-[10px] font-bold uppercase tracking-widest">
+            <div className="flex items-center justify-center gap-2 text-white text-[10px] font-bold uppercase tracking-widest">
               <Zap className="w-3 h-3" />
               Tap to flip
             </div>
@@ -239,8 +239,8 @@ export default function FlashcardDrill({ flashcards, contentId }: FlashcardDrill
 
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/8 w-fit relative z-10">
-                <Target className="w-3 h-3 text-white/40" />
-                <span className="text-[10px] font-bold text-white/40 uppercase tracking-widest">Answer</span>
+                <Target className="w-3 h-3 text-white" />
+                <span className="text-[10px] font-bold text-white uppercase tracking-widest">Answer</span>
               </div>
             </div>
 
@@ -250,7 +250,7 @@ export default function FlashcardDrill({ flashcards, contentId }: FlashcardDrill
               </p>
             </div>
 
-            <div className="flex items-center justify-center gap-2 text-white/20 text-[10px] font-bold uppercase tracking-widest">
+            <div className="flex items-center justify-center gap-2 text-white text-[10px] font-bold uppercase tracking-widest">
               <RotateCcw className="w-3 h-3" />
               Tap to flip back
             </div>
@@ -265,7 +265,7 @@ export default function FlashcardDrill({ flashcards, contentId }: FlashcardDrill
           size="icon"
           onClick={goPrev}
           disabled={currentIndex === 0}
-          className="w-12 h-12 rounded-2xl border border-white/8 hover:bg-white/5 text-white/50 disabled:opacity-30"
+          className="w-12 h-12 rounded-2xl border border-white/8 hover:bg-white/5 text-white disabled:opacity-30"
         >
           <ChevronLeft className="w-5 h-5" />
         </Button>
@@ -299,7 +299,7 @@ export default function FlashcardDrill({ flashcards, contentId }: FlashcardDrill
             <Button
               onClick={() => goNext()}
               variant="ghost"
-              className="h-12 w-12 rounded-2xl border border-white/8 hover:bg-white/5 text-white/50"
+              className="h-12 w-12 rounded-2xl border border-white/8 hover:bg-white/5 text-white"
             >
               <ChevronRight className="w-5 h-5" />
             </Button>

@@ -139,12 +139,12 @@
   }
 
   .premium-sidebar-item:not(.active):hover {
-    @apply text-white/90;
+    @apply text-white;
     background-color: rgba(255, 255, 255, 0.05);
   }
 
   .bubble-received {
-    @apply p-4 rounded-3xl rounded-tl-none max-w-[85%] text-white/90 shadow-lg;
+    @apply p-4 rounded-3xl rounded-tl-none max-w-[85%] text-white shadow-lg;
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(255, 255, 255, 0.1);
   }

@@ -50,16 +50,16 @@ function SessionsList({ activeId }: { activeId?: string }) {
           <h3 className="text-xl font-serif text-white">Sources</h3>
           <Link href="/">
             <button className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/10 transition-colors">
-              <UploadCloud className="h-4 w-4 text-white/70" />
+              <UploadCloud className="h-4 w-4 text-white" />
             </button>
           </Link>
         </div>
 
         <div className="relative mb-6">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white" />
           <input 
             placeholder="Search sources" 
-            className="w-full rounded-2xl bg-white/5 border border-white/5 px-10 py-2.5 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-primary/50" 
+            className="w-full rounded-2xl bg-white/5 border border-white/5 px-10 py-2.5 text-sm text-white placeholder:text-white focus:outline-none focus:border-primary/50" 
           />
         </div>
 
@@ -76,7 +76,7 @@ function SessionsList({ activeId }: { activeId?: string }) {
                   }`}
                 >
                   <div className="flex justify-between items-center mb-2">
-                    <span className="text-[10px] text-white/30 font-medium uppercase tracking-wider">
+                    <span className="text-[10px] text-white font-medium uppercase tracking-wider">
                       {new Date(it.createdAt).toLocaleDateString()}
                     </span>
                     {it.status === 'processing' && (
@@ -111,7 +111,7 @@ function SessionsList({ activeId }: { activeId?: string }) {
               </Link>
             ))
           ) : (
-            <div className="text-sm text-white/30 px-3 italic">No sources yet</div>
+            <div className="text-sm text-white px-3 italic">No sources yet</div>
           )}
         </div>
       </div>
@@ -200,7 +200,7 @@ export default function StudyPage({ params }: { params: { id: string } }) {
                  <File className="w-5 h-5 text-primary" />
                  <div>
                     <div className="text-sm font-bold">{data.originalFileName || "Original Document"}</div>
-                    <div className="text-[10px] text-white/30 uppercase tracking-widest font-bold">Secure Preview</div>
+                    <div className="text-[10px] text-white uppercase tracking-widest font-bold">Secure Preview</div>
                  </div>
               </div>
               <Button size="sm" variant="secondary" onClick={() => window.open(previewUrl)}>
@@ -216,7 +216,7 @@ export default function StudyPage({ params }: { params: { id: string } }) {
       );
     }
 
-    return <div className="p-20 text-center text-white/20 italic">No preview available for this content type</div>;
+    return <div className="p-20 text-center text-white italic">No preview available for this content type</div>;
   };
 
   return (
@@ -225,7 +225,7 @@ export default function StudyPage({ params }: { params: { id: string } }) {
       <nav className="h-16 border-b border-white/5 flex items-center justify-between px-6 sticky top-0 bg-[#050505]/80 backdrop-blur-md z-40 shrink-0">
         <div className="flex items-center gap-6">
           <Link href="/workspace">
-            <button className="flex items-center gap-2 text-white/50 hover:text-white transition-colors text-sm font-medium">
+            <button className="flex items-center gap-2 text-white hover:text-white transition-colors text-sm font-medium">
               <ChevronLeft className="w-4 h-4" /> Back to Library
             </button>
           </Link>
@@ -236,7 +236,7 @@ export default function StudyPage({ params }: { params: { id: string } }) {
              </div>
              <div>
                 <div className="text-sm font-medium leading-none mb-1 truncate max-w-[200px]">{data?.title || "Untitled Note"}</div>
-                <div className="text-[10px] text-white/30 uppercase tracking-tighter font-semibold">
+                <div className="text-[10px] text-white uppercase tracking-tighter font-semibold">
                    {data?.status || "Idle"}
                 </div>
              </div>
@@ -250,8 +250,8 @@ export default function StudyPage({ params }: { params: { id: string } }) {
               </button>
            )}
            <div className="flex items-center gap-1.5 p-1 bg-white/5 rounded-lg border border-white/5">
-              <button className="p-2 hover:bg-white/5 rounded-md transition-colors"><Info className="w-4 h-4 text-white/50" /></button>
-              <button className="p-2 hover:bg-white/5 rounded-md transition-colors"><MoreVertical className="w-4 h-4 text-white/50" /></button>
+              <button className="p-2 hover:bg-white/5 rounded-md transition-colors"><Info className="w-4 h-4 text-white" /></button>
+              <button className="p-2 hover:bg-white/5 rounded-md transition-colors"><MoreVertical className="w-4 h-4 text-white" /></button>
            </div>
         </div>
       </nav>
@@ -273,7 +273,7 @@ export default function StudyPage({ params }: { params: { id: string } }) {
                     >
                       <div className="glass-card rounded-[2rem] p-12 text-center mb-8">
                         <h2 className="text-3xl font-serif mb-4">Start your study session</h2>
-                        <p className="text-white/40 mb-10 max-w-md mx-auto">Upload a document or paste a link to generate summaries, chat with AI, and create study tools.</p>
+                        <p className="text-white mb-10 max-w-md mx-auto">Upload a document or paste a link to generate summaries, chat with AI, and create study tools.</p>
                         <div className="bg-white/5 rounded-3xl p-8 border border-white/5">
                           <DocumentUpload />
                         </div>
@@ -287,7 +287,7 @@ export default function StudyPage({ params }: { params: { id: string } }) {
                   ) : error || !data ? (
                     <div className="max-w-4xl mx-auto bg-destructive/10 border border-destructive/20 p-8 rounded-3xl text-center">
                        <h3 className="text-xl font-medium mb-2">Something went wrong</h3>
-                       <p className="text-sm text-white/50 mb-6">{error?.message || "Content not found"}</p>
+                       <p className="text-sm text-white mb-6">{error?.message || "Content not found"}</p>
                        <Button variant="outline" onClick={() => refetch()}>Try Again</Button>
                     </div>
                   ) : (
@@ -306,7 +306,7 @@ export default function StudyPage({ params }: { params: { id: string } }) {
                              className={`flex items-center gap-2 px-5 py-2.5 rounded-xl transition-all whitespace-nowrap ${
                                selectedView === tool.id 
                                  ? 'bg-primary text-white shadow-lg shadow-primary/20' 
-                                 : 'hover:bg-white/5 text-white/40'
+                                 : 'hover:bg-white/5 text-white'
                              }`}
                            >
                               <tool.icon className="w-4 h-4" />
@@ -321,18 +321,18 @@ export default function StudyPage({ params }: { params: { id: string } }) {
                              <div className="flex items-center justify-between mb-8">
                                 <h2 className="text-2xl font-serif">Study Summary</h2>
                                 <div className="flex gap-2">
-                                    <button className="p-2.5 rounded-xl bg-white/5 hover:bg-white/10 transition-colors" title="Copy text"><Copy className="w-4 h-4 text-white/50" /></button>
-                                    <button className="p-2.5 rounded-xl bg-white/5 hover:bg-white/10 transition-colors" title="Download MD"><Download className="w-4 h-4 text-white/50" /></button>
+                                    <button className="p-2.5 rounded-xl bg-white/5 hover:bg-white/10 transition-colors" title="Copy text"><Copy className="w-4 h-4 text-white" /></button>
+                                    <button className="p-2.5 rounded-xl bg-white/5 hover:bg-white/10 transition-colors" title="Download MD"><Download className="w-4 h-4 text-white" /></button>
                                 </div>
                              </div>
 
-                             <div className="prose prose-invert prose-p:text-white/70 prose-headings:font-serif prose-headings:text-white prose-p:leading-relaxed max-w-none">
+                             <div className="prose prose-invert prose-p:text-white prose-headings:font-serif prose-headings:text-white prose-p:leading-relaxed max-w-none">
                                 {data.summary ? (
                                   <ReactMarkdown remarkPlugins={[remarkGfm]}>
                                     {parseSummary(data.summary as any).text}
                                   </ReactMarkdown>
                                 ) : (
-                                  <div className="flex flex-col items-center justify-center py-20 text-white/20">
+                                  <div className="flex flex-col items-center justify-center py-20 text-white">
                                      <div className="w-16 h-16 rounded-3xl bg-white/5 flex items-center justify-center mb-6 animate-pulse">
                                         <FileText className="w-8 h-8" />
                                      </div>
@@ -366,7 +366,7 @@ export default function StudyPage({ params }: { params: { id: string } }) {
                               {data.mindMap ? (
                                 <div className="w-full flex flex-col items-center">
                                    <MermaidChart data={data.mindMap as any} />
-                                   <p className="mt-8 text-sm text-white/30 text-center italic font-sans tracking-wide">Interactive concept map generated by AI.</p>
+                                   <p className="mt-8 text-sm text-white text-center italic font-sans tracking-wide">Interactive concept map generated by AI.</p>
                                 </div>
                               ) : (
                                 <div className="text-center opacity-20">
@@ -430,7 +430,7 @@ export default function StudyPage({ params }: { params: { id: string } }) {
                  />
                )}
                {!data && (
-                 <div className="h-full flex flex-col items-center justify-center text-white/20 p-12 text-center">
+                 <div className="h-full flex flex-col items-center justify-center text-white p-12 text-center">
                     <MessageSquare className="w-12 h-12 mb-4" />
                     <p className="text-sm font-medium">Select a source to start studying</p>
                  </div>

@@ -141,12 +141,12 @@ export default function NotesChatbot({ id, summary = "", extractedText = "" }: N
                     </div>
                     <div>
                         <h3 className="text-sm font-bold text-white leading-none">AI Assistant</h3>
-                        <p className="text-[10px] text-white/30 uppercase tracking-widest mt-1">Active Learning</p>
+                        <p className="text-[10px] text-white uppercase tracking-widest mt-1">Active Learning</p>
                     </div>
                 </div>
                 <button 
                   onClick={clearChat}
-                  className="p-2 hover:bg-white/5 rounded-lg text-white/30 hover:text-white/60 transition-colors"
+                  className="p-2 hover:bg-white/5 rounded-lg text-white hover:text-white transition-colors"
                   title="Clear conversation"
                 >
                     <Trash2 className="w-4 h-4" />
@@ -166,7 +166,7 @@ export default function NotesChatbot({ id, summary = "", extractedText = "" }: N
                             <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 border ${
                                 msg.role === "assistant" 
                                     ? "bg-primary/20 border-primary/30 text-primary" 
-                                    : "bg-white/5 border-white/10 text-white/50"
+                                    : "bg-white/5 border-white/10 text-white"
                             }`}>
                                 {msg.role === "assistant" ? <Bot className="w-4 h-4" /> : <User className="w-4 h-4" />}
                             </div>
@@ -174,7 +174,7 @@ export default function NotesChatbot({ id, summary = "", extractedText = "" }: N
                             <div className={`flex flex-col max-w-[85%] ${msg.role === "user" ? "items-end" : "items-start"}`}>
                                 <div className={`relative px-4 py-3 rounded-2xl text-sm leading-relaxed ${
                                     msg.role === "assistant" 
-                                        ? "glass-card border-white/5 text-white/90 shadow-xl" 
+                                        ? "glass-card border-white/5 text-white shadow-xl" 
                                         : "bg-primary text-white shadow-lg shadow-primary/10"
                                 }`}>
                                     {msg.role === "assistant" ? (
@@ -190,7 +190,7 @@ export default function NotesChatbot({ id, summary = "", extractedText = "" }: N
                                         <p className="whitespace-pre-wrap">{msg.content}</p>
                                     )}
                                 </div>
-                                <span className="text-[9px] text-white/20 mt-1.5 uppercase font-bold tracking-tighter">
+                                <span className="text-[9px] text-white mt-1.5 uppercase font-bold tracking-tighter">
                                     {msg.role === "assistant" ? "Assistant" : "You"}
                                 </span>
                             </div>
@@ -224,7 +224,7 @@ export default function NotesChatbot({ id, summary = "", extractedText = "" }: N
                                 handleAsk();
                             }
                         }}
-                        className="min-h-[100px] w-full bg-white/5 border-white/10 rounded-2xl focus:border-primary/50 focus:ring-primary/20 transition-all resize-none pr-24 pl-4 py-4 text-sm placeholder:text-white/20"
+                        className="min-h-[100px] w-full bg-white/5 border-white/10 rounded-2xl focus:border-primary/50 focus:ring-primary/20 transition-all resize-none pr-24 pl-4 py-4 text-sm placeholder:text-white"
                     />
                     
                     <div className="absolute bottom-3 right-3 flex items-center gap-2">
@@ -236,7 +236,7 @@ export default function NotesChatbot({ id, summary = "", extractedText = "" }: N
                             className={`h-9 w-9 rounded-xl border transition-all ${
                                 listening 
                                     ? "bg-red-500/20 border-red-500/50 text-red-500 animate-pulse" 
-                                    : "bg-white/5 border-white/10 text-white/40 hover:text-white hover:bg-white/10"
+                                    : "bg-white/5 border-white/10 text-white hover:text-white hover:bg-white/10"
                             }`}
                         >
                             <Mic className="h-4 w-4" />
@@ -251,7 +251,7 @@ export default function NotesChatbot({ id, summary = "", extractedText = "" }: N
                         </Button>
                     </div>
                 </div>
-                <p className="text-[10px] text-white/20 text-center mt-3 font-medium uppercase tracking-widest">
+                <p className="text-[10px] text-white text-center mt-3 font-medium uppercase tracking-widest">
                     Shift + Enter for new line • Press Enter to send
                 </p>
             </div>

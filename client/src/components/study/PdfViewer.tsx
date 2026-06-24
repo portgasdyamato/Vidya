@@ -74,7 +74,7 @@ export default function PdfViewer({ url, contentItemId }: { url: string, content
       <div className="absolute top-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2 p-2 bg-card/90 backdrop-blur-xl border border-white/10 rounded-full shadow-2xl">
         <button
           onClick={() => setMode('pan')}
-          className={clsx("p-2.5 rounded-full transition-all", mode === 'pan' ? "bg-primary text-primary-foreground shadow-md" : "text-muted-foreground hover:bg-white/10")}
+          className={clsx("p-2.5 rounded-full transition-all", mode === 'pan' ? "bg-primary text-primary-foreground shadow-md" : "text-white hover:bg-white/10")}
           title="Pan & Scroll"
         >
           <MousePointer2 className="w-4 h-4" />
@@ -82,7 +82,7 @@ export default function PdfViewer({ url, contentItemId }: { url: string, content
         <div className="w-px h-6 bg-white/10 mx-1" />
         <button
           onClick={() => setMode('highlight')}
-          className={clsx("p-2.5 rounded-full transition-all flex items-center gap-2", mode === 'highlight' ? "bg-white/10 text-white shadow-inner" : "text-muted-foreground hover:bg-white/5")}
+          className={clsx("p-2.5 rounded-full transition-all flex items-center gap-2", mode === 'highlight' ? "bg-white/10 text-white shadow-inner" : "text-white hover:bg-white/5")}
           title="Highlighter"
         >
           <Highlighter className="w-4 h-4" />
@@ -102,7 +102,7 @@ export default function PdfViewer({ url, contentItemId }: { url: string, content
         <div className="w-px h-6 bg-white/10 mx-1" />
         <button
           onClick={() => setMode('erase')}
-          className={clsx("p-2.5 rounded-full transition-all", mode === 'erase' ? "bg-destructive/20 text-destructive border border-destructive/30" : "text-muted-foreground hover:bg-white/10")}
+          className={clsx("p-2.5 rounded-full transition-all", mode === 'erase' ? "bg-destructive/20 text-destructive border border-destructive/30" : "text-white hover:bg-white/10")}
           title="Eraser"
         >
           <Eraser className="w-4 h-4" />
@@ -110,17 +110,17 @@ export default function PdfViewer({ url, contentItemId }: { url: string, content
         <div className="w-px h-6 bg-white/10 mx-1" />
         <button
           onClick={() => setScale(s => Math.max(0.5, s - 0.2))}
-          className="p-2.5 rounded-full transition-all text-muted-foreground hover:bg-white/10"
+          className="p-2.5 rounded-full transition-all text-white hover:bg-white/10"
           title="Zoom Out"
         >
           <ZoomOut className="w-4 h-4" />
         </button>
-        <div className="flex items-center justify-center min-w-[3rem] text-xs font-medium text-muted-foreground">
+        <div className="flex items-center justify-center min-w-[3rem] text-xs font-medium text-white">
           {Math.round(scale * 100)}%
         </div>
         <button
           onClick={() => setScale(s => Math.min(3.0, s + 0.2))}
-          className="p-2.5 rounded-full transition-all text-muted-foreground hover:bg-white/10"
+          className="p-2.5 rounded-full transition-all text-white hover:bg-white/10"
           title="Zoom In"
         >
           <ZoomIn className="w-4 h-4" />
@@ -137,7 +137,7 @@ export default function PdfViewer({ url, contentItemId }: { url: string, content
             file={url}
             onLoadSuccess={onDocumentLoadSuccess}
             loading={
-              <div className="flex flex-col items-center gap-4 text-muted-foreground py-20">
+              <div className="flex flex-col items-center gap-4 text-white py-20">
                 <Loader2 className="w-8 h-8 animate-spin text-primary" />
                 <p>Loading document...</p>
               </div>

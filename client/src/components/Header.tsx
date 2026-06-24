@@ -63,7 +63,7 @@ export default function Header() {
 
           <button 
             onClick={toggle} 
-            className="p-2 rounded-xl bg-black/5 border border-black/10 hover:bg-black/10 dark:bg-white/5 dark:border-white/10 dark:hover:bg-white/10 transition-colors text-black/70 dark:text-white/70"
+            className="p-2 rounded-xl bg-black/5 border border-black/10 hover:bg-black/10 dark:bg-white/5 dark:border-white/10 dark:hover:bg-white/10 transition-colors text-white dark:text-white"
           >
             {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
           </button>
@@ -85,15 +85,15 @@ export default function Header() {
               >
                 <DropdownMenuLabel className="font-normal p-3">
                   <div className="flex flex-col space-y-1">
-                    <p className="text-base font-semibold text-white/90 tracking-tight">{user.displayName || user.name || user.username}</p>
-                    <p className="text-xs text-white/50">{user.username}</p>
+                    <p className="text-base font-semibold text-white tracking-tight">{user.displayName || user.name || user.username}</p>
+                    <p className="text-xs text-white">{user.username}</p>
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator className="bg-white/5 mx-2 my-1" />
-                <DropdownMenuItem className="text-white/80 focus:text-white focus:bg-white/10 cursor-pointer rounded-xl py-2.5 px-3 transition-colors" asChild>
+                <DropdownMenuItem className="text-white focus:text-white focus:bg-white/10 cursor-pointer rounded-xl py-2.5 px-3 transition-colors" asChild>
                   <Link href="/workspace">Workspace</Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem className="text-white/80 focus:text-white focus:bg-white/10 cursor-pointer rounded-xl py-2.5 px-3 transition-colors" asChild>
+                <DropdownMenuItem className="text-white focus:text-white focus:bg-white/10 cursor-pointer rounded-xl py-2.5 px-3 transition-colors" asChild>
                   <Link href="/history">History</Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator className="bg-white/5 mx-2 my-1" />

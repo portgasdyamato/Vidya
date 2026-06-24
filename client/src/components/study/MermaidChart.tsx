@@ -239,8 +239,8 @@ export default function MermaidChart({ data, onExplainNode }: MermaidChartProps)
         <div className="w-16 h-16 rounded-3xl bg-primary/10 border border-primary/20 flex items-center justify-center">
           <Sparkles className="h-8 w-8 text-primary/30" />
         </div>
-        <p className="text-sm text-muted-foreground">No mind map available yet.</p>
-        <p className="text-xs text-muted-foreground/50">Upload a document and enable the "Mind Map" option.</p>
+        <p className="text-sm text-white">No mind map available yet.</p>
+        <p className="text-xs text-white">Upload a document and enable the "Mind Map" option.</p>
       </div>
     );
   }
@@ -279,8 +279,8 @@ export default function MermaidChart({ data, onExplainNode }: MermaidChartProps)
 
         {!selectedId && (
           <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center justify-center gap-1.5 pointer-events-none bg-background/60 backdrop-blur-md px-4 py-2 rounded-full border border-border/20 shadow-lg">
-            <Info className="w-3 h-3 text-white/50" />
-            <span className="text-[10px] text-white/70 font-medium">Use mouse to pan and zoom. Click a node to explore.</span>
+            <Info className="w-3 h-3 text-white" />
+            <span className="text-[10px] text-white font-medium">Use mouse to pan and zoom. Click a node to explore.</span>
           </div>
         )}
       </div>
@@ -310,18 +310,18 @@ export default function MermaidChart({ data, onExplainNode }: MermaidChartProps)
                       boxShadow: `0 0 12px ${selectedColor.stroke}, inset 0 0 4px rgba(255,255,255,0.5)` 
                     }} 
                   />
-                  <h4 className="text-[15px] font-semibold text-slate-100 tracking-wide leading-none">
+                  <h4 className="text-[15px] font-semibold text-white tracking-wide leading-none">
                     {selectedNode.label}
                   </h4>
                 </div>
-                <p className="text-[13px] text-slate-400 leading-relaxed font-medium pl-[1.125rem] border-l border-white/5">
+                <p className="text-[13px] text-white leading-relaxed font-medium pl-[1.125rem] border-l border-white/5">
                   {selectedExplanation}
                 </p>
                 {onExplainNode && (
                   <div className="pl-[1.125rem] mt-2">
                     <button
                       onClick={() => onExplainNode(selectedNode.label)}
-                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-[12px] font-semibold text-white/80 transition-colors"
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-[12px] font-semibold text-white transition-colors"
                     >
                       <Sparkles className="w-3.5 h-3.5 text-primary" />
                       Explain More
@@ -331,7 +331,7 @@ export default function MermaidChart({ data, onExplainNode }: MermaidChartProps)
               </div>
               <button
                 onClick={() => setSelectedId(null)}
-                className="p-1.5 -mr-1 -mt-1 rounded-full hover:bg-white/10 transition-colors flex-shrink-0 text-slate-500 hover:text-slate-300"
+                className="p-1.5 -mr-1 -mt-1 rounded-full hover:bg-white/10 transition-colors flex-shrink-0 text-white hover:text-white"
               >
                 <X className="w-4 h-4" />
               </button>

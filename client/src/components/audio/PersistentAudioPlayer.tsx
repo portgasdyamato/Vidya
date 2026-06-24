@@ -57,14 +57,14 @@ export default function PersistentAudioPlayer() {
                     className="cursor-pointer"
                   />
                   <div className="flex justify-between items-center mt-2">
-                    <span className="text-[10px] font-mono text-white/30">{format(audio.currentTime)}</span>
-                    <span className="text-[10px] font-mono text-white/30">{format(audio.duration)}</span>
+                    <span className="text-[10px] font-mono text-white">{format(audio.currentTime)}</span>
+                    <span className="text-[10px] font-mono text-white">{format(audio.duration)}</span>
                   </div>
                </div>
             </div>
 
             <div className="hidden sm:flex items-center gap-3 ml-2 border-l border-white/5 pl-5">
-              <Volume2 className="w-4 h-4 text-white/30" />
+              <Volume2 className="w-4 h-4 text-white" />
               <Slider 
                 value={[audio.volume]} 
                 max={1} 
@@ -75,7 +75,7 @@ export default function PersistentAudioPlayer() {
             </div>
 
             <div className="flex items-center gap-2">
-               <button onClick={handleDownload} className="p-2 hover:bg-white/5 rounded-xl text-white/30 hover:text-white transition-colors">
+               <button onClick={handleDownload} className="p-2 hover:bg-white/5 rounded-xl text-white hover:text-white transition-colors">
                   <Download className="w-5 h-5" />
                </button>
             </div>

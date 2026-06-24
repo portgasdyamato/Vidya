@@ -116,7 +116,7 @@ export default function AudioPlayer({ audioUrl, title }: AudioPlayerProps) {
         </Button>
 
         <div className="flex-1 space-y-2">
-          <div className="flex items-center justify-between text-sm text-muted-foreground">
+          <div className="flex items-center justify-between text-sm text-white">
             <span>{formatTime(currentTime)}</span>
             <span className="font-medium text-card-foreground truncate mx-2" title={title}>
               {title}
@@ -136,7 +136,7 @@ export default function AudioPlayer({ audioUrl, title }: AudioPlayerProps) {
         </div>
 
         <div className="flex items-center space-x-2 flex-shrink-0">
-          <Volume2 className="h-4 w-4 text-muted-foreground" />
+          <Volume2 className="h-4 w-4 text-white" />
           <Slider
             value={[volume]}
             max={1}
@@ -149,7 +149,7 @@ export default function AudioPlayer({ audioUrl, title }: AudioPlayerProps) {
         </div>
         
         <div className="flex items-center space-x-2 flex-shrink-0 ml-2">
-          <span className="text-xs text-muted-foreground">Speed</span>
+          <span className="text-xs text-white">Speed</span>
           <Slider
             value={[playbackRate]}
             min={0.5}

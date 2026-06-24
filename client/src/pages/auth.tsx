@@ -113,7 +113,7 @@ export default function AuthPage() {
             {isLogin ? "Welcome Back" : "Create Account"}
           </h2>
           
-          <p className="text-sm text-white/50 mb-8">
+          <p className="text-sm text-white mb-8">
             {isLogin ? "Don't have an account yet?" : "Already have an account?"}{" "}
             <button 
               onClick={() => setIsLogin(!isLogin)} 
@@ -135,32 +135,32 @@ export default function AuthPage() {
               >
                 {!isLogin && (
                   <div className="relative">
-                    <UserCheck className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30 pointer-events-none" />
+                    <UserCheck className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white pointer-events-none" />
                     <Input
                       type="text"
                       placeholder="Full Name"
-                      className="h-12 rounded-xl bg-white/5 border-white/10 text-white placeholder:text-white/25 focus:border-white/30 focus:bg-white/10 transition-all pl-11"
+                      className="h-12 rounded-xl bg-white/5 border-white/10 text-white placeholder:text-white focus:border-white/30 focus:bg-white/10 transition-all pl-11"
                     />
                   </div>
                 )}
                 <div className="relative">
-                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30 pointer-events-none" />
+                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white pointer-events-none" />
                   <Input
                     type="email"
                     placeholder="email address"
-                    className="h-12 rounded-xl bg-white/5 border-white/10 text-white placeholder:text-white/25 focus:border-white/30 focus:bg-white/10 transition-all pl-11"
+                    className="h-12 rounded-xl bg-white/5 border-white/10 text-white placeholder:text-white focus:border-white/30 focus:bg-white/10 transition-all pl-11"
                   />
                 </div>
                 <div className="relative">
-                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30 pointer-events-none" />
+                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white pointer-events-none" />
                   <Input
                     type={showPass ? "text" : "password"}
                     placeholder="Password"
-                    className="h-12 rounded-xl bg-white/5 border-white/10 text-white placeholder:text-white/25 focus:border-white/30 focus:bg-white/10 transition-all pl-11 pr-12"
+                    className="h-12 rounded-xl bg-white/5 border-white/10 text-white placeholder:text-white focus:border-white/30 focus:bg-white/10 transition-all pl-11 pr-12"
                   />
                   <button
                     onClick={() => setShowPass(!showPass)}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-white/30 hover:text-white/60 transition-colors"
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-white hover:text-white transition-colors"
                   >
                     {showPass ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
@@ -175,7 +175,7 @@ export default function AuthPage() {
             {/* Divider */}
             <div className="relative flex items-center gap-4 py-2">
               <div className="flex-1 h-px bg-white/10" />
-              <span className="text-[10px] text-white/30 font-bold uppercase tracking-widest">Or</span>
+              <span className="text-[10px] text-white font-bold uppercase tracking-widest">Or</span>
               <div className="flex-1 h-px bg-white/10" />
             </div>
 

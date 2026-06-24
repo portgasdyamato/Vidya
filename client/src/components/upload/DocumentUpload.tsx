@@ -185,11 +185,11 @@ export default function DocumentUpload({ onSuccess, hideProgress = false, notebo
           <div className="mb-8 rounded-2xl border border-border/60 bg-muted/20 p-6">
             <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
               <div>
-                <p className="text-xs uppercase tracking-wide text-muted-foreground">Processing</p>
+                <p className="text-xs uppercase tracking-wide text-white">Processing</p>
                 <h4 className="text-lg font-semibold text-foreground">
                   {processingItem?.title || title || (files.length > 0 ? files[0].name : "Document")}
                 </h4>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm text-white">
                   Status:{" "}
                   <span className="font-medium text-primary">
                     {processingItem?.status === "completed"
@@ -209,13 +209,13 @@ export default function DocumentUpload({ onSuccess, hideProgress = false, notebo
                 ) : processingItem?.status === "failed" ? (
                   <AlertTriangle className="h-10 w-10 text-destructive" />
                 ) : (
-                  <Loader2 className="h-10 w-10 animate-spin text-muted-foreground" />
+                  <Loader2 className="h-10 w-10 animate-spin text-white" />
                 )}
               </div>
             </div>
             <Progress value={progressValue} className="mt-4" />
             <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center">
-              <p className="text-xs text-muted-foreground">
+              <p className="text-xs text-white">
                 We'll automatically refresh this status. You can navigate away and come back anytime.
               </p>
               {!onSuccess && (
@@ -243,12 +243,12 @@ export default function DocumentUpload({ onSuccess, hideProgress = false, notebo
           onDrop={handleDrop}
           data-testid="dropzone-documents"
         >
-          <Upload className="w-16 h-16 text-white/50 mx-auto mb-4" />
+          <Upload className="w-16 h-16 text-white mx-auto mb-4" />
           <h4 className="text-xl font-semibold text-card-foreground mb-2">
             {files.length > 0 ? `${files.length} file(s) selected` : "Drop your files here"}
           </h4>
-          <p className="text-white/50 mb-4">or click to browse your computer</p>
-          <p className="text-sm text-white/40 mb-4">Supports PDF and DOCX files up to 10MB</p>
+          <p className="text-white mb-4">or click to browse your computer</p>
+          <p className="text-sm text-white mb-4">Supports PDF and DOCX files up to 10MB</p>
           
           <Input
             type="file"
@@ -279,7 +279,7 @@ export default function DocumentUpload({ onSuccess, hideProgress = false, notebo
                     <div className="flex items-center gap-2">
                        <FileText className="h-5 w-5 text-primary" />
                        <span className="text-sm font-medium text-foreground truncate max-w-[200px]">{file.name}</span>
-                       <span className="text-[10px] text-muted-foreground uppercase">{(file.size / 1024 / 1024).toFixed(2)} MB</span>
+                       <span className="text-[10px] text-white uppercase">{(file.size / 1024 / 1024).toFixed(2)} MB</span>
                     </div>
                     <Button 
                       variant="ghost" 
@@ -327,7 +327,7 @@ export default function DocumentUpload({ onSuccess, hideProgress = false, notebo
               />
               <div>
                 <Label htmlFor="audio" className="font-medium">Convert to Audio</Label>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm text-white">
                   Generate high-quality speech for visually impaired students
                 </p>
               </div>
@@ -342,7 +342,7 @@ export default function DocumentUpload({ onSuccess, hideProgress = false, notebo
               />
               <div>
                 <Label htmlFor="summary" className="font-medium">Create Summary & Flashcards</Label>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm text-white">
                   Get structured highlights with bold headings plus ready-to-use flashcards
                 </p>
               </div>
@@ -357,7 +357,7 @@ export default function DocumentUpload({ onSuccess, hideProgress = false, notebo
               />
               <div>
                 <Label htmlFor="mindmap" className="font-medium">Generate Mind Map</Label>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm text-white">
                   Create an interactive concept map with Mermaid.js
                 </p>
               </div>
@@ -372,7 +372,7 @@ export default function DocumentUpload({ onSuccess, hideProgress = false, notebo
               />
               <div>
                 <Label htmlFor="quiz" className="font-medium">Generate Quiz</Label>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm text-white">
                   Create interactive questions to test understanding
                 </p>
               </div>
