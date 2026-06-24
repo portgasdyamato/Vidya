@@ -259,9 +259,9 @@ function MainNav({ activeTab, onTabChange }: { activeTab: string; onTabChange: (
 
   return (
     <>
-      <nav className="w-[76px] flex flex-col items-center py-6 bg-slate-900/[0.03] dark:bg-white/[0.03] backdrop-blur-[80px] border border-slate-900/10 dark:border-white/10 rounded-[32px] h-full gap-8 z-20 shadow-[0_8px_32px_rgba(0,0,0,0.4)] relative shrink-0">
+      <nav className="w-[76px] flex flex-col items-center py-6 bg-white/[0.03] backdrop-blur-[80px] border border-white/10 rounded-[32px] h-full gap-8 z-20 shadow-[0_8px_32px_rgba(0,0,0,0.4)] relative shrink-0">
         <div className="absolute inset-0 pointer-events-none opacity-20 rounded-[32px] overflow-hidden">
-          <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-slate-900/10 dark:from-white/10 to-transparent" />
+          <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-white/10 to-transparent" />
         </div>
 
         <Link href="/">
@@ -280,13 +280,13 @@ function MainNav({ activeTab, onTabChange }: { activeTab: string; onTabChange: (
               onClick={() => onTabChange(id)}
               className={`w-full aspect-square flex items-center justify-center rounded-2xl transition-all duration-300 group relative ${
                 activeTab === id 
-                  ? "bg-slate-900/10 dark:bg-white/10 text-slate-900 dark:text-white shadow-inner border border-slate-900/5 dark:border-white/5" 
-                  : "text-slate-900/40 dark:text-white/40 hover:bg-slate-900/5 dark:bg-white/5 hover:text-slate-900/80 dark:text-white/80"
+                  ? "bg-white/10 text-white shadow-inner border border-white/5" 
+                  : "text-white/40 hover:bg-white/5 hover:text-white/80"
               }`}
               title={label}
             >
               <Icon className={`w-5 h-5 transition-transform duration-300 ${activeTab === id ? 'scale-110' : 'group-hover:scale-110'}`} />
-              <span className="absolute left-[70px] bg-slate-900/10 dark:bg-white/10 backdrop-blur-xl border border-slate-900/10 dark:border-white/10 text-slate-900 dark:text-white text-[12px] font-semibold px-3 py-1.5 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap shadow-xl pointer-events-none">
+              <span className="absolute left-[70px] bg-white/10 backdrop-blur-xl border border-white/10 text-white text-[12px] font-semibold px-3 py-1.5 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap shadow-xl pointer-events-none">
                 {label}
               </span>
             </button>
@@ -296,7 +296,7 @@ function MainNav({ activeTab, onTabChange }: { activeTab: string; onTabChange: (
         <div className="mt-auto relative z-10 flex flex-col items-center gap-4">
           <button 
             onClick={toggle} 
-            className="w-11 h-11 rounded-2xl bg-slate-900/5 dark:bg-white/5 border border-slate-900/10 dark:border-white/10 hover:bg-slate-900/10 dark:bg-white/10 transition-colors flex items-center justify-center text-slate-900/70 dark:text-white/70 hover:text-slate-900 dark:text-white"
+            className="w-11 h-11 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors flex items-center justify-center text-white/70 hover:text-white"
             title="Toggle Theme"
           >
             {theme === "dark" ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
@@ -304,9 +304,9 @@ function MainNav({ activeTab, onTabChange }: { activeTab: string; onTabChange: (
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="rounded-full h-11 w-11 p-0 relative hover:scale-105 transition-transform border border-slate-900/10 dark:border-white/10 shadow-lg group">
+              <Button variant="ghost" className="rounded-full h-11 w-11 p-0 relative hover:scale-105 transition-transform border border-white/10 shadow-lg group">
                 <div className="h-2.5 w-2.5 rounded-full bg-[#30D158] absolute bottom-0 right-0 border-2 border-black z-10 shadow-[0_0_8px_#30D158]" />
-                <div className="h-full w-full rounded-full bg-gradient-to-br from-indigo-500 to-blue-600 flex items-center justify-center text-[11px] text-slate-900 dark:text-white font-bold overflow-hidden">
+                <div className="h-full w-full rounded-full bg-gradient-to-br from-indigo-500 to-blue-600 flex items-center justify-center text-[11px] text-white font-bold overflow-hidden">
                   {user?.photo ? (
                     <img src={user.photo} alt={user.name} className="w-full h-full object-cover" />
                   ) : (
@@ -315,10 +315,10 @@ function MainNav({ activeTab, onTabChange }: { activeTab: string; onTabChange: (
                 </div>
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" side="right" sideOffset={16} className="w-60 p-2 bg-slate-900/[0.05] dark:bg-white/[0.05] backdrop-blur-[80px] border border-slate-900/10 dark:border-white/10 text-slate-900 dark:text-white rounded-[24px] shadow-[0_8px_32px_rgba(0,0,0,0.5)]">
-              <div className={`px-3 py-3 flex flex-col gap-0.5 ${user?.username !== "default-user" ? "mb-2 border-b border-slate-900/10 dark:border-white/10" : ""}`}>
-                <p className="text-[14px] font-bold tracking-tight truncate text-slate-900 dark:text-white">{user?.name || user?.displayName || user?.username}</p>
-                <p className="text-[11px] font-medium tracking-wide text-slate-900/40 dark:text-white/40 uppercase truncate">
+            <DropdownMenuContent align="start" side="right" sideOffset={16} className="w-60 p-2 bg-white/[0.05] backdrop-blur-[80px] border border-white/10 text-white rounded-[24px] shadow-[0_8px_32px_rgba(0,0,0,0.5)]">
+              <div className={`px-3 py-3 flex flex-col gap-0.5 ${user?.username !== "default-user" ? "mb-2 border-b border-white/10" : ""}`}>
+                <p className="text-[14px] font-bold tracking-tight truncate text-white">{user?.name || user?.displayName || user?.username}</p>
+                <p className="text-[11px] font-medium tracking-wide text-white/40 uppercase truncate">
                   {user?.username === "default-user" ? "Guest Account" : "Student Account"}
                 </p>
               </div>
@@ -326,7 +326,7 @@ function MainNav({ activeTab, onTabChange }: { activeTab: string; onTabChange: (
                 <>
                   <DropdownMenuItem 
                     onClick={() => setIsProfileModalOpen(true)}
-                    className="rounded-[16px] cursor-pointer py-2.5 px-3 hover:bg-slate-900/10 dark:bg-white/10 focus:bg-slate-900/10 dark:bg-white/10 focus:text-slate-900 dark:text-white transition-colors"
+                    className="rounded-[16px] cursor-pointer py-2.5 px-3 hover:bg-white/10 focus:bg-white/10 focus:text-white transition-colors"
                   >
                     <UserCircle className="w-4 h-4 mr-2.5 opacity-70" />
                     <span className="font-medium text-[13px]">Edit Profile Name</span>
@@ -346,25 +346,25 @@ function MainNav({ activeTab, onTabChange }: { activeTab: string; onTabChange: (
       </nav>
 
       <Dialog open={isProfileModalOpen} onOpenChange={setIsProfileModalOpen}>
-        <DialogContent className="bg-slate-900/[0.05] dark:bg-white/[0.05] backdrop-blur-[120px] border border-slate-900/10 dark:border-white/10 text-slate-900 dark:text-white sm:rounded-[32px] sm:max-w-md p-8 shadow-[0_16px_64px_rgba(0,0,0,0.5)]">
+        <DialogContent className="bg-white/[0.05] backdrop-blur-[120px] border border-white/10 text-white sm:rounded-[32px] sm:max-w-md p-8 shadow-[0_16px_64px_rgba(0,0,0,0.5)]">
           <DialogHeader className="space-y-3 mb-6">
-            <div className="w-12 h-12 rounded-2xl bg-slate-900/5 dark:bg-white/5 border border-slate-900/10 dark:border-white/10 flex items-center justify-center mb-2 shadow-inner">
-              <UserCircle className="w-6 h-6 text-slate-900/70 dark:text-white/70" />
+            <div className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center mb-2 shadow-inner">
+              <UserCircle className="w-6 h-6 text-white/70" />
             </div>
             <DialogTitle className="text-2xl font-bold tracking-tight">Edit Profile</DialogTitle>
-            <DialogDescription className="text-slate-900/50 dark:text-white/50 text-[14px] leading-relaxed">
+            <DialogDescription className="text-white/50 text-[14px] leading-relaxed">
               Choose how you want your name to appear across Vidya.
             </DialogDescription>
           </DialogHeader>
           
           <div className="space-y-4 py-2">
             <div className="space-y-2">
-              <Label htmlFor="name" className="text-slate-900/60 dark:text-white/60 text-[12px] font-bold uppercase tracking-wider">Display Name</Label>
+              <Label htmlFor="name" className="text-white/60 text-[12px] font-bold uppercase tracking-wider">Display Name</Label>
               <Input
                 id="name"
                 value={displayName}
                 onChange={(e) => setDisplayName(e.target.value)}
-                className="bg-slate-900/5 dark:bg-white/5 border-slate-900/10 dark:border-white/10 text-slate-900 dark:text-white placeholder:text-slate-900/20 dark:text-white/20 h-12 rounded-xl text-[15px] focus-visible:ring-1 focus-visible:ring-white/30 focus-visible:border-slate-900/30 dark:border-white/30 transition-all"
+                className="bg-white/5 border-white/10 text-white placeholder:text-white/20 h-12 rounded-xl text-[15px] focus-visible:ring-1 focus-visible:ring-white/30 focus-visible:border-white/30 transition-all"
                 placeholder="Enter your name"
               />
             </div>
@@ -374,14 +374,14 @@ function MainNav({ activeTab, onTabChange }: { activeTab: string; onTabChange: (
             <Button
               variant="ghost"
               onClick={() => setIsProfileModalOpen(false)}
-              className="rounded-xl h-12 font-semibold hover:bg-slate-900/5 dark:bg-white/5 hover:text-slate-900 dark:text-white"
+              className="rounded-xl h-12 font-semibold hover:bg-white/5 hover:text-white"
             >
               Cancel
             </Button>
             <Button
               onClick={handleUpdateProfile}
               disabled={isUpdating || !displayName.trim()}
-              className="rounded-xl h-12 font-bold bg-slate-900 dark:bg-white text-black hover:bg-slate-900/90 dark:bg-white/90 shadow-[0_0_20px_rgba(255,255,255,0.2)] hover:shadow-[0_0_25px_rgba(255,255,255,0.3)] transition-all disabled:opacity-50"
+              className="rounded-xl h-12 font-bold bg-white text-black hover:bg-white/90 shadow-[0_0_20px_rgba(255,255,255,0.2)] hover:shadow-[0_0_25px_rgba(255,255,255,0.3)] transition-all disabled:opacity-50"
             >
               {isUpdating ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
               Save Changes
@@ -471,14 +471,14 @@ function NotebooksView({ onSelectNotebook }: { onSelectNotebook: (id: string) =>
   };
 
   return (
-    <div className="flex-1 overflow-y-auto bg-transparent relative p-8 md:p-12 custom-scrollbar text-slate-900 dark:text-white w-full">
+    <div className="flex-1 overflow-y-auto bg-transparent relative p-8 md:p-12 custom-scrollbar text-white w-full">
       <div className="max-w-5xl mx-auto relative z-10">
         <header className="mb-14 flex items-center justify-between">
           <div>
-            <h1 className="text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-br from-slate-900 dark:from-white to-slate-900/60 dark:to-white/60 mb-3 tracking-tight font-serif">
+            <h1 className="text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-br from-white to-white/60 mb-3 tracking-tight font-serif">
               Notebooks
             </h1>
-            <p className="text-lg text-slate-900/50 dark:text-white/50 font-medium">Organize your research effectively</p>
+            <p className="text-lg text-white/50 font-medium">Organize your research effectively</p>
           </div>
           <Button onClick={() => setIsCreating(true)} className="glass-button-primary rounded-full font-medium px-6">
             <Plus className="w-4 h-4 mr-2" /> New Notebook
@@ -486,33 +486,33 @@ function NotebooksView({ onSelectNotebook }: { onSelectNotebook: (id: string) =>
         </header>
 
         {isCreating && (
-          <Card className="mb-8 bg-slate-900/5 dark:bg-white/5 border-slate-900/10 dark:border-white/10 backdrop-blur-xl">
+          <Card className="mb-8 bg-white/5 border-white/10 backdrop-blur-xl">
             <CardContent className="p-6">
-              <h3 className="text-lg font-semibold mb-4 text-slate-900 dark:text-white">Create New Notebook</h3>
+              <h3 className="text-lg font-semibold mb-4 text-white">Create New Notebook</h3>
               <div className="flex items-center gap-4">
                 <Input
                   autoFocus
                   placeholder="Notebook Name"
                   value={newNotebookName}
                   onChange={(e) => setNewNotebookName(e.target.value)}
-                  className="bg-slate-900/10 dark:bg-white/10 border-slate-900/20 dark:border-white/20 text-slate-900 dark:text-white placeholder:text-slate-900/30 dark:text-white/30"
+                  className="bg-white/10 border-white/20 text-white placeholder:text-white/30"
                   onKeyDown={(e) => e.key === "Enter" && handleCreate()}
                 />
                 <Button onClick={() => handleCreate()} className="glass-button-primary rounded-full shrink-0">Create</Button>
-                <Button variant="ghost" onClick={() => setIsCreating(false)} className="shrink-0 text-slate-900 dark:text-white hover:bg-slate-900/10 dark:bg-white/10">Cancel</Button>
+                <Button variant="ghost" onClick={() => setIsCreating(false)} className="shrink-0 text-white hover:bg-white/10">Cancel</Button>
               </div>
             </CardContent>
           </Card>
         )}
 
         <Dialog open={!!editingNotebook} onOpenChange={(open) => !open && setEditingNotebook(null)}>
-          <DialogContent className="bg-background/95 backdrop-blur-xl border-slate-900/10 dark:border-white/10 text-foreground">
+          <DialogContent className="bg-background/95 backdrop-blur-xl border-white/10 text-foreground">
             <DialogHeader><DialogTitle>Edit Notebook Name</DialogTitle></DialogHeader>
             <div className="py-4">
               <Input 
                 value={editingNotebook?.name || ""} 
                 onChange={e => setEditingNotebook(prev => prev ? {...prev, name: e.target.value} : null)}
-                className="bg-slate-900/5 dark:bg-white/5 border-slate-900/10 dark:border-white/10 text-slate-900 dark:text-white"
+                className="bg-white/5 border-white/10 text-white"
                 autoFocus
                 onKeyDown={e => e.key === "Enter" && handleEditSubmit()}
               />
@@ -525,15 +525,15 @@ function NotebooksView({ onSelectNotebook }: { onSelectNotebook: (id: string) =>
         </Dialog>
 
         <AlertDialog open={!!deletingNotebookId} onOpenChange={(open) => !open && setDeletingNotebookId(null)}>
-          <AlertDialogContent className="bg-background/95 backdrop-blur-xl border-slate-900/10 dark:border-white/10 text-foreground">
+          <AlertDialogContent className="bg-background/95 backdrop-blur-xl border-white/10 text-foreground">
             <AlertDialogHeader>
               <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-              <AlertDialogDescription className="text-slate-900/70 dark:text-white/70">
+              <AlertDialogDescription className="text-white/70">
                 This will permanently delete this notebook and all of its contents. This action cannot be undone.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel className="bg-slate-900/5 dark:bg-white/5 border-slate-900/10 dark:border-white/10 text-slate-900 dark:text-white hover:bg-slate-900/10 dark:bg-white/10 hover:text-slate-900 dark:text-white">Cancel</AlertDialogCancel>
+              <AlertDialogCancel className="bg-white/5 border-white/10 text-white hover:bg-white/10 hover:text-white">Cancel</AlertDialogCancel>
               <AlertDialogAction onClick={handleDeleteConfirm} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">Delete Notebook</AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
@@ -545,17 +545,17 @@ function NotebooksView({ onSelectNotebook }: { onSelectNotebook: (id: string) =>
           </div>
         ) : notebooks.length === 0 ? (
           <div 
-            className="rounded-[32px] border border-slate-900/10 dark:border-white/10 p-16 text-center"
+            className="rounded-[32px] border border-white/10 p-16 text-center"
             style={{
               background: 'rgba(255, 255, 255, 0.02)',
               backdropFilter: 'blur(40px)',
               boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.2), inset 0 1px 0 0 rgba(255, 255, 255, 0.05)',
             }}
           >
-            <div className="w-20 h-20 rounded-3xl bg-slate-900/5 dark:bg-white/5 border border-slate-900/10 dark:border-white/10 flex items-center justify-center mx-auto mb-6">
-              <BookMarked className="h-10 w-10 text-slate-900/20 dark:text-white/20" />
+            <div className="w-20 h-20 rounded-3xl bg-white/5 border border-white/10 flex items-center justify-center mx-auto mb-6">
+              <BookMarked className="h-10 w-10 text-white/20" />
             </div>
-            <p className="text-slate-900/50 dark:text-white/50 mb-6 font-medium text-lg">You haven't created any notebooks yet.</p>
+            <p className="text-white/50 mb-6 font-medium text-lg">You haven't created any notebooks yet.</p>
             <Button onClick={() => setIsCreating(true)} className="glass-button-primary px-8 py-6 rounded-full shadow-2xl font-medium text-base">
               Create your first notebook
             </Button>
@@ -573,28 +573,28 @@ function NotebooksView({ onSelectNotebook }: { onSelectNotebook: (id: string) =>
                 <div
                   key={notebook.id}
                   onClick={() => onSelectNotebook(notebook.id)}
-                  className="group relative rounded-[32px] p-7 text-left transition-all duration-300 hover:scale-[1.02] border border-slate-900/10 dark:border-white/10 overflow-hidden cursor-pointer"
+                  className="group relative rounded-[32px] p-7 text-left transition-all duration-300 hover:scale-[1.02] border border-white/10 overflow-hidden cursor-pointer"
                   style={{
                     background: 'rgba(255, 255, 255, 0.03)',
                     backdropFilter: 'blur(40px)',
                     boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.3), inset 0 1px 0 0 rgba(255, 255, 255, 0.1)',
                   }}
                 >
-                  <div className="absolute inset-0 bg-gradient-to-br from-slate-900/10 dark:from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+                  <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
                   
                   <div className="flex items-center justify-between mb-4">
-                    <div className="w-12 h-12 rounded-xl flex items-center justify-center text-slate-900 dark:text-white bg-primary/20 border border-primary/30 relative z-10">
+                    <div className="w-12 h-12 rounded-xl flex items-center justify-center text-white bg-primary/20 border border-primary/30 relative z-10">
                       <BookMarked className="h-6 w-6" />
                     </div>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
-                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity text-slate-900 dark:text-white hover:bg-slate-900/10 dark:bg-white/10 relative z-20">
+                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity text-white hover:bg-white/10 relative z-20">
                           <MoreVertical className="h-4 w-4" />
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end" className="z-[60]">
                         <DropdownMenuItem 
-                          className="text-slate-900/70 dark:text-white/70 focus:text-slate-900 dark:text-white focus:bg-slate-900/10 dark:bg-white/10 py-2"
+                          className="text-white/70 focus:text-white focus:bg-white/10 py-2"
                           onClick={(e) => { e.stopPropagation(); setEditingNotebook({ id: String(notebook.id), name: notebook.name }); }}
                         >
                           <SquarePen className="w-4 h-4 mr-2" />
@@ -620,7 +620,7 @@ function NotebooksView({ onSelectNotebook }: { onSelectNotebook: (id: string) =>
                       <span>Study Progress</span>
                       <span>{progress}%</span>
                     </div>
-                    <Progress value={progress} className="h-1.5 bg-slate-900/10 dark:bg-white/10" />
+                    <Progress value={progress} className="h-1.5 bg-white/10" />
                   </div>
                 </div>
               );
@@ -747,8 +747,8 @@ function SessionsPanel({
   const dateKeys = Object.keys(byDate).sort((a, b) => new Date(b).getTime() - new Date(a).getTime());
 
   return (
-    <aside className="w-[300px] bg-slate-900/[0.03] dark:bg-white/[0.03] backdrop-blur-[80px] border-r border-slate-900/10 dark:border-white/10 flex flex-col h-full z-10 relative shadow-[10px_0_30px_rgba(0,0,0,0.3)] shrink-0">
-      <div className="p-4 border-b border-slate-900/10 dark:border-white/10">
+    <aside className="w-[300px] bg-white/[0.03] backdrop-blur-[80px] border-r border-white/10 flex flex-col h-full z-10 relative shadow-[10px_0_30px_rgba(0,0,0,0.3)] shrink-0">
+      <div className="p-4 border-b border-white/10">
         <div className="flex items-center justify-between mb-3">
           <h2 className="text-base font-bold text-foreground">
             {activeNotebookName ? `${activeNotebookName}` : "Sources"}
@@ -757,7 +757,7 @@ function SessionsPanel({
             onClick={onNewChat}
             size="sm"
             variant="ghost"
-            className="h-8 w-8 p-0 rounded-lg hover:bg-slate-900/10 dark:bg-white/10 text-foreground"
+            className="h-8 w-8 p-0 rounded-lg hover:bg-white/10 text-foreground"
             aria-label="Add source"
           >
             <UploadCloud className="h-4 w-4" />
@@ -769,7 +769,7 @@ function SessionsPanel({
             placeholder="Search sources"
             value={searchSources}
             onChange={(e) => setSearchSources(e.target.value)}
-            className="pl-9 h-9 rounded-xl bg-slate-900/5 dark:bg-white/5 border-border/50 text-foreground placeholder:text-muted-foreground"
+            className="pl-9 h-9 rounded-xl bg-white/5 border-border/50 text-foreground placeholder:text-muted-foreground"
           />
         </div>
       </div>
@@ -798,14 +798,14 @@ function SessionsPanel({
                         onClick={() => onSelectSession(session)}
                         className={`group relative rounded-[16px] p-4 transition-all cursor-pointer border ${
                           isActive 
-                            ? "bg-slate-900/10 dark:bg-white/10 border-slate-900/20 dark:border-white/20 shadow-[0_4px_16px_rgba(0,0,0,0.2)]" 
-                            : "border-transparent hover:bg-slate-900/5 dark:bg-white/5"
+                            ? "bg-white/10 border-white/20 shadow-[0_4px_16px_rgba(0,0,0,0.2)]" 
+                            : "border-transparent hover:bg-white/5"
                         }`}
                       >
                         <div className="flex items-start justify-between gap-2">
                           <div className="flex-1 min-w-0">
                             <h3 
-                              className={`text-[13px] tracking-wide ${isActive ? "text-slate-900 dark:text-white font-bold" : "text-slate-900/70 dark:text-white/70 font-medium"}`} 
+                              className={`text-[13px] tracking-wide ${isActive ? "text-white font-bold" : "text-white/70 font-medium"}`} 
                               style={{
                                 display: "-webkit-box",
                                 WebkitLineClamp: 2,
@@ -818,7 +818,7 @@ function SessionsPanel({
                               {session.title}
                             </h3>
                             {progress > 0 && progress < 100 && (
-                              <div className="mt-2 h-[2px] bg-slate-900/10 dark:bg-white/10 rounded-full overflow-hidden w-full">
+                              <div className="mt-2 h-[2px] bg-white/10 rounded-full overflow-hidden w-full">
                                 <div
                                   className="h-full bg-primary/80 transition-all"
                                   style={{ width: `${progress}%` }}
@@ -1002,7 +1002,7 @@ function CenterColumn({
             {/* Feature Pills */}
             <div className="flex flex-wrap gap-2 justify-center">
               {["AI Summary", "Mind Map", "Flashcards", "Quiz", "AI Podcast", "Chat"].map((f) => (
-                <div key={f} className="px-3 py-1.5 rounded-full bg-slate-900/5 dark:bg-white/5 border border-slate-900/8 dark:border-white/8 text-[11px] font-bold text-slate-900/50 dark:text-white/50 uppercase tracking-wider">
+                <div key={f} className="px-3 py-1.5 rounded-full bg-white/5 border border-white/8 text-[11px] font-bold text-white/50 uppercase tracking-wider">
                   {f}
                 </div>
               ))}
@@ -1016,7 +1016,7 @@ function CenterColumn({
               Upload Your First Source
             </Button>
 
-            <p className="text-[11px] text-slate-900/20 dark:text-white/20">
+            <p className="text-[11px] text-white/20">
               Supports PDF, DOCX, TXT
             </p>
           </div>
@@ -1074,7 +1074,7 @@ function CenterColumn({
 
     return (
       <div className="flex-1 flex flex-col bg-transparent overflow-hidden h-full min-w-0">
-        <div className="h-16 px-6 border-b border-slate-900/10 dark:border-white/10 bg-slate-900/[0.02] dark:bg-white/[0.02] backdrop-blur-3xl flex items-center justify-between shrink-0">
+        <div className="h-16 px-6 border-b border-white/10 bg-white/[0.02] backdrop-blur-3xl flex items-center justify-between shrink-0">
           <h2 className="text-[16px] font-bold tracking-wide text-foreground">Study Summary</h2>
           <div className="flex items-center gap-1">
             {isEditingSummary ? (
@@ -1133,7 +1133,7 @@ function CenterColumn({
         <ScrollArea className="flex-1 min-w-0">
           <div className="p-6 max-w-4xl mx-auto">
             {isEditingSummary ? (
-              <div className="relative glass-card rounded-2xl overflow-visible quill-dark-theme p-0 border-slate-900/10 dark:border-white/10 mt-6 shadow-2xl">
+              <div className="relative glass-card rounded-2xl overflow-visible quill-dark-theme p-0 border-white/10 mt-6 shadow-2xl">
                 <ReactQuill 
                   theme="snow"
                   value={editedSummary} 
@@ -1238,13 +1238,13 @@ function CenterColumn({
 
                     return (
                       <>
-                        <section className="rounded-[32px] border border-slate-900/10 dark:border-white/10 bg-slate-900/[0.04] dark:bg-white/[0.04] backdrop-blur-[60px] p-8 shadow-[0_8px_32px_rgba(0,0,0,0.3)] break-words w-full overflow-hidden">
+                        <section className="rounded-[32px] border border-white/10 bg-white/[0.04] backdrop-blur-[60px] p-8 shadow-[0_8px_32px_rgba(0,0,0,0.3)] break-words w-full overflow-hidden">
                           <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-2">Summary Overview</p>
                           <h1 className="text-3xl font-bold text-foreground leading-tight">{heroTitle}</h1>
                           <p className="mt-3 text-base text-muted-foreground leading-relaxed max-w-3xl">{heroDescription}</p>
                         </section>
 
-                        <section className="rounded-[32px] border border-slate-900/10 dark:border-white/10 bg-slate-900/[0.02] dark:bg-white/[0.02] backdrop-blur-[40px] p-8 break-words w-full overflow-hidden shadow-[0_8px_32px_rgba(0,0,0,0.2)]">
+                        <section className="rounded-[32px] border border-white/10 bg-white/[0.02] backdrop-blur-[40px] p-8 break-words w-full overflow-hidden shadow-[0_8px_32px_rgba(0,0,0,0.2)]">
                           {markdownSection}
                         </section>
                       </>
@@ -1279,7 +1279,7 @@ function CenterColumn({
   if (selectedView === "preview") {
     return (
       <div className="flex-1 flex flex-col bg-transparent overflow-hidden h-full min-w-0">
-        <div className="p-4 border-b border-slate-900/10 dark:border-white/10 bg-slate-900/[0.02] dark:bg-white/[0.02] backdrop-blur-3xl flex items-center justify-between">
+        <div className="p-4 border-b border-white/10 bg-white/[0.02] backdrop-blur-3xl flex items-center justify-between">
           <h2 className="text-base font-semibold text-foreground">Original Document</h2>
            <div className="flex items-center gap-2">
             <span className="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full font-bold uppercase tracking-wider border border-primary/20">
@@ -1351,7 +1351,7 @@ function CenterColumn({
 
     return (
       <div className="flex-1 flex flex-col bg-transparent overflow-hidden h-full min-w-0">
-        <div className="p-4 border-b border-slate-900/10 dark:border-white/10 bg-slate-900/[0.02] dark:bg-white/[0.02] backdrop-blur-3xl flex items-center justify-between">
+        <div className="p-4 border-b border-white/10 bg-white/[0.02] backdrop-blur-3xl flex items-center justify-between">
           <div className="flex items-center gap-2">
             <BookMarked className="h-4 w-4 text-primary" />
             <h2 className="text-base font-semibold text-foreground">Flashcards</h2>
@@ -1400,7 +1400,7 @@ function CenterColumn({
     
     return (
       <div className="flex-1 flex flex-col bg-transparent overflow-hidden h-full min-w-0">
-        <div className="p-4 border-b border-slate-900/10 dark:border-white/10 bg-slate-900/[0.02] dark:bg-white/[0.02] backdrop-blur-3xl flex items-center gap-3">
+        <div className="p-4 border-b border-white/10 bg-white/[0.02] backdrop-blur-3xl flex items-center gap-3">
           <Headphones className="h-4 w-4 text-primary" />
           <h2 className="text-base font-semibold text-foreground">AI Podcast</h2>
           {hasScript && (
@@ -1474,13 +1474,13 @@ function CenterColumn({
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: questionIndex * 0.05, duration: 0.4 }}
-          className="p-6 md:p-8 rounded-[28px] bg-[#1C1C1E]/60 backdrop-blur-2xl border border-slate-900/5 dark:border-white/5 shadow-2xl relative overflow-hidden"
+          className="p-6 md:p-8 rounded-[28px] bg-[#1C1C1E]/60 backdrop-blur-2xl border border-white/5 shadow-2xl relative overflow-hidden"
         >
           {/* Subtle top highlight */}
           <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent opacity-50" />
           
           <div className="flex items-start gap-4 mb-8">
-            <span className="flex items-center justify-center w-8 h-8 rounded-full bg-slate-900/5 dark:bg-white/5 text-slate-900/40 dark:text-white/40 text-[13px] font-bold border border-slate-900/5 dark:border-white/5 shrink-0 mt-0.5">
+            <span className="flex items-center justify-center w-8 h-8 rounded-full bg-white/5 text-white/40 text-[13px] font-bold border border-white/5 shrink-0 mt-0.5">
               {questionIndex + 1}
             </span>
             <h3 className="text-[17px] font-medium text-[#F2F2F7] leading-relaxed tracking-wide">
@@ -1494,19 +1494,19 @@ function CenterColumn({
                 const isSelected = selectedOption === idx;
                 const isCorrectOption = Number(q.correctAnswer) === idx;
                 
-                let stateClass = "bg-[#2C2C2E]/40 border-transparent hover:bg-[#3A3A3C]/60 text-slate-900/90 dark:text-white/90";
-                let letterClass = "bg-slate-900/10 dark:bg-white/10 text-slate-900/50 dark:text-white/50";
+                let stateClass = "bg-[#2C2C2E]/40 border-transparent hover:bg-[#3A3A3C]/60 text-white/90";
+                let letterClass = "bg-white/10 text-white/50";
                 
                 if (isAnswered) {
                   if (isCorrectOption) {
                     stateClass = "bg-[#34C759]/10 border-transparent text-[#34C759]";
                     letterClass = "bg-[#34C759] text-black shadow-[0_0_15px_rgba(52,199,89,0.3)]";
                   } else if (isSelected && !isCorrectOption) {
-                    stateClass = "bg-[#2C2C2E]/40 border-transparent text-slate-900/90 dark:text-white/90 opacity-60";
-                    letterClass = "bg-[#FF453A] text-slate-900 dark:text-white shadow-[0_0_15px_rgba(255,69,58,0.3)]";
+                    stateClass = "bg-[#2C2C2E]/40 border-transparent text-white/90 opacity-60";
+                    letterClass = "bg-[#FF453A] text-white shadow-[0_0_15px_rgba(255,69,58,0.3)]";
                   } else {
-                    stateClass = "bg-[#2C2C2E]/20 border-transparent opacity-30 cursor-not-allowed text-slate-900/50 dark:text-white/50";
-                    letterClass = "bg-black/20 text-slate-900/30 dark:text-white/30";
+                    stateClass = "bg-[#2C2C2E]/20 border-transparent opacity-30 cursor-not-allowed text-white/50";
+                    letterClass = "bg-black/20 text-white/30";
                   }
                 }
 
@@ -1558,10 +1558,10 @@ function CenterColumn({
                 className="overflow-hidden"
               >
                 <div className={`p-4 rounded-2xl flex items-center gap-4 ${
-                  isCorrect ? "bg-[#34C759]/10 text-[#34C759]" : "bg-[#2C2C2E]/60 text-slate-900 dark:text-white"
+                  isCorrect ? "bg-[#34C759]/10 text-[#34C759]" : "bg-[#2C2C2E]/60 text-white"
                 }`}>
                   <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${
-                    isCorrect ? "bg-[#34C759] text-black" : "bg-[#FF453A] text-slate-900 dark:text-white shadow-[0_0_15px_rgba(255,69,58,0.2)]"
+                    isCorrect ? "bg-[#34C759] text-black" : "bg-[#FF453A] text-white shadow-[0_0_15px_rgba(255,69,58,0.2)]"
                   }`}>
                     {isCorrect ? <CheckCircle2 className="w-5 h-5" /> : <X className="w-5 h-5" />}
                   </div>
@@ -1613,7 +1613,7 @@ function CenterColumn({
 
     return (
       <div className="flex-1 flex flex-col bg-transparent overflow-hidden h-full min-w-0">
-        <div className="p-4 border-b border-slate-900/10 dark:border-white/10 bg-slate-900/[0.02] dark:bg-white/[0.02] backdrop-blur-3xl flex items-center justify-between">
+        <div className="p-4 border-b border-white/10 bg-white/[0.02] backdrop-blur-3xl flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center border border-primary/20">
               <Check className="h-4 w-4 text-primary" />
@@ -1654,7 +1654,7 @@ function CenterColumn({
 
     return (
       <div className="flex-1 flex flex-col bg-transparent overflow-hidden h-full min-w-0">
-        <div className="p-4 border-b border-slate-900/10 dark:border-white/10 bg-slate-900/[0.02] dark:bg-white/[0.02] backdrop-blur-3xl flex items-center justify-between">
+        <div className="p-4 border-b border-white/10 bg-white/[0.02] backdrop-blur-3xl flex items-center justify-between">
           <div className="flex items-center gap-3">
             <BrainCircuit className="h-4 w-4 text-primary" />
             <h2 className="text-base font-semibold text-foreground">Mind Map</h2>
@@ -1677,7 +1677,7 @@ function CenterColumn({
                 <BrainCircuit className="h-10 w-10 text-primary/40" />
               </div>
               <div>
-                <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">No Mind Map Yet</h3>
+                <h3 className="text-lg font-bold text-white mb-2">No Mind Map Yet</h3>
                 <p className="text-sm text-muted-foreground max-w-sm">
                   {isReady
                     ? "Click \"Generate Mind Map\" to create an interactive knowledge map from your document."
@@ -1755,9 +1755,9 @@ function CenterColumn({
     return (
       <div className="flex-1 flex flex-col bg-transparent overflow-hidden h-full min-w-0" style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", system-ui, sans-serif' }}>
         {/* Header */}
-        <div className="px-8 pt-8 pb-6 bg-slate-900/[0.02] dark:bg-white/[0.02] backdrop-blur-3xl border-b border-slate-900/10 dark:border-white/10">
-          <p className="text-[12px] font-bold tracking-[0.2em] text-slate-900/40 dark:text-white/40 uppercase mb-2">Progress</p>
-          <h2 className="text-[28px] font-bold text-slate-900 dark:text-white tracking-tight" style={{ letterSpacing: '-0.5px' }}>
+        <div className="px-8 pt-8 pb-6 bg-white/[0.02] backdrop-blur-3xl border-b border-white/10">
+          <p className="text-[12px] font-bold tracking-[0.2em] text-white/40 uppercase mb-2">Progress</p>
+          <h2 className="text-[28px] font-bold text-white tracking-tight" style={{ letterSpacing: '-0.5px' }}>
             Learning Analytics
           </h2>
         </div>
@@ -1801,8 +1801,8 @@ function CenterColumn({
                   />
                 </svg>
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <span className="text-[36px] font-black text-slate-900 dark:text-white" style={{ letterSpacing: '-1.5px', lineHeight: 1 }}>{overallProgress}</span>
-                  <span className="text-[12px] text-slate-900/50 dark:text-white/50 font-bold mt-1 tracking-wider">%</span>
+                  <span className="text-[36px] font-black text-white" style={{ letterSpacing: '-1.5px', lineHeight: 1 }}>{overallProgress}</span>
+                  <span className="text-[12px] text-white/50 font-bold mt-1 tracking-wider">%</span>
                 </div>
               </div>
               {/* Label */}
@@ -1810,9 +1810,9 @@ function CenterColumn({
                 <div>
                   <div className="flex items-center gap-2.5 mb-2">
                     <div className="w-2 h-2 rounded-full shadow-lg" style={{ background: masteryColor, boxShadow: `0 0 10px ${masteryColor}` }} />
-                    <span className="text-[12px] font-bold tracking-widest text-slate-900/50 dark:text-white/50 uppercase">{masteryLabel}</span>
+                    <span className="text-[12px] font-bold tracking-widest text-white/50 uppercase">{masteryLabel}</span>
                   </div>
-                  <p className="text-[17px] font-medium text-slate-900/90 dark:text-white/90 leading-relaxed max-w-xl">
+                  <p className="text-[17px] font-medium text-white/90 leading-relaxed max-w-xl">
                     {overallProgress < 20 ? 'Start reading, quiz yourself, and review flashcards to build progress.' :
                      overallProgress < 50 ? 'Good momentum. Keep practicing to strengthen your retention.' :
                      overallProgress < 80 ? "You're close to full mastery of this topic." :
@@ -1827,11 +1827,11 @@ function CenterColumn({
                     { label: 'Quiz', value: lastQuizScore ? Math.round((lastQuizScore.score / lastQuizScore.total) * 100) : 0, color: '#FF9F0A', show: hasQuiz },
                   ].filter(x => x.show).map(({ label, value, color }) => (
                     <div key={label} className="flex items-center gap-3">
-                      <span className="text-[11px] text-slate-900/40 dark:text-white/40 w-20 font-semibold tracking-wide">{label}</span>
+                      <span className="text-[11px] text-white/40 w-20 font-semibold tracking-wide">{label}</span>
                       <div className="flex-1 h-1.5 rounded-full" style={{ background: 'rgba(255,255,255,0.06)' }}>
                         <div className="h-full rounded-full" style={{ width: `${value}%`, background: color, transition: 'width 1s ease', boxShadow: `0 0 8px ${color}50` }} />
                       </div>
-                      <span className="text-[11px] text-slate-900/40 dark:text-white/40 w-10 text-right font-bold">{value}%</span>
+                      <span className="text-[11px] text-white/40 w-10 text-right font-bold">{value}%</span>
                     </div>
                   ))}
                 </div>
@@ -1862,14 +1862,14 @@ function CenterColumn({
                   <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent opacity-50" />
                   
                   <div className="flex items-center justify-between">
-                    <span className="text-[11px] font-bold tracking-widest text-slate-900/40 dark:text-white/40 uppercase">{label}</span>
+                    <span className="text-[11px] font-bold tracking-widest text-white/40 uppercase">{label}</span>
                     <div className="w-9 h-9 rounded-[10px] flex items-center justify-center transition-colors shadow-md group-hover:brightness-110" style={{ background: color, color: '#ffffff' }}>
                       {icon}
                     </div>
                   </div>
                   <div className="mt-2">
-                    <p className="text-[34px] font-black text-slate-900 dark:text-white tracking-tight leading-none mb-1.5">{value}</p>
-                    <p className="text-[12px] text-slate-900/40 dark:text-white/40 font-medium">{sub}</p>
+                    <p className="text-[34px] font-black text-white tracking-tight leading-none mb-1.5">{value}</p>
+                    <p className="text-[12px] text-white/40 font-medium">{sub}</p>
                   </div>
                 </motion.div>
               ))}
@@ -1897,25 +1897,25 @@ function CenterColumn({
                              <Layers className="w-5 h-5 text-[#30D158]" />
                           </div>
                           <div>
-                             <h3 className="text-[16px] font-bold text-slate-900 dark:text-white tracking-tight">Flashcard Recall</h3>
-                             <p className="text-[12px] text-slate-900/40 dark:text-white/40 font-medium">{totalFlashcards} cards in deck</p>
+                             <h3 className="text-[16px] font-bold text-white tracking-tight">Flashcard Recall</h3>
+                             <p className="text-[12px] text-white/40 font-medium">{totalFlashcards} cards in deck</p>
                           </div>
                        </div>
                      </div>
 
                      <div className="flex items-end justify-between mb-6 relative z-10">
                         <div className="flex flex-col">
-                           <span className="text-[48px] font-black text-slate-900 dark:text-white leading-none tracking-tighter">{gotItCount}</span>
+                           <span className="text-[48px] font-black text-white leading-none tracking-tighter">{gotItCount}</span>
                            <span className="text-[13px] font-bold text-[#30D158] uppercase tracking-wider mt-1">Mastered</span>
                         </div>
                         <div className="flex flex-col text-right">
-                           <span className="text-[28px] font-bold text-slate-900/60 dark:text-white/60 leading-none">{needReviewCount}</span>
+                           <span className="text-[28px] font-bold text-white/60 leading-none">{needReviewCount}</span>
                            <span className="text-[11px] font-semibold text-[#FF9F0A] uppercase tracking-wider mt-1">Reviewing</span>
                         </div>
                      </div>
                   </div>
 
-                  <div className="relative h-2 rounded-full overflow-hidden bg-slate-900/5 dark:bg-white/5 w-full z-10 mt-auto">
+                  <div className="relative h-2 rounded-full overflow-hidden bg-white/5 w-full z-10 mt-auto">
                     <div className="absolute left-0 top-0 h-full rounded-full shadow-[0_0_12px_rgba(48,209,88,0.5)]" style={{ width: `${(gotItCount / totalFlashcards) * 100}%`, background: '#30D158', transition: 'width 1s cubic-bezier(0.4,0,0.2,1)' }} />
                     <div className="absolute top-0 h-full rounded-full shadow-[0_0_12px_rgba(255,159,10,0.5)]" style={{
                       left: `${(gotItCount / totalFlashcards) * 100}%`,
@@ -1947,13 +1947,13 @@ function CenterColumn({
                              <CheckSquare className="w-5 h-5 text-[#FF9F0A]" />
                           </div>
                           <div>
-                             <h3 className="text-[16px] font-bold text-slate-900 dark:text-white tracking-tight">Quiz Performance</h3>
-                             <p className="text-[12px] text-slate-900/40 dark:text-white/40 font-medium">Last {Math.min(quizScores.length, 3)} attempts</p>
+                             <h3 className="text-[16px] font-bold text-white tracking-tight">Quiz Performance</h3>
+                             <p className="text-[12px] text-white/40 font-medium">Last {Math.min(quizScores.length, 3)} attempts</p>
                           </div>
                        </div>
                        <div className="text-right">
-                          <span className="text-[24px] font-black text-slate-900 dark:text-white">{avgQuizScore}%</span>
-                          <p className="text-[10px] font-bold text-slate-900/30 dark:text-white/30 uppercase tracking-widest mt-0.5">Average</p>
+                          <span className="text-[24px] font-black text-white">{avgQuizScore}%</span>
+                          <p className="text-[10px] font-bold text-white/30 uppercase tracking-widest mt-0.5">Average</p>
                        </div>
                      </div>
 
@@ -1964,9 +1964,9 @@ function CenterColumn({
                          return (
                            <div key={i} className="flex items-center gap-4">
                              <div className="w-8 flex justify-end shrink-0">
-                                <span className="text-[11px] font-bold text-slate-900/30 dark:text-white/30 uppercase">#{quizScores.length - i}</span>
+                                <span className="text-[11px] font-bold text-white/30 uppercase">#{quizScores.length - i}</span>
                              </div>
-                             <div className="flex-1 h-2 rounded-full bg-slate-900/5 dark:bg-white/5 relative overflow-hidden">
+                             <div className="flex-1 h-2 rounded-full bg-white/5 relative overflow-hidden">
                                <div className="absolute left-0 top-0 h-full rounded-full" style={{ width: `${pct}%`, background: barColor, boxShadow: `0 0 10px ${barColor}60` }} />
                              </div>
                              <div className="w-10 flex justify-end shrink-0">
@@ -1984,12 +1984,12 @@ function CenterColumn({
             {/* Empty state */}
             {pagesRead.length === 0 && quizScores.length === 0 && totalFlashcards === 0 && (
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col items-center justify-center py-20 text-center gap-4">
-                <div className="w-16 h-16 rounded-2xl bg-slate-900/[0.02] dark:bg-white/[0.02] border border-slate-900/[0.05] dark:border-white/[0.05] flex items-center justify-center shadow-lg">
-                  <BarChart3 className="h-6 w-6 text-slate-900/20 dark:text-white/20" />
+                <div className="w-16 h-16 rounded-2xl bg-white/[0.02] border border-white/[0.05] flex items-center justify-center shadow-lg">
+                  <BarChart3 className="h-6 w-6 text-white/20" />
                 </div>
                 <div>
-                  <p className="text-[16px] font-semibold text-slate-900/60 dark:text-white/60 mb-2">No activity yet</p>
-                  <p className="text-[13px] text-slate-900/30 dark:text-white/30 max-w-[240px] mx-auto leading-relaxed">Read the document, take the quiz, and review flashcards to track your progress.</p>
+                  <p className="text-[16px] font-semibold text-white/60 mb-2">No activity yet</p>
+                  <p className="text-[13px] text-white/30 max-w-[240px] mx-auto leading-relaxed">Read the document, take the quiz, and review flashcards to track your progress.</p>
                 </div>
               </motion.div>
             )}
@@ -2070,8 +2070,8 @@ function ChatPanel({
 
   if (!session || !contentItem) {
     return (
-      <aside className="w-80 flex flex-col bg-transparent border-l border-slate-900/5 dark:border-white/5 h-full backdrop-blur-3xl">
-        <div className="p-4 border-b border-slate-900/10 dark:border-white/10">
+      <aside className="w-80 flex flex-col bg-transparent border-l border-white/5 h-full backdrop-blur-3xl">
+        <div className="p-4 border-b border-white/10">
           <h2 className="text-sm font-bold text-foreground">AI Assistant</h2>
         </div>
         <div className="flex-1 flex flex-col items-center justify-center p-6 text-center">
@@ -2086,15 +2086,15 @@ function ChatPanel({
   const messages = session.messages || [];
 
   return (
-    <aside className="w-[400px] shrink-0 flex flex-col bg-black/20 backdrop-blur-3xl border-l border-slate-900/5 dark:border-white/5 h-full absolute lg:relative right-0 top-0 bottom-0 shadow-[-10px_0_30px_rgba(0,0,0,0.5)] z-30">
-      <div className="h-16 flex items-center justify-between px-6 border-b border-slate-900/5 dark:border-white/5 bg-transparent shrink-0">
+    <aside className="w-[400px] shrink-0 flex flex-col bg-black/20 backdrop-blur-3xl border-l border-white/5 h-full absolute lg:relative right-0 top-0 bottom-0 shadow-[-10px_0_30px_rgba(0,0,0,0.5)] z-30">
+      <div className="h-16 flex items-center justify-between px-6 border-b border-white/5 bg-transparent shrink-0">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-slate-900/30 dark:from-white/30 to-slate-900/10 dark:to-white/10 flex items-center justify-center shadow-lg shadow-white/10">
+          <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-white/30 to-white/10 flex items-center justify-center shadow-lg shadow-white/10">
             <img src="/logo.png" alt="Vidya AI" className="w-4 h-4 object-contain" />
           </div>
           <h2 className="text-[14px] font-bold text-foreground tracking-wide">Vidya AI</h2>
         </div>
-        <div className="px-3 py-1 rounded-full bg-slate-900/5 dark:bg-white/5 border border-slate-900/10 dark:border-white/10 text-[10px] font-bold tracking-widest uppercase text-slate-900/60 dark:text-white/60">
+        <div className="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-[10px] font-bold tracking-widest uppercase text-white/60">
           GPT-4o
         </div>
       </div>
@@ -2103,7 +2103,7 @@ function ChatPanel({
         <div className="py-6 space-y-6">
           {messages.length === 0 ? (
             <div className="text-center py-12 flex flex-col items-center justify-center opacity-80">
-              <div className="w-16 h-16 rounded-[24px] bg-gradient-to-br from-slate-900/10 dark:from-white/10 to-transparent flex items-center justify-center mb-5 border border-slate-900/10 dark:border-white/10 shadow-lg">
+              <div className="w-16 h-16 rounded-[24px] bg-gradient-to-br from-white/10 to-transparent flex items-center justify-center mb-5 border border-white/10 shadow-lg">
                 <img src="/logo.png" alt="Vidya AI" className="w-7 h-7 object-contain opacity-70" />
               </div>
               <h3 className="text-[15px] font-semibold text-foreground mb-2">How can I help you?</h3>
@@ -2118,10 +2118,10 @@ function ChatPanel({
                 className={`flex w-full ${msg.role === "user" ? "justify-end" : "justify-start"}`}
               >
                 <div
-                  className={`max-w-[85%] px-4 py-3 text-[14px] leading-[1.6] shadow-lg border border-slate-900/10 dark:border-white/10 ${
+                  className={`max-w-[85%] px-4 py-3 text-[14px] leading-[1.6] shadow-lg border border-white/10 ${
                     msg.role === "user"
-                      ? "bg-gradient-to-br from-slate-900/20 dark:from-white/20 to-slate-900/5 dark:to-white/5 text-slate-900 dark:text-white rounded-[20px] rounded-br-[4px]"
-                      : "bg-slate-900/[0.05] dark:bg-white/[0.05] text-slate-900/90 dark:text-white/90 rounded-[20px] rounded-bl-[4px]"
+                      ? "bg-gradient-to-br from-white/20 to-white/5 text-white rounded-[20px] rounded-br-[4px]"
+                      : "bg-white/[0.05] text-white/90 rounded-[20px] rounded-bl-[4px]"
                   }`}
                 >
                   <ReactMarkdown
@@ -2149,7 +2149,7 @@ function ChatPanel({
 
       {/* macOS Style Input Area */}
       <div className="p-4 pt-2 shrink-0 bg-transparent">
-        <div className="relative bg-slate-900/[0.05] dark:bg-white/[0.05] backdrop-blur-[40px] rounded-[24px] border border-slate-900/10 dark:border-white/10 p-1 flex items-end shadow-[0_8px_32px_rgba(0,0,0,0.3)] transition-all focus-within:border-slate-900/20 dark:border-white/20 focus-within:bg-slate-900/[0.08] dark:bg-white/[0.08] focus-within:shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
+        <div className="relative bg-white/[0.05] backdrop-blur-[40px] rounded-[24px] border border-white/10 p-1 flex items-end shadow-[0_8px_32px_rgba(0,0,0,0.3)] transition-all focus-within:border-white/20 focus-within:bg-white/[0.08] focus-within:shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
           <Textarea
             ref={textareaRef}
             value={input}
@@ -2164,7 +2164,7 @@ function ChatPanel({
               type="button"
               variant="ghost"
               size="icon"
-              className={`h-8 w-8 rounded-full transition-all ${listening ? 'bg-red-500/20 text-red-500' : 'text-muted-foreground hover:bg-slate-900/10 dark:bg-white/10'}`}
+              className={`h-8 w-8 rounded-full transition-all ${listening ? 'bg-red-500/20 text-red-500' : 'text-muted-foreground hover:bg-white/10'}`}
               onClick={toggleListening}
               disabled={!isReady || !browserSupportsSpeech}
               title={!browserSupportsSpeech ? "Speech recognition not supported in this browser" : listening ? "Stop recording" : "Use microphone"}
@@ -2175,7 +2175,7 @@ function ChatPanel({
               onClick={handleSend}
               disabled={!input.trim() || !isReady}
               size="icon"
-              className="h-8 w-8 rounded-full bg-slate-900/20 dark:bg-white/20 hover:bg-slate-900/30 dark:bg-white/30 text-slate-900 dark:text-white disabled:bg-slate-900/5 dark:bg-white/5 disabled:text-slate-900/20 dark:text-white/20 transition-all shrink-0"
+              className="h-8 w-8 rounded-full bg-white/20 hover:bg-white/30 text-white disabled:bg-white/5 disabled:text-white/20 transition-all shrink-0"
             >
               <ArrowUp className="h-4 w-4" />
             </Button>
@@ -2208,7 +2208,7 @@ function RightColumn({ contentItem, selectedView, onSelectView }: {
   ] as const;
 
   return (
-    <aside className="w-16 bg-slate-900/[0.02] dark:bg-white/[0.02] backdrop-blur-3xl border-l border-slate-900/5 dark:border-white/5 flex flex-col h-full py-4 items-center gap-4 z-10 relative shadow-[-10px_0_30px_rgba(0,0,0,0.2)]">
+    <aside className="w-16 bg-white/[0.02] backdrop-blur-3xl border-l border-white/5 flex flex-col h-full py-4 items-center gap-4 z-10 relative shadow-[-10px_0_30px_rgba(0,0,0,0.2)]">
       {!contentItem || !isReady ? (
         <div className="flex flex-col items-center gap-4 opacity-20 pointer-events-none">
           {tools.map(({ id, icon: Icon }) => (
@@ -2227,13 +2227,13 @@ function RightColumn({ contentItem, selectedView, onSelectView }: {
                 onClick={() => onSelectView(id)}
                 className={`p-3 rounded-xl transition-all duration-200 group relative ${
                   isSelected 
-                    ? "bg-slate-900/10 dark:bg-white/10 text-slate-900 dark:text-white shadow-lg" 
-                    : "text-muted-foreground hover:bg-slate-900/5 dark:bg-white/5"
+                    ? "bg-white/10 text-white shadow-lg" 
+                    : "text-muted-foreground hover:bg-white/5"
                 }`}
                 title={label}
               >
                 <Icon className="h-5 w-5" />
-                <span className="absolute right-14 bg-black text-slate-900 dark:text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-50 pointer-events-none">
+                <span className="absolute right-14 bg-black text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-50 pointer-events-none">
                   {label}
                 </span>
               </button>
@@ -2423,10 +2423,10 @@ function Dashboard({
       
       <div className="max-w-5xl mx-auto relative z-10">
         <header className="mb-14">
-          <h1 className="text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-br from-slate-900 dark:from-white to-slate-900/60 dark:to-white/60 mb-3 tracking-tight font-serif">
+          <h1 className="text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-br from-white to-white/60 mb-3 tracking-tight font-serif">
             Welcome back, Student
           </h1>
-          <p className="text-lg text-slate-900/50 dark:text-white/50 font-medium">What would you like to research today?</p>
+          <p className="text-lg text-white/50 font-medium">What would you like to research today?</p>
         </header>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
@@ -2439,17 +2439,17 @@ function Dashboard({
             <button
               key={i}
               onClick={card.action}
-              className="group relative rounded-[32px] p-7 text-left transition-all duration-300 hover:scale-[1.02] border border-slate-900/10 dark:border-white/10 overflow-hidden"
+              className="group relative rounded-[32px] p-7 text-left transition-all duration-300 hover:scale-[1.02] border border-white/10 overflow-hidden"
               style={{
                 background: 'rgba(255, 255, 255, 0.03)',
                 backdropFilter: 'blur(40px)',
                 boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.3), inset 0 1px 0 0 rgba(255, 255, 255, 0.1)',
               }}
             >
-              <div className="absolute inset-0 bg-gradient-to-br from-slate-900/10 dark:from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+              <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
               
               <div 
-                className="w-12 h-12 rounded-xl flex items-center justify-center mb-6 text-slate-900 dark:text-white bg-black border border-slate-900/10 dark:border-white/10"
+                className="w-12 h-12 rounded-xl flex items-center justify-center mb-6 text-white bg-black border border-white/10"
                 style={{ 
                   boxShadow: `0 8px 20px -4px rgba(0,0,0,0.5), inset 0 2px 4px rgba(255,255,255,0.1)`
                 }}
@@ -2465,24 +2465,24 @@ function Dashboard({
         <section>
           <div className="flex items-center justify-between mb-8">
             <h2 className="text-2xl font-bold text-slate-100 tracking-tight font-serif">Recent Sources</h2>
-            <Button variant="ghost" size="sm" className="text-slate-900/60 dark:text-white/60 hover:text-slate-900 dark:text-white hover:bg-slate-900/10 dark:bg-white/10 rounded-full px-4">
+            <Button variant="ghost" size="sm" className="text-white/60 hover:text-white hover:bg-white/10 rounded-full px-4">
               View Library
             </Button>
           </div>
 
           {recentSessions.length === 0 ? (
             <div 
-              className="rounded-[32px] border border-slate-900/10 dark:border-white/10 p-16 text-center"
+              className="rounded-[32px] border border-white/10 p-16 text-center"
               style={{
                 background: 'rgba(255, 255, 255, 0.02)',
                 backdropFilter: 'blur(40px)',
                 boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.2), inset 0 1px 0 0 rgba(255, 255, 255, 0.05)',
               }}
             >
-              <div className="w-20 h-20 rounded-3xl bg-slate-900/5 dark:bg-white/5 border border-slate-900/10 dark:border-white/10 flex items-center justify-center mx-auto mb-6">
-                <FileText className="h-10 w-10 text-slate-900/20 dark:text-white/20" />
+              <div className="w-20 h-20 rounded-3xl bg-white/5 border border-white/10 flex items-center justify-center mx-auto mb-6">
+                <FileText className="h-10 w-10 text-white/20" />
               </div>
-              <p className="text-slate-900/50 dark:text-white/50 mb-6 font-medium text-lg">You haven't uploaded any sources yet.</p>
+              <p className="text-white/50 mb-6 font-medium text-lg">You haven't uploaded any sources yet.</p>
               <Button onClick={onUpload} className="glass-button-primary px-8 py-6 rounded-full shadow-2xl font-bold text-base">
                 Upload your first source
               </Button>
@@ -2497,7 +2497,7 @@ function Dashboard({
                 <div
                   key={session.id}
                   onClick={() => onSelectSource(session)}
-                  className="relative rounded-[24px] p-5 flex items-center gap-5 cursor-pointer group transition-all duration-300 hover:scale-[1.02] border border-slate-900/10 dark:border-white/10 overflow-hidden"
+                  className="relative rounded-[24px] p-5 flex items-center gap-5 cursor-pointer group transition-all duration-300 hover:scale-[1.02] border border-white/10 overflow-hidden"
                   style={{
                     background: 'rgba(255, 255, 255, 0.03)',
                     backdropFilter: 'blur(40px)',
@@ -2521,7 +2521,7 @@ function Dashboard({
                       )}
                     </div>
                   </div>
-                  <ChevronRight className="h-5 w-5 text-slate-900/20 dark:text-white/20 group-hover:text-slate-900/60 dark:text-white/60 transition-colors group-hover:translate-x-1 duration-300 relative z-10" />
+                  <ChevronRight className="h-5 w-5 text-white/20 group-hover:text-white/60 transition-colors group-hover:translate-x-1 duration-300 relative z-10" />
                 </div>
                 );
               })}
@@ -2554,7 +2554,7 @@ function Canvas({ initialContent, title }: { initialContent?: string; title: str
 
   return (
     <div className="flex-1 flex flex-col bg-transparent h-full overflow-hidden">
-      <div className="p-4 border-b border-slate-900/10 dark:border-white/10 flex items-center justify-between bg-slate-900/[0.02] dark:bg-white/[0.02] backdrop-blur-3xl">
+      <div className="p-4 border-b border-white/10 flex items-center justify-between bg-white/[0.02] backdrop-blur-3xl">
         <div className="flex items-center gap-2">
           <SquarePen className="h-4 w-4 text-primary" />
           <h2 className="text-sm font-semibold text-foreground truncate max-w-[200px]">Scratchpad: {title}</h2>
@@ -2929,12 +2929,12 @@ export default function Workspace() {
   if (showUpload) {
     return (
       <div className="min-h-screen w-full bg-slate-50 dark:bg-black flex overflow-hidden text-slate-900 dark:text-slate-200 relative transition-colors duration-500">
-        {/* Light Mode: Pastel Flowy Background */}
+        {/* Light Mode: White Grey Flowy Background */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none bg-slate-50 dark:hidden z-0">
-          <div className="absolute inset-0 bg-gradient-to-br from-pink-50/80 via-purple-50/80 to-blue-50/80 opacity-90" />
-          <div className="absolute w-[120vw] h-[120vh] -top-[10%] -left-[10%] bg-pink-200/30 rounded-full mix-blend-multiply filter blur-[100px] opacity-70 animate-pulse" style={{ animationDuration: '15s' }} />
-          <div className="absolute w-[100vw] h-[100vh] top-[20%] left-[20%] bg-purple-200/30 rounded-full mix-blend-multiply filter blur-[120px] opacity-60 animate-pulse" style={{ animationDuration: '20s', animationDelay: '2s' }} />
-          <div className="absolute w-[110vw] h-[110vh] -bottom-[20%] -right-[10%] bg-blue-200/30 rounded-full mix-blend-multiply filter blur-[90px] opacity-70 animate-pulse" style={{ animationDuration: '18s', animationDelay: '5s' }} />
+          <div className="absolute inset-0 bg-gradient-to-br from-gray-100 via-slate-50 to-gray-200 opacity-80" />
+          <div className="absolute w-[120vw] h-[120vh] -top-[10%] -left-[10%] bg-gray-300 rounded-full mix-blend-multiply filter blur-[100px] opacity-50 animate-pulse" style={{ animationDuration: '15s' }} />
+          <div className="absolute w-[100vw] h-[100vh] top-[20%] left-[20%] bg-slate-300 rounded-full mix-blend-multiply filter blur-[120px] opacity-40 animate-pulse" style={{ animationDuration: '20s', animationDelay: '2s' }} />
+          <div className="absolute w-[110vw] h-[110vh] -bottom-[20%] -right-[10%] bg-zinc-300 rounded-full mix-blend-multiply filter blur-[90px] opacity-60 animate-pulse" style={{ animationDuration: '18s', animationDelay: '5s' }} />
         </div>
 
         {/* Dark Mode: Cinematic GIF Environment */}
@@ -3072,12 +3072,12 @@ export default function Workspace() {
 
   return (
     <div className="h-screen w-full bg-slate-50 dark:bg-black flex overflow-hidden text-slate-900 dark:text-slate-200 relative transition-colors duration-500">
-      {/* Light Mode: Pastel Flowy Background */}
+      {/* Light Mode: White Grey Flowy Background */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none bg-slate-50 dark:hidden z-0">
-        <div className="absolute inset-0 bg-gradient-to-br from-pink-50/80 via-purple-50/80 to-blue-50/80 opacity-90" />
-        <div className="absolute w-[120vw] h-[120vh] -top-[10%] -left-[10%] bg-pink-200/30 rounded-full mix-blend-multiply filter blur-[100px] opacity-70 animate-pulse" style={{ animationDuration: '15s' }} />
-        <div className="absolute w-[100vw] h-[100vh] top-[20%] left-[20%] bg-purple-200/30 rounded-full mix-blend-multiply filter blur-[120px] opacity-60 animate-pulse" style={{ animationDuration: '20s', animationDelay: '2s' }} />
-        <div className="absolute w-[110vw] h-[110vh] -bottom-[20%] -right-[10%] bg-blue-200/30 rounded-full mix-blend-multiply filter blur-[90px] opacity-70 animate-pulse" style={{ animationDuration: '18s', animationDelay: '5s' }} />
+        <div className="absolute inset-0 bg-gradient-to-br from-gray-100 via-slate-50 to-gray-200 opacity-80" />
+        <div className="absolute w-[120vw] h-[120vh] -top-[10%] -left-[10%] bg-gray-300 rounded-full mix-blend-multiply filter blur-[100px] opacity-50 animate-pulse" style={{ animationDuration: '15s' }} />
+        <div className="absolute w-[100vw] h-[100vh] top-[20%] left-[20%] bg-slate-300 rounded-full mix-blend-multiply filter blur-[120px] opacity-40 animate-pulse" style={{ animationDuration: '20s', animationDelay: '2s' }} />
+        <div className="absolute w-[110vw] h-[110vh] -bottom-[20%] -right-[10%] bg-zinc-300 rounded-full mix-blend-multiply filter blur-[90px] opacity-60 animate-pulse" style={{ animationDuration: '18s', animationDelay: '5s' }} />
       </div>
 
       {/* Dark Mode: Cinematic GIF Environment */}
@@ -3102,7 +3102,7 @@ export default function Workspace() {
         />
         
         {/* 2. Main Workspace Area (Floating Glass Pane) */}
-        <div className="flex-1 flex overflow-hidden relative z-10 bg-slate-900/[0.02] dark:bg-white/[0.02] backdrop-blur-[80px] border border-slate-900/10 dark:border-white/10 rounded-[40px] shadow-[0_8px_32px_rgba(0,0,0,0.5)]">
+        <div className="flex-1 flex overflow-hidden relative z-10 bg-white/[0.02] backdrop-blur-[80px] border border-white/10 rounded-[40px] shadow-[0_8px_32px_rgba(0,0,0,0.5)]">
         {activeMainNavTab === "home" ? (
           <Dashboard 
             items={items}
@@ -3140,7 +3140,7 @@ export default function Workspace() {
             {/* Sidebar Toggle Button */}
             <button 
               onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-              className={`absolute z-40 top-1/2 -translate-y-1/2 flex items-center justify-center w-5 h-12 bg-slate-900/[0.05] dark:bg-white/[0.05] backdrop-blur-[40px] border border-slate-900/10 dark:border-white/10 rounded-r-[12px] hover:bg-slate-900/10 dark:bg-white/10 transition-all shadow-[0_4px_16px_rgba(0,0,0,0.3)] ${
+              className={`absolute z-40 top-1/2 -translate-y-1/2 flex items-center justify-center w-5 h-12 bg-white/[0.05] backdrop-blur-[40px] border border-white/10 rounded-r-[12px] hover:bg-white/10 transition-all shadow-[0_4px_16px_rgba(0,0,0,0.3)] ${
                 isSidebarOpen ? "left-[300px] border-l-transparent shadow-none" : "left-0"
               }`}
             >
@@ -3150,7 +3150,7 @@ export default function Workspace() {
             {/* 3. Main Stage (Content + AI Tools) */}
             <div className="flex-1 flex flex-col overflow-hidden min-w-0">
               {/* Main Stage Header */}
-              <div className="h-16 border-b border-slate-900/5 dark:border-white/5 flex items-center justify-between px-8 bg-transparent shrink-0 min-w-0">
+              <div className="h-16 border-b border-white/5 flex items-center justify-between px-8 bg-transparent shrink-0 min-w-0">
                 <div className="flex items-center gap-4 min-w-0">
                   {selectedSession ? (
                     <>
@@ -3165,7 +3165,7 @@ export default function Workspace() {
                         <span className="text-[10px] font-bold text-primary uppercase tracking-widest">Active</span>
                       </div>
                       {activeNotebookName && (
-                        <div className="px-3 py-1 bg-secondary border border-slate-900/10 dark:border-white/10 rounded-full flex items-center gap-1.5 ml-2">
+                        <div className="px-3 py-1 bg-secondary border border-white/10 rounded-full flex items-center gap-1.5 ml-2">
                           <Book className="h-3 w-3 text-secondary-foreground" />
                           <span className="text-[10px] font-bold text-secondary-foreground uppercase tracking-widest">{activeNotebookName}</span>
                         </div>
@@ -3211,7 +3211,7 @@ export default function Workspace() {
             {/* Right Sidebar Toggle Button */}
             <button
               onClick={() => setIsRightSidebarOpen(!isRightSidebarOpen)}
-              className={`absolute z-40 top-1/2 -translate-y-1/2 flex items-center justify-center w-5 h-12 bg-slate-900/[0.05] dark:bg-white/[0.05] backdrop-blur-[40px] border border-slate-900/10 dark:border-white/10 rounded-l-[12px] hover:bg-slate-900/10 dark:bg-white/10 transition-all shadow-[0_4px_16px_rgba(0,0,0,0.3)] ${
+              className={`absolute z-40 top-1/2 -translate-y-1/2 flex items-center justify-center w-5 h-12 bg-white/[0.05] backdrop-blur-[40px] border border-white/10 rounded-l-[12px] hover:bg-white/10 transition-all shadow-[0_4px_16px_rgba(0,0,0,0.3)] ${
                 isRightSidebarOpen ? (selectedSession ? "right-[400px] border-r-transparent shadow-none" : "right-[320px] border-r-transparent shadow-none") : "right-0"
               }`}
             >

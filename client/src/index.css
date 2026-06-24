@@ -85,52 +85,30 @@
 
   .glass-button {
     @apply px-6 py-3 rounded-xl font-medium transition-all duration-300 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden;
-    background: rgba(15, 23, 42, 0.05) !important;
-    border: 1px solid rgba(15, 23, 42, 0.1);
-    border-top-color: rgba(15, 23, 42, 0.2);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.5), 0 4px 15px rgba(0, 0, 0, 0.05);
-    color: #0f172a !important;
-  }
-  
-  .dark .glass-button {
     background: rgba(255, 255, 255, 0.05) !important;
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-top-color: rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
     box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.1), 0 4px 15px rgba(0, 0, 0, 0.2);
     color: white !important;
   }
 
   .glass-button:not(:disabled):hover {
-    background: rgba(15, 23, 42, 0.08) !important;
-    border-top-color: rgba(15, 23, 42, 0.3);
-    box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.6), 0 8px 25px rgba(0, 0, 0, 0.1);
-    transform: scale(1.02);
-  }
-  
-  .dark .glass-button:not(:disabled):hover {
     background: rgba(255, 255, 255, 0.08) !important;
     border-top-color: rgba(255, 255, 255, 0.4);
     box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.2), 0 8px 25px rgba(0, 0, 0, 0.3);
+    transform: scale(1.02);
   }
 
   .glass-button-primary {
     @apply glass-button font-bold;
-    background: rgba(15, 23, 42, 0.08) !important;
-    border: 1px solid rgba(15, 23, 42, 0.15);
-    border-top-color: rgba(15, 23, 42, 0.4);
-    box-shadow: inset 0 1px 3px rgba(255, 255, 255, 0.6), 0 8px 32px rgba(0, 0, 0, 0.1);
-    backdrop-filter: blur(30px);
-    -webkit-backdrop-filter: blur(30px);
-    color: #0f172a !important;
-  }
-  
-  .dark .glass-button-primary {
     background: rgba(255, 255, 255, 0.1) !important;
     border: 1px solid rgba(255, 255, 255, 0.2);
     border-top-color: rgba(255, 255, 255, 0.6);
     box-shadow: inset 0 1px 3px rgba(255, 255, 255, 0.4), 0 8px 32px rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(30px);
+    -webkit-backdrop-filter: blur(30px);
     color: white !important;
   }
 
@@ -138,26 +116,16 @@
     content: '';
     position: absolute;
     inset: 0;
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.5) 0%, transparent 40%);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.2) 0%, transparent 40%);
     pointer-events: none;
     border-radius: inherit;
   }
-  
-  .dark .glass-button-primary::before {
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.2) 0%, transparent 40%);
-  }
 
   .glass-button-primary:not(:disabled):hover {
-    background: rgba(15, 23, 42, 0.12) !important;
-    border-top-color: rgba(15, 23, 42, 0.5);
-    box-shadow: inset 0 1px 4px rgba(255, 255, 255, 0.8), 0 12px 40px rgba(0, 0, 0, 0.15);
-    transform: scale(1.03);
-  }
-  
-  .dark .glass-button-primary:not(:disabled):hover {
     background: rgba(255, 255, 255, 0.15) !important;
     border-top-color: rgba(255, 255, 255, 0.8);
     box-shadow: inset 0 1px 4px rgba(255, 255, 255, 0.6), 0 12px 40px rgba(0, 0, 0, 0.5);
+    transform: scale(1.03);
   }
 
   .premium-sidebar-item {
