@@ -253,7 +253,10 @@ function MainNav({ activeTab, onTabChange }: { activeTab: string; onTabChange: (
         </div>
 
         <Link href="/">
-          <div className="w-11 h-11 flex items-center justify-center mb-4 relative z-10 cursor-pointer hover:opacity-80 transition-opacity">
+          <div 
+            className="w-11 h-11 flex items-center justify-center mb-4 relative z-10 cursor-pointer hover:opacity-80 transition-opacity"
+            onClick={() => onTabChange("home")}
+          >
             <img src="/logo.png" alt="Vidya Logo" className="w-8 h-8 object-contain" />
           </div>
         </Link>
@@ -608,7 +611,7 @@ function SessionsPanel({
     
     // Filter by notebook if one is selected
     const filteredItems = activeNotebookId 
-      ? items.filter(i => i.notebookId === activeNotebookId)
+      ? items.filter(i => String(i.notebookId) === String(activeNotebookId))
       : items.filter(i => !i.notebookId);
 
     // Create sessions for content items that don't have one
@@ -629,7 +632,7 @@ function SessionsPanel({
       .filter(session => {
         const item = items.find(i => i.id === session.contentItemId);
         if (!item) return false;
-        if (activeNotebookId && item.notebookId !== activeNotebookId) return false;
+        if (activeNotebookId && String(item.notebookId) !== String(activeNotebookId)) return false;
         if (!activeNotebookId && item.notebookId) return false;
         return true;
       })
@@ -2307,9 +2310,27 @@ function buildAssistantReply(summary: string, extractedText: string, question: s
 }
 
 // Dashboard View (Anara Home Style)
-function Dashboard({ onUpload, onSelectSource }: { onUpload: () => void; onSelectSource: (session: ChatSession) => void }) {
+function Dashboard({ 
+  items, 
+  notebooks, 
+  onUpload, 
+  onSelectSource 
+}: { 
+  items: any[]; 
+  notebooks?: any[]; 
+  onUpload: () => void; 
+  onSelectSource: (session: ChatSession) => void 
+}) {
   const sessions = getStoredSessions();
-  const recentSessions = sessions.slice(0, 4);
+  
+  const filteredSessions = sessions.filter(session => {
+    const item = items.find(i => i.id === session.contentItemId);
+    if (!item) return false;
+    
+    return true;
+  });
+  
+  const recentSessions = filteredSessions.slice(0, 4);
 
   return (
     <div className="flex-1 overflow-y-auto bg-transparent relative p-8 md:p-12 custom-scrollbar">
@@ -2382,7 +2403,11 @@ function Dashboard({ onUpload, onSelectSource }: { onUpload: () => void; onSelec
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-              {recentSessions.map((session) => (
+              {recentSessions.map((session) => {
+                const item = items.find(i => i.id === session.contentItemId);
+                const notebook = item?.notebookId && notebooks ? notebooks.find((n: any) => String(n.id) === String(item.notebookId)) : null;
+                
+                return (
                 <div
                   key={session.id}
                   onClick={() => onSelectSource(session)}
@@ -2400,11 +2425,20 @@ function Dashboard({ onUpload, onSelectSource }: { onUpload: () => void; onSelec
                   </div>
                   <div className="flex-1 min-w-0 relative z-10">
                     <h4 className="font-bold text-slate-200 truncate tracking-tight text-base">{session.title}</h4>
-                    <p className="text-xs text-slate-500 font-medium mt-1">{new Date(session.updatedAt).toLocaleDateString()}</p>
+                    <div className="flex items-center gap-2 mt-1">
+                      <p className="text-xs text-slate-500 font-medium">{new Date(session.updatedAt).toLocaleDateString()}</p>
+                      {notebook && (
+                        <div className="px-2 py-0.5 rounded text-[10px] bg-secondary/20 text-secondary-foreground border border-secondary/20 truncate max-w-[100px] font-medium">
+                          <Book className="h-3 w-3 inline mr-1 opacity-70" />
+                          {notebook.name}
+                        </div>
+                      )}
+                    </div>
                   </div>
                   <ChevronRight className="h-5 w-5 text-white/20 group-hover:text-white/60 transition-colors group-hover:translate-x-1 duration-300 relative z-10" />
                 </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </section>
@@ -2945,12 +2979,22 @@ export default function Workspace() {
       {/* Main Floating Interface */}
       <div className="flex w-full h-full p-4 gap-4 relative z-10">
         {/* 1. Main Navigation Sidebar (Floating) */}
-        <MainNav activeTab={activeMainNavTab} onTabChange={setActiveMainNavTab} />
+        <MainNav 
+          activeTab={activeMainNavTab} 
+          onTabChange={(tab) => {
+            setActiveMainNavTab(tab);
+            if (tab !== "library") {
+              setActiveNotebookId(null);
+            }
+          }} 
+        />
         
         {/* 2. Main Workspace Area (Floating Glass Pane) */}
         <div className="flex-1 flex overflow-hidden relative z-10 bg-white/[0.02] backdrop-blur-[80px] border border-white/10 rounded-[40px] shadow-[0_8px_32px_rgba(0,0,0,0.5)]">
         {activeMainNavTab === "home" ? (
           <Dashboard 
+            items={items}
+            notebooks={notebooks}
             onUpload={handleNewChat} 
             onSelectSource={(session) => {
               setActiveMainNavTab("library");
