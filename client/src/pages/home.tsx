@@ -54,7 +54,7 @@ export default function Home() {
           >  {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
           </button>
           {!user ? (
-            <Link href="/auth">
+            <Link href="/login">
               <span className="text-sm font-medium text-white hover:text-white transition-colors cursor-pointer">Login</span>
             </Link>
           ) : (

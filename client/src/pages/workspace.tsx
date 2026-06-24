@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import Header from "@/components/Header";
 import DocumentUpload from "@/components/upload/DocumentUpload";
 
@@ -220,6 +220,7 @@ function saveSessions(sessions: ChatSession[]) {
 // Far Left: Main Navigation Sidebar (Anara Style)
 function MainNav({ activeTab, onTabChange }: { activeTab: string; onTabChange: (tab: string) => void }) {
   const { user, logoutMutation } = useAuth();
+  const [, setLocation] = useLocation();
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [displayName, setDisplayName] = useState(user?.name || user?.displayName || user?.username || "");
   const [isUpdating, setIsUpdating] = useState(false);
@@ -330,7 +331,7 @@ function MainNav({ activeTab, onTabChange }: { activeTab: string; onTabChange: (
                   {(!user || user?.username === "default-user") ? "Guest Account" : "Student Account"}
                 </p>
               </div>
-              {user && user.username !== "default-user" && (
+              {user && user.username !== "default-user" ? (
                 <>
                   <DropdownMenuItem 
                     onSelect={() => setIsProfileModalOpen(true)}
@@ -347,6 +348,16 @@ function MainNav({ activeTab, onTabChange }: { activeTab: string; onTabChange: (
                     <span className="font-medium text-[13px]">Log Out</span>
                   </DropdownMenuItem>
                 </>
+              ) : (
+                <div className="pt-2 mt-2 border-t border-white/10">
+                  <DropdownMenuItem 
+                    onSelect={() => setLocation("/login")}
+                    className="rounded-[16px] cursor-pointer py-2.5 px-3 text-white hover:bg-white/10 focus:bg-white/10 focus:text-white transition-colors flex items-center"
+                  >
+                    <LogOut className="w-4 h-4 mr-2.5 opacity-70 rotate-180" />
+                    <span className="font-medium text-[13px]">Log In / Sign Up</span>
+                  </DropdownMenuItem>
+                </div>
               )}
             </DropdownMenuContent>
           </DropdownMenu>
