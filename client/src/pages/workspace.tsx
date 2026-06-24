@@ -324,13 +324,13 @@ function MainNav({ activeTab, onTabChange }: { activeTab: string; onTabChange: (
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start" side="right" sideOffset={16} className="w-60 p-2 bg-white/[0.05] backdrop-blur-[80px] border border-white/10 text-white rounded-[24px] shadow-[0_8px_32px_rgba(0,0,0,0.5)]">
-              <div className={`px-3 py-3 flex flex-col gap-0.5 ${user?.username !== "default-user" ? "mb-2 border-b border-white/10" : ""}`}>
-                <p className="text-[14px] font-bold tracking-tight truncate text-white">{user?.name || user?.displayName || user?.username}</p>
+              <div className={`px-3 py-3 flex flex-col gap-0.5 ${(!user || user.username === "default-user") ? "" : "mb-2 border-b border-white/10"}`}>
+                <p className="text-[14px] font-bold tracking-tight truncate text-white">{user?.name || user?.displayName || user?.username || "Guest User"}</p>
                 <p className="text-[11px] font-medium tracking-wide text-white uppercase truncate">
-                  {user?.username === "default-user" ? "Guest Account" : "Student Account"}
+                  {(!user || user?.username === "default-user") ? "Guest Account" : "Student Account"}
                 </p>
               </div>
-              {user?.username !== "default-user" && (
+              {user && user.username !== "default-user" && (
                 <>
                   <DropdownMenuItem 
                     onSelect={() => setIsProfileModalOpen(true)}
