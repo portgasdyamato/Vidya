@@ -610,13 +610,13 @@ function NotebooksView({ onSelectNotebook }: { onSelectNotebook: (id: string) =>
                     </DropdownMenu>
                   </div>
                   
-                  <h3 className="text-xl font-bold text-slate-100 mb-2 truncate relative z-10">{notebook.name}</h3>
-                  <div className="flex gap-4 text-xs text-slate-400 font-medium mb-4 relative z-10">
+                  <h3 className="text-xl font-bold text-white mb-2 truncate relative z-10">{notebook.name}</h3>
+                  <div className="flex gap-4 text-xs text-white/70 font-medium mb-4 relative z-10">
                     <span>{docsCount} Documents</span>
                     <span>{chatCount} Chats</span>
                   </div>
                   <div className="space-y-1 relative z-10">
-                    <div className="flex justify-between text-xs text-slate-400">
+                    <div className="flex justify-between text-xs text-white/70">
                       <span>Study Progress</span>
                       <span>{progress}%</span>
                     </div>
@@ -2439,9 +2439,9 @@ function Dashboard({
             <button
               key={i}
               onClick={card.action}
-              className="group relative rounded-[32px] p-7 text-left transition-all duration-300 hover:scale-[1.02] border border-white/10 overflow-hidden"
+              className="group relative rounded-[32px] p-7 text-left transition-all duration-300 hover:scale-[1.02] border border-white/20 overflow-hidden"
               style={{
-                background: 'rgba(255, 255, 255, 0.03)',
+                background: 'rgba(255, 255, 255, 0.1)',
                 backdropFilter: 'blur(40px)',
                 boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.3), inset 0 1px 0 0 rgba(255, 255, 255, 0.1)',
               }}
@@ -2454,17 +2454,17 @@ function Dashboard({
                   boxShadow: `0 8px 20px -4px rgba(0,0,0,0.5), inset 0 2px 4px rgba(255,255,255,0.1)`
                 }}
               >
-                <card.icon className="h-6 w-6" />
+                <card.icon className="h-6 w-6 text-white" />
               </div>
-              <h3 className="text-xl font-bold text-slate-100 mb-2 tracking-tight">{card.title}</h3>
-              <p className="text-sm text-slate-400 font-medium leading-relaxed">{card.description}</p>
+              <h3 className="text-xl font-bold text-white mb-2 tracking-tight">{card.title}</h3>
+              <p className="text-sm text-white/70 font-medium leading-relaxed">{card.description}</p>
             </button>
           ))}
         </div>
 
         <section>
           <div className="flex items-center justify-between mb-8">
-            <h2 className="text-2xl font-bold text-slate-100 tracking-tight font-serif">Recent Sources</h2>
+            <h2 className="text-2xl font-bold text-white tracking-tight font-serif">Recent Sources</h2>
             <Button variant="ghost" size="sm" className="text-white/60 hover:text-white hover:bg-white/10 rounded-full px-4">
               View Library
             </Button>
@@ -2510,9 +2510,9 @@ function Dashboard({
                     <FileText className="h-5 w-5" />
                   </div>
                   <div className="flex-1 min-w-0 relative z-10">
-                    <h4 className="font-bold text-slate-200 truncate tracking-tight text-base">{session.title}</h4>
+                    <h4 className="font-bold text-white truncate tracking-tight text-base">{session.title}</h4>
                     <div className="flex items-center gap-2 mt-1">
-                      <p className="text-xs text-slate-500 font-medium">{new Date(session.updatedAt).toLocaleDateString()}</p>
+                      <p className="text-xs text-white/50 font-medium">{new Date(session.updatedAt).toLocaleDateString()}</p>
                       {notebook && (
                         <div className="px-2 py-0.5 rounded text-[10px] bg-secondary/20 text-secondary-foreground border border-secondary/20 truncate max-w-[100px] font-medium">
                           <Book className="h-3 w-3 inline mr-1 opacity-70" />
@@ -2928,12 +2928,13 @@ export default function Workspace() {
 
   if (showUpload) {
     return (
-      <div className="min-h-screen w-full bg-white dark:bg-black flex overflow-hidden text-slate-900 dark:text-slate-200 relative transition-colors duration-500">
+      <div className="min-h-screen w-full bg-white dark:bg-black flex overflow-hidden text-white dark:text-slate-200 relative transition-colors duration-500">
         {/* Light Mode: Dynamic Colorful Flowy Background */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none bg-white dark:hidden z-0">
-          <div className="absolute w-[120vw] h-[120vh] -top-[10%] -left-[10%] bg-pink-300 rounded-full mix-blend-multiply filter blur-[120px] opacity-40 animate-pulse" style={{ animationDuration: '12s' }} />
-          <div className="absolute w-[100vw] h-[100vh] top-[10%] left-[30%] bg-sky-300 rounded-full mix-blend-multiply filter blur-[120px] opacity-40 animate-pulse" style={{ animationDuration: '18s', animationDelay: '2s' }} />
-          <div className="absolute w-[110vw] h-[110vh] -bottom-[10%] -right-[10%] bg-yellow-300 rounded-full mix-blend-multiply filter blur-[120px] opacity-40 animate-pulse" style={{ animationDuration: '15s', animationDelay: '5s' }} />
+        <div className="absolute inset-0 overflow-hidden pointer-events-none dark:hidden z-0 bg-white/10 backdrop-blur-3xl">
+          <div className="absolute w-[120vw] h-[120vh] -top-[10%] -left-[10%] bg-pink-400 rounded-full filter blur-[120px] opacity-60 animate-pulse" style={{ animationDuration: '12s' }} />
+          <div className="absolute w-[100vw] h-[100vh] top-[10%] left-[30%] bg-sky-400 rounded-full filter blur-[120px] opacity-60 animate-pulse" style={{ animationDuration: '18s', animationDelay: '2s' }} />
+          <div className="absolute w-[110vw] h-[110vh] -bottom-[10%] -right-[10%] bg-yellow-300 rounded-full filter blur-[120px] opacity-60 animate-pulse" style={{ animationDuration: '15s', animationDelay: '5s' }} />
+          <div className="absolute inset-0 bg-white/10 filter blur-[10px]" />
         </div>
 
         {/* Dark Mode: Cinematic GIF Environment */}
@@ -3070,12 +3071,13 @@ export default function Workspace() {
   }
 
   return (
-    <div className="h-screen w-full bg-white dark:bg-black flex overflow-hidden text-slate-900 dark:text-slate-200 relative transition-colors duration-500">
+    <div className="h-screen w-full bg-white dark:bg-black flex overflow-hidden text-white dark:text-slate-200 relative transition-colors duration-500">
       {/* Light Mode: Dynamic Colorful Flowy Background */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none bg-white dark:hidden z-0">
-        <div className="absolute w-[120vw] h-[120vh] -top-[10%] -left-[10%] bg-pink-300 rounded-full mix-blend-multiply filter blur-[120px] opacity-40 animate-pulse" style={{ animationDuration: '12s' }} />
-        <div className="absolute w-[100vw] h-[100vh] top-[10%] left-[30%] bg-sky-300 rounded-full mix-blend-multiply filter blur-[120px] opacity-40 animate-pulse" style={{ animationDuration: '18s', animationDelay: '2s' }} />
-        <div className="absolute w-[110vw] h-[110vh] -bottom-[10%] -right-[10%] bg-yellow-300 rounded-full mix-blend-multiply filter blur-[120px] opacity-40 animate-pulse" style={{ animationDuration: '15s', animationDelay: '5s' }} />
+      <div className="absolute inset-0 overflow-hidden pointer-events-none dark:hidden z-0 bg-white/10 backdrop-blur-3xl">
+        <div className="absolute w-[120vw] h-[120vh] -top-[10%] -left-[10%] bg-pink-400 rounded-full filter blur-[120px] opacity-60 animate-pulse" style={{ animationDuration: '12s' }} />
+        <div className="absolute w-[100vw] h-[100vh] top-[10%] left-[30%] bg-sky-400 rounded-full filter blur-[120px] opacity-60 animate-pulse" style={{ animationDuration: '18s', animationDelay: '2s' }} />
+        <div className="absolute w-[110vw] h-[110vh] -bottom-[10%] -right-[10%] bg-yellow-300 rounded-full filter blur-[120px] opacity-60 animate-pulse" style={{ animationDuration: '15s', animationDelay: '5s' }} />
+        <div className="absolute inset-0 bg-white/10 filter blur-[10px]" />
       </div>
 
       {/* Dark Mode: Cinematic GIF Environment */}

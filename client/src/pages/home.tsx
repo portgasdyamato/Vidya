@@ -24,12 +24,13 @@ export default function Home() {
   const displayName = user ? (user.displayName || user.name || user.username) : '';
   
   return (
-    <div className="min-h-screen bg-[#0a0a0a] dark:bg-[#0a0a0a] text-black dark:text-white flex flex-col items-center justify-center p-4 selection:bg-[#00a3b6]/30 relative overflow-hidden transition-colors duration-500">
+    <div className="min-h-screen bg-[#0a0a0a] dark:bg-[#0a0a0a] text-white dark:text-white flex flex-col items-center justify-center p-4 selection:bg-[#00a3b6]/30 relative overflow-hidden transition-colors duration-500">
       {/* Light Mode: Dynamic Colorful Flowy Background */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none bg-white dark:hidden z-0">
-        <div className="absolute w-[120vw] h-[120vh] -top-[10%] -left-[10%] bg-pink-300 rounded-full mix-blend-multiply filter blur-[120px] opacity-40 animate-pulse" style={{ animationDuration: '12s' }} />
-        <div className="absolute w-[100vw] h-[100vh] top-[10%] left-[30%] bg-sky-300 rounded-full mix-blend-multiply filter blur-[120px] opacity-40 animate-pulse" style={{ animationDuration: '18s', animationDelay: '2s' }} />
-        <div className="absolute w-[110vw] h-[110vh] -bottom-[10%] -right-[10%] bg-yellow-300 rounded-full mix-blend-multiply filter blur-[120px] opacity-40 animate-pulse" style={{ animationDuration: '15s', animationDelay: '5s' }} />
+      <div className="absolute inset-0 overflow-hidden pointer-events-none dark:hidden z-0 bg-white/10 backdrop-blur-3xl">
+        <div className="absolute w-[120vw] h-[120vh] -top-[10%] -left-[10%] bg-pink-400 rounded-full filter blur-[120px] opacity-60 animate-pulse" style={{ animationDuration: '12s' }} />
+        <div className="absolute w-[100vw] h-[100vh] top-[10%] left-[30%] bg-sky-400 rounded-full filter blur-[120px] opacity-60 animate-pulse" style={{ animationDuration: '18s', animationDelay: '2s' }} />
+        <div className="absolute w-[110vw] h-[110vh] -bottom-[10%] -right-[10%] bg-yellow-300 rounded-full filter blur-[120px] opacity-60 animate-pulse" style={{ animationDuration: '15s', animationDelay: '5s' }} />
+        <div className="absolute inset-0 bg-white/10 filter blur-[10px]" />
       </div>
       
       {/* Main Content wrapper */}
@@ -48,22 +49,22 @@ export default function Home() {
         <div className="flex items-center gap-6">
           <button 
             onClick={toggle} 
-            className="p-2 rounded-xl bg-black/5 border border-black/10 hover:bg-black/10 dark:bg-white/5 dark:border-white/10 dark:hover:bg-white/10 transition-colors text-black/70 dark:text-white/70"
-          >
-            {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+            className="p-2 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors text-white/70 hover:text-white"
+            aria-label="Toggle theme"
+          >  {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
           </button>
           {!user ? (
-            <Link href="/login">
-              <span className="text-sm font-medium text-black/70 dark:text-white/70 hover:text-black dark:hover:text-white transition-colors cursor-pointer">Login</span>
+            <Link href="/auth">
+              <span className="text-sm font-medium text-white/70 hover:text-white transition-colors cursor-pointer">Login</span>
             </Link>
           ) : (
-             <Link href="/workspace">
-              <span className="text-sm font-medium text-black/70 dark:text-white/70 hover:text-black dark:hover:text-white transition-colors cursor-pointer capitalize">Hi, {displayName}</span>
+            <Link href="/workspace">
+              <span className="text-sm font-medium text-white/70 hover:text-white transition-colors cursor-pointer capitalize">Hi, {displayName}</span>
             </Link>
           )}
-          <Link href="/workspace">
-            <span className="text-sm font-medium text-black/70 dark:text-white/70 hover:text-black dark:hover:text-white transition-colors cursor-pointer">Workspace</span>
-          </Link>
+            <Link href="/workspace">
+              <span className="text-sm font-medium text-white/70 hover:text-white transition-colors cursor-pointer">Workspace</span>
+            </Link>
         </div>
       </header>
 
