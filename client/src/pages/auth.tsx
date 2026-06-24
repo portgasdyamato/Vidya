@@ -78,7 +78,7 @@ export default function AuthPage() {
       {/* VisionOS Cinematic Environment Background */}
       <div 
         className="absolute inset-0 bg-cover bg-center opacity-40 mix-blend-screen pointer-events-none"
-        style={{ backgroundImage: "url('/ide.gif')" }} 
+        style={{ backgroundImage: "url('/bg.gif')" }} 
       />
       <div className="absolute inset-0 bg-black/40 pointer-events-none" />
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/20 to-black/80 pointer-events-none" />
