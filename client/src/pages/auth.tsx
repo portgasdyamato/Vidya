@@ -79,7 +79,7 @@ export default function AuthPage() {
       <div className="absolute inset-0 overflow-hidden pointer-events-none dark:hidden z-0 bg-white/10 backdrop-blur-3xl">
         <div className="absolute w-[120vw] h-[120vh] -top-[10%] -left-[10%] bg-pink-400 rounded-full filter blur-[120px] opacity-60 animate-pulse" style={{ animationDuration: '12s' }} />
         <div className="absolute w-[100vw] h-[100vh] top-[10%] left-[30%] bg-sky-400 rounded-full filter blur-[120px] opacity-60 animate-pulse" style={{ animationDuration: '18s', animationDelay: '2s' }} />
-        <div className="absolute w-[110vw] h-[110vh] -bottom-[10%] -right-[10%] bg-yellow-300 rounded-full filter blur-[120px] opacity-60 animate-pulse" style={{ animationDuration: '15s', animationDelay: '5s' }} />
+        <div className="absolute w-[110vw] h-[110vh] -bottom-[10%] -right-[10%] bg-purple-400 rounded-full filter blur-[120px] opacity-60 animate-pulse" style={{ animationDuration: '15s', animationDelay: '5s' }} />
         <div className="absolute inset-0 bg-white/10 filter blur-[10px]" />
       </div>
 
