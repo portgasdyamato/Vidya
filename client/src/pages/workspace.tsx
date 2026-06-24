@@ -572,7 +572,8 @@ function SessionsPanel({
   onNewChat,
   onDeleteSession,
   autoSelectNew,
-  activeNotebookId
+  activeNotebookId,
+  activeNotebookName
 }: { 
   activeSessionId?: string; 
   onSelectSession: (session: ChatSession) => void;
