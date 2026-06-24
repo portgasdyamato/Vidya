@@ -2921,10 +2921,10 @@ export default function Workspace() {
     return (
       <div className="min-h-screen w-full bg-black flex overflow-hidden text-slate-200 relative">
         <div 
-          className="absolute inset-0 bg-cover bg-center opacity-40 mix-blend-screen pointer-events-none"
+          className="absolute inset-0 bg-cover bg-center opacity-80 mix-blend-screen pointer-events-none"
           style={{ backgroundImage: "url('/bg.gif')" }} 
         />
-        <div className="absolute inset-0 bg-black/40 pointer-events-none" />
+        <div className="absolute inset-0 bg-black/20 pointer-events-none" />
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/20 to-black/80 pointer-events-none" />
 
         <div className="max-w-4xl w-full mx-auto p-6 relative z-10 overflow-y-auto custom-scrollbar pt-12">
@@ -3056,10 +3056,10 @@ export default function Workspace() {
     <div className="h-screen w-full bg-black flex overflow-hidden text-slate-200 relative">
       {/* VisionOS Cinematic Environment Background */}
       <div 
-        className="absolute inset-0 bg-cover bg-center opacity-40 mix-blend-screen pointer-events-none"
+        className="absolute inset-0 bg-cover bg-center opacity-80 mix-blend-screen pointer-events-none"
         style={{ backgroundImage: "url('/bg.gif')" }} 
       />
-      <div className="absolute inset-0 bg-black/40 pointer-events-none" />
+      <div className="absolute inset-0 bg-black/20 pointer-events-none" />
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/20 to-black/80 pointer-events-none" />
 
       {/* Main Floating Interface */}
