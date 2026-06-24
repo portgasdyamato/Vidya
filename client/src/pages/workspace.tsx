@@ -2920,10 +2920,11 @@ export default function Workspace() {
   if (showUpload) {
     return (
       <div className="min-h-screen w-full bg-black flex overflow-hidden text-slate-200 relative">
-        {/* VisionOS Cinematic Environment Background with glowing orb */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none flex items-center justify-center">
-          <div className="w-[800px] h-[800px] rounded-full bg-gradient-to-br from-[#4361EE] via-[#7209B7] to-[#F72585] opacity-40 blur-[100px] animate-pulse" style={{ animationDuration: '4s' }} />
-        </div>
+        {/* VisionOS Cinematic Environment Background */}
+        <div 
+          className="absolute inset-0 bg-cover bg-center opacity-40 mix-blend-screen pointer-events-none"
+          style={{ backgroundImage: "url('/ide.gif')" }} 
+        />
         <div className="absolute inset-0 bg-black/40 pointer-events-none" />
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/20 to-black/80 pointer-events-none" />
 
@@ -3054,10 +3055,11 @@ export default function Workspace() {
 
   return (
     <div className="h-screen w-full bg-black flex overflow-hidden text-slate-200 relative">
-      {/* VisionOS Cinematic Environment Background with glowing orb */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none flex items-center justify-center">
-        <div className="w-[800px] h-[800px] rounded-full bg-gradient-to-br from-[#4361EE] via-[#7209B7] to-[#F72585] opacity-40 blur-[100px] animate-pulse" style={{ animationDuration: '4s' }} />
-      </div>
+      {/* VisionOS Cinematic Environment Background */}
+      <div 
+        className="absolute inset-0 bg-cover bg-center opacity-40 mix-blend-screen pointer-events-none"
+        style={{ backgroundImage: "url('/ide.gif')" }} 
+      />
       <div className="absolute inset-0 bg-black/40 pointer-events-none" />
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/20 to-black/80 pointer-events-none" />
 
