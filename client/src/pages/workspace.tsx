@@ -333,15 +333,15 @@ function MainNav({ activeTab, onTabChange }: { activeTab: string; onTabChange: (
               {user?.username !== "default-user" && (
                 <>
                   <DropdownMenuItem 
-                    onClick={() => setIsProfileModalOpen(true)}
+                    onSelect={() => setIsProfileModalOpen(true)}
                     className="rounded-[16px] cursor-pointer py-2.5 px-3 hover:bg-white/10 focus:bg-white/10 focus:text-white transition-colors"
                   >
                     <UserCircle className="w-4 h-4 mr-2.5 opacity-70" />
                     <span className="font-medium text-[13px]">Edit Profile Name</span>
                   </DropdownMenuItem>
                   <DropdownMenuItem 
-                    onClick={() => logoutMutation.mutate()}
-                    className="rounded-[16px] cursor-pointer py-2.5 px-3 text-[#FF453A] hover:bg-[#FF453A]/10 focus:bg-[#FF453A]/10 focus:text-[#FF453A] mt-1 transition-colors"
+                    onSelect={() => logoutMutation.mutate()}
+                    className="rounded-[16px] cursor-pointer py-2.5 px-3 text-[#FF453A] hover:bg-white/10 focus:bg-white/10 focus:text-[#FF453A] mt-1 transition-colors"
                   >
                     <LogOut className="w-4 h-4 mr-2.5 opacity-70" />
                     <span className="font-medium text-[13px]">Log Out</span>

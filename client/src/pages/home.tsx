@@ -96,7 +96,7 @@ export default function Home() {
                   { text: "Receive accessible audio and interactive study material" },
                 ].map((step, i) => (
                   <li key={i} className="flex items-center gap-4 group">
-                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-white text-black flex items-center justify-center font-bold text-sm shadow-lg group-hover:scale-110 transition-transform">
+                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white flex items-center justify-center font-bold text-sm shadow-lg group-hover:scale-110 transition-transform">
                       {i + 1}
                     </div>
                     <p className="text-white font-medium leading-tight group-hover:text-white transition-colors">{step.text}</p>
