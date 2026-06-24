@@ -89,10 +89,10 @@ export default function FlashcardDrill({ flashcards, contentId }: FlashcardDrill
 
   if (completed) {
     const grade =
-      score >= 90 ? { emoji: "🏆", label: "Mastered!", color: "text-yellow-400", bg: "bg-yellow-400/10 border-yellow-400/20" } :
-      score >= 70 ? { emoji: "🎯", label: "Excellent!", color: "text-primary", bg: "bg-primary/10 border-primary/20" } :
-      score >= 50 ? { emoji: "📚", label: "Keep Going!", color: "text-blue-400", bg: "bg-blue-400/10 border-blue-400/20" } :
-      { emoji: "💪", label: "Practice More", color: "text-orange-400", bg: "bg-orange-400/10 border-orange-400/20" };
+      score >= 90 ? { emoji: "🏆", label: "Mastered!" } :
+      score >= 70 ? { emoji: "⭐", label: "Excellent!" } :
+      score >= 50 ? { emoji: "👍", label: "Keep Going!" } :
+      { emoji: "💪", label: "Practice More" };
 
     return (
       <motion.div
@@ -100,25 +100,27 @@ export default function FlashcardDrill({ flashcards, contentId }: FlashcardDrill
         animate={{ opacity: 1, scale: 1 }}
         className="max-w-2xl mx-auto text-center space-y-8 py-8"
       >
-        <div className={`inline-flex flex-col items-center gap-4 px-12 py-10 rounded-3xl border ${grade.bg}`}>
+        <div className="inline-flex flex-col items-center gap-4 px-16 py-12 rounded-[32px] bg-white/40 backdrop-blur-xl border border-white/60 shadow-[inset_0_1px_4px_rgba(255,255,255,0.8),0_8px_32px_rgba(0,0,0,0.05)] transition-all">
           <span className="text-6xl">{grade.emoji}</span>
           <div>
-            <h2 className="text-3xl font-black text-white font-serif">{grade.label}</h2>
-            <p className="text-white mt-1">You scored {score}% on this deck</p>
+            <h2 className="text-4xl font-black text-white font-serif mb-2">{grade.label}</h2>
+            <p className="text-white font-medium">You scored {score}% on this deck</p>
           </div>
-          <div className={`text-5xl font-black font-mono ${grade.color}`}>{score}%</div>
+          <div className="text-6xl font-black font-mono text-white mt-2">{score}%</div>
         </div>
 
         <div className="grid grid-cols-3 gap-4">
           {[
-            { label: "Total Cards", value: total, icon: BookOpen, color: "text-white" },
-            { label: "Correct", value: correctCount, icon: CheckCircle2, color: "text-green-400" },
-            { label: "Needs Review", value: wrongCount, icon: XCircle, color: "text-orange-400" },
-          ].map(({ label, value, icon: Icon, color }) => (
-            <div key={label} className="p-5 rounded-2xl bg-white/5 border border-white/5 flex flex-col items-center gap-2">
-              <Icon className={`w-6 h-6 ${color}`} />
-              <span className={`text-2xl font-black ${color}`}>{value}</span>
-              <span className="text-xs text-white font-medium">{label}</span>
+            { label: "Total Cards", value: total, icon: BookOpen },
+            { label: "Correct", value: correctCount, icon: CheckCircle2 },
+            { label: "Needs Review", value: wrongCount, icon: XCircle },
+          ].map(({ label, value, icon: Icon }) => (
+            <div key={label} className="p-6 rounded-[24px] bg-white/40 backdrop-blur-md border border-white/60 shadow-[inset_0_1px_4px_rgba(255,255,255,0.8),0_4px_16px_rgba(0,0,0,0.05)] flex flex-col items-center gap-3 transition-all hover:bg-white/50">
+              <div className="w-10 h-10 rounded-full bg-black flex items-center justify-center shadow-md mb-1">
+                <Icon className="w-5 h-5 text-white" />
+              </div>
+              <span className="text-4xl font-black text-white">{value}</span>
+              <span className="text-[11px] font-bold tracking-widest uppercase text-white">{label}</span>
             </div>
           ))}
         </div>
@@ -158,13 +160,17 @@ export default function FlashcardDrill({ flashcards, contentId }: FlashcardDrill
           <p className="text-sm text-white font-medium">Card {currentIndex + 1} of {total}</p>
         </div>
         <div className="flex items-center gap-3 text-sm font-bold">
-          <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/[0.05] border border-white/10 text-green-400 backdrop-blur-md shadow-[0_4px_12px_rgba(0,0,0,0.1)]">
-            <CheckCircle2 className="w-4 h-4" />
-            <span>{correctCount}</span>
+          <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-white/40 border border-white/60 text-white backdrop-blur-md shadow-[inset_0_1px_4px_rgba(255,255,255,0.8),0_4px_12px_rgba(0,0,0,0.05)]">
+            <div className="w-5 h-5 rounded-full bg-black flex items-center justify-center">
+              <CheckCircle2 className="w-3 h-3 text-white" />
+            </div>
+            <span className="font-bold">{correctCount}</span>
           </div>
-          <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/[0.05] border border-white/10 text-orange-400 backdrop-blur-md shadow-[0_4px_12px_rgba(0,0,0,0.1)]">
-            <XCircle className="w-4 h-4" />
-            <span>{wrongCount}</span>
+          <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-white/40 border border-white/60 text-white backdrop-blur-md shadow-[inset_0_1px_4px_rgba(255,255,255,0.8),0_4px_12px_rgba(0,0,0,0.05)]">
+            <div className="w-5 h-5 rounded-full bg-black flex items-center justify-center">
+              <XCircle className="w-3 h-3 text-white" />
+            </div>
+            <span className="font-bold">{wrongCount}</span>
           </div>
         </div>
       </div>
@@ -205,8 +211,10 @@ export default function FlashcardDrill({ flashcards, contentId }: FlashcardDrill
                 <span className="text-[10px] font-bold text-white uppercase tracking-widest">Question</span>
               </div>
               {cardResult ? (
-                <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-[10px] font-bold uppercase tracking-widest ${cardResult === "correct" ? "bg-green-500/10 border-green-500/20 text-green-400" : "bg-orange-500/10 border-orange-500/20 text-orange-400"}`}>
-                  {cardResult === "correct" ? <CheckCircle2 className="w-3 h-3" /> : <XCircle className="w-3 h-3" />}
+                <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/40 border border-white/60 text-white backdrop-blur-md shadow-[inset_0_1px_4px_rgba(255,255,255,0.8),0_4px_12px_rgba(0,0,0,0.05)] text-[10px] font-bold uppercase tracking-widest">
+                  <div className="w-4 h-4 rounded-full bg-black flex items-center justify-center">
+                    {cardResult === "correct" ? <CheckCircle2 className="w-2.5 h-2.5 text-white" /> : <XCircle className="w-2.5 h-2.5 text-white" />}
+                  </div>
                   {cardResult}
                 </div>
               ) : (
@@ -274,16 +282,20 @@ export default function FlashcardDrill({ flashcards, contentId }: FlashcardDrill
           <div className="flex-1 flex gap-3">
             <Button
               onClick={() => goNext("wrong")}
-              className="flex-1 h-12 rounded-2xl bg-white/[0.05] hover:bg-white/10 backdrop-blur-md border border-white/10 hover:border-orange-500/50 text-white font-bold gap-2 shadow-[0_4px_16px_rgba(0,0,0,0.2)] transition-all group"
+              className="flex-1 h-12 rounded-2xl bg-white/40 hover:bg-white/50 backdrop-blur-md border border-white/60 text-white font-bold gap-2 shadow-[inset_0_1px_4px_rgba(255,255,255,0.8),0_4px_16px_rgba(0,0,0,0.05)] transition-all group"
             >
-              <XCircle className="w-4 h-4 text-orange-400 group-hover:scale-110 transition-transform" />
+              <div className="w-5 h-5 rounded-full bg-black flex items-center justify-center">
+                <XCircle className="w-3 h-3 text-white group-hover:scale-110 transition-transform" />
+              </div>
               Need to Review
             </Button>
             <Button
               onClick={() => goNext("correct")}
-              className="flex-1 h-12 rounded-2xl bg-white/[0.05] hover:bg-white/10 backdrop-blur-md border border-white/10 hover:border-green-500/50 text-white font-bold gap-2 shadow-[0_4px_16px_rgba(0,0,0,0.2)] transition-all group"
+              className="flex-1 h-12 rounded-2xl bg-white/40 hover:bg-white/50 backdrop-blur-md border border-white/60 text-white font-bold gap-2 shadow-[inset_0_1px_4px_rgba(255,255,255,0.8),0_4px_16px_rgba(0,0,0,0.05)] transition-all group"
             >
-              <CheckCircle2 className="w-4 h-4 text-green-400 group-hover:scale-110 transition-transform" />
+              <div className="w-5 h-5 rounded-full bg-black flex items-center justify-center">
+                <CheckCircle2 className="w-3 h-3 text-white group-hover:scale-110 transition-transform" />
+              </div>
               Got It!
             </Button>
           </div>
