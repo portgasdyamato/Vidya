@@ -42,12 +42,16 @@ export function setupGoogleAuth(app: Express) {
                 id: profile.id, // We use Google ID as the primary key
                 username: profile.emails?.[0]?.value || profile.displayName || profile.id,
                 displayName: profile.displayName,
+                avatarUrl: profile.photos?.[0]?.value,
                 password: "google-authenticated-user", // Placeholder since we use OAuth
               } as any);
               console.log(`Created new Google user: ${user.username}`);
-            } else if (!user.displayName && profile.displayName) {
-              // Update existing user to have displayName
-              user = await storage.updateUser(user.id, { displayName: profile.displayName }) || user;
+            } else if ((!user.displayName && profile.displayName) || (!user.avatarUrl && profile.photos?.[0]?.value)) {
+              // Update existing user to have displayName and avatarUrl
+              user = await storage.updateUser(user.id, { 
+                displayName: profile.displayName || user.displayName,
+                avatarUrl: profile.photos?.[0]?.value || user.avatarUrl
+              }) || user;
             }
             
             // For session data that isn't in DB yet (like photo)

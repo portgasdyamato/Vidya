@@ -59,6 +59,16 @@ import { motion, AnimatePresence } from "framer-motion";
 import ReactQuill from 'react-quill-new';
 import { marked } from 'marked';
 
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogCancel,
+  AlertDialogAction,
+} from "@/components/ui/alert-dialog";
 import TurndownService from 'turndown';
 
 const turndownService = new TurndownService({
@@ -388,7 +398,11 @@ function NotebooksView({ onSelectNotebook }: { onSelectNotebook: (id: string) =>
     queryKey: ["/api/content"],
   });
 
-  const handleCreate = async () => {
+  const [editingNotebook, setEditingNotebook] = useState<{id: string, name: string} | null>(null);
+  const [deletingNotebookId, setDeletingNotebookId] = useState<string | null>(null);
+
+  const handleCreate = async (e?: React.FormEvent) => {
+    e?.preventDefault?.();
     if (!newNotebookName.trim()) return;
     try {
       const res = await fetch("/api/notebooks", {
@@ -409,15 +423,15 @@ function NotebooksView({ onSelectNotebook }: { onSelectNotebook: (id: string) =>
     }
   };
 
-  const handleDelete = async (id: string, e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (!confirm("Are you sure you want to delete this notebook? All associated documents and chats will be permanently deleted.")) return;
+  const handleDeleteConfirm = async () => {
+    if (!deletingNotebookId) return;
     try {
-      const res = await fetch(`/api/notebooks/${id}`, { method: "DELETE" });
+      const res = await fetch(`/api/notebooks/${deletingNotebookId}`, { method: "DELETE" });
       if (res.ok) {
         queryClient.invalidateQueries({ queryKey: ["/api/notebooks"] });
         queryClient.invalidateQueries({ queryKey: ["/api/content"] });
         toast({ title: "Notebook deleted" });
+        setDeletingNotebookId(null);
       } else {
         throw new Error("Failed to delete");
       }
@@ -426,19 +440,18 @@ function NotebooksView({ onSelectNotebook }: { onSelectNotebook: (id: string) =>
     }
   };
 
-  const handleEdit = async (id: string, currentName: string, e: React.MouseEvent) => {
-    e.stopPropagation();
-    const newName = prompt("Enter new notebook name:", currentName);
-    if (!newName || newName === currentName) return;
+  const handleEditSubmit = async () => {
+    if (!editingNotebook || !editingNotebook.name.trim()) return;
     try {
-      const res = await fetch(`/api/notebooks/${id}`, {
+      const res = await fetch(`/api/notebooks/${editingNotebook.id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: newName })
+        body: JSON.stringify({ name: editingNotebook.name })
       });
       if (res.ok) {
         queryClient.invalidateQueries({ queryKey: ["/api/notebooks"] });
         toast({ title: "Notebook updated" });
+        setEditingNotebook(null);
       } else {
         throw new Error("Failed to update");
       }
@@ -457,7 +470,7 @@ function NotebooksView({ onSelectNotebook }: { onSelectNotebook: (id: string) =>
             </h1>
             <p className="text-lg text-white/50 font-medium">Organize your research effectively</p>
           </div>
-          <Button onClick={() => setIsCreating(true)} className="glass-button-primary">
+          <Button onClick={() => setIsCreating(true)} className="bg-white text-black hover:bg-white/90 font-bold px-6">
             <Plus className="w-4 h-4 mr-2" /> New Notebook
           </Button>
         </header>
@@ -475,12 +488,46 @@ function NotebooksView({ onSelectNotebook }: { onSelectNotebook: (id: string) =>
                   className="bg-white/10 border-white/20 text-white placeholder:text-white/30"
                   onKeyDown={(e) => e.key === "Enter" && handleCreate()}
                 />
-                <Button onClick={handleCreate} className="glass-button-primary shrink-0">Create</Button>
+                <Button onClick={() => handleCreate()} className="bg-white text-black hover:bg-white/90 shrink-0">Create</Button>
                 <Button variant="ghost" onClick={() => setIsCreating(false)} className="shrink-0 text-white hover:bg-white/10">Cancel</Button>
               </div>
             </CardContent>
           </Card>
         )}
+
+        <Dialog open={!!editingNotebook} onOpenChange={(open) => !open && setEditingNotebook(null)}>
+          <DialogContent className="bg-background/95 backdrop-blur-xl border-white/10 text-foreground">
+            <DialogHeader><DialogTitle>Edit Notebook Name</DialogTitle></DialogHeader>
+            <div className="py-4">
+              <Input 
+                value={editingNotebook?.name || ""} 
+                onChange={e => setEditingNotebook(prev => prev ? {...prev, name: e.target.value} : null)}
+                className="bg-white/5 border-white/10 text-white"
+                autoFocus
+                onKeyDown={e => e.key === "Enter" && handleEditSubmit()}
+              />
+            </div>
+            <DialogFooter>
+              <Button variant="ghost" onClick={() => setEditingNotebook(null)}>Cancel</Button>
+              <Button onClick={handleEditSubmit} className="bg-primary text-primary-foreground">Save Changes</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        <AlertDialog open={!!deletingNotebookId} onOpenChange={(open) => !open && setDeletingNotebookId(null)}>
+          <AlertDialogContent className="bg-background/95 backdrop-blur-xl border-white/10 text-foreground">
+            <AlertDialogHeader>
+              <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+              <AlertDialogDescription className="text-white/70">
+                This will permanently delete this notebook and all of its contents. This action cannot be undone.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel className="bg-white/5 border-white/10 text-white hover:bg-white/10 hover:text-white">Cancel</AlertDialogCancel>
+              <AlertDialogAction onClick={handleDeleteConfirm} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">Delete Notebook</AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
 
         {isLoading ? (
           <div className="flex items-center justify-center p-12">
@@ -499,7 +546,7 @@ function NotebooksView({ onSelectNotebook }: { onSelectNotebook: (id: string) =>
               <BookMarked className="h-10 w-10 text-white/20" />
             </div>
             <p className="text-white/50 mb-6 font-medium text-lg">You haven't created any notebooks yet.</p>
-            <Button onClick={() => setIsCreating(true)} className="glass-button-primary px-8 py-6 rounded-full shadow-2xl font-bold text-base">
+            <Button onClick={() => setIsCreating(true)} className="bg-white text-black hover:bg-white/90 px-8 py-6 rounded-full shadow-2xl font-bold text-base">
               Create your first notebook
             </Button>
           </div>
@@ -536,11 +583,18 @@ function NotebooksView({ onSelectNotebook }: { onSelectNotebook: (id: string) =>
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end" className="z-[60]">
-                        <DropdownMenuItem onClick={(e) => handleEdit(notebook.id, notebook.name, e)}>
-                          <SquarePen className="h-4 w-4 mr-2" /> Edit Name
+                        <DropdownMenuItem 
+                          className="text-white/70 focus:text-white focus:bg-white/10 py-2"
+                          onClick={(e) => { e.stopPropagation(); setEditingNotebook({ id: String(notebook.id), name: notebook.name }); }}
+                        >
+                          <SquarePen className="w-4 h-4 mr-2" />
+                          Edit Name
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={(e) => handleDelete(notebook.id, e)} className="text-destructive focus:text-destructive">
-                          <Trash2 className="h-4 w-4 mr-2" /> Delete Notebook
+                        <DropdownMenuItem 
+                          className="text-red-400 focus:text-red-300 focus:bg-red-400/10 py-2"
+                          onClick={(e) => { e.stopPropagation(); setDeletingNotebookId(String(notebook.id)); }}
+                        >
+                          <Trash2 className="w-4 h-4 mr-2" /> Delete Notebook
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
@@ -2315,12 +2369,16 @@ function Dashboard({
   notebooks, 
   onUpload, 
   onCreateNotebook,
+  onViewLibrary,
+  onOpenModels,
   onSelectSource 
 }: { 
   items: any[]; 
   notebooks?: any[]; 
   onUpload: () => void; 
   onCreateNotebook: () => void;
+  onViewLibrary: () => void;
+  onOpenModels: () => void;
   onSelectSource: (session: ChatSession) => void 
 }) {
   const sessions = getStoredSessions();
@@ -2334,9 +2392,21 @@ function Dashboard({
     return true;
   });
   
-  const recentSessions = [...filteredSessions]
-    .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
-    .slice(0, 4);
+  // Deduplicate by contentItemId (or session id if normal chat)
+  const uniqueSessions: ChatSession[] = [];
+  const seenItems = new Set<string>();
+  
+  const sortedFiltered = [...filteredSessions].sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
+  
+  for (const session of sortedFiltered) {
+    const key = session.contentItemId ? `item-${session.contentItemId}` : `session-${session.id}`;
+    if (!seenItems.has(key)) {
+      seenItems.add(key);
+      uniqueSessions.push(session);
+    }
+  }
+  
+  const recentSessions = uniqueSessions.slice(0, 4);
 
   return (
     <div className="flex-1 overflow-y-auto bg-transparent relative p-8 md:p-12 scrollbar-hide">
@@ -2351,10 +2421,10 @@ function Dashboard({
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
           {[
-            { title: "New Project", description: "Upload sources and start researching", icon: Plus, action: onUpload, color: "linear-gradient(135deg, #007AFF 0%, #0056b3 100%)", shadow: "rgba(0, 122, 255, 0.4)" },
+            { title: "New Project", description: "Upload sources and start researching", icon: Plus, action: onUpload, color: "linear-gradient(135deg, #3A0CA3 0%, #F72585 100%)", shadow: "rgba(247, 37, 133, 0.4)" },
             { title: "New Notebook", description: "Create a notebook to organize your files", icon: Folder, action: onCreateNotebook, color: "linear-gradient(135deg, #FF9500 0%, #E68A00 100%)", shadow: "rgba(255, 149, 0, 0.4)" },
-            { title: "Continue Reading", description: "Pick up where you left off", icon: BookOpen, action: () => {}, color: "linear-gradient(135deg, #AF52DE 0%, #7B33A4 100%)", shadow: "rgba(175, 82, 222, 0.4)" },
-            { title: "Practice Mode", description: "Review flashcards and quizzes", icon: Grid, action: () => {}, color: "linear-gradient(135deg, #34C759 0%, #248A3D 100%)", shadow: "rgba(52, 199, 89, 0.4)" },
+            { title: "View Library", description: "Browse all your uploaded documents", icon: Library, action: onViewLibrary, color: "linear-gradient(135deg, #AF52DE 0%, #7B33A4 100%)", shadow: "rgba(175, 82, 222, 0.4)" },
+            { title: "Model Settings", description: "Configure your AI assistant", icon: BrainCircuit, action: onOpenModels, color: "linear-gradient(135deg, #34C759 0%, #248A3D 100%)", shadow: "rgba(52, 199, 89, 0.4)" },
           ].map((card, i) => (
             <button
               key={i}
@@ -3014,6 +3084,12 @@ export default function Workspace() {
             onUpload={handleNewChat} 
             onCreateNotebook={() => {
               setActiveMainNavTab("notebooks");
+            }}
+            onViewLibrary={() => {
+              setActiveMainNavTab("library");
+            }}
+            onOpenModels={() => {
+              setActiveMainNavTab("models");
             }}
             onSelectSource={(session) => {
               setActiveMainNavTab("library");

@@ -177,7 +177,7 @@ export default function Home() {
             </div>
           </div>
           <Link href={user ? "/workspace" : "/login"}>
-            <Button className="glass-button-primary transition-all gap-2 text-md px-6 py-6 rounded-xl">
+            <Button className="glass-button-primary transition-all gap-2 text-md px-6 py-6 rounded-full">
               {user ? "Go to Workspace" : "Get started"}
               <ArrowRight className="w-4 h-4" />
             </Button>
