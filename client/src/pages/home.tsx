@@ -25,8 +25,13 @@ export default function Home() {
   
   return (
     <div className="min-h-screen bg-[#0a0a0a] dark:bg-[#0a0a0a] text-black dark:text-white flex flex-col items-center justify-center p-4 selection:bg-[#00a3b6]/30 relative overflow-hidden transition-colors duration-500">
-      {/* Light Mode: Grayish White Gradient */}
-      <div className="absolute inset-0 bg-gradient-to-br from-gray-200 via-slate-50 to-white dark:hidden" />
+      {/* Light Mode: White Grey Flowy Background */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none bg-slate-50 dark:hidden z-0">
+        <div className="absolute inset-0 bg-gradient-to-br from-gray-100 via-slate-50 to-gray-200 opacity-80" />
+        <div className="absolute w-[120vw] h-[120vh] -top-[10%] -left-[10%] bg-gray-300 rounded-full mix-blend-multiply filter blur-[100px] opacity-50 animate-pulse" style={{ animationDuration: '15s' }} />
+        <div className="absolute w-[100vw] h-[100vh] top-[20%] left-[20%] bg-slate-300 rounded-full mix-blend-multiply filter blur-[120px] opacity-40 animate-pulse" style={{ animationDuration: '20s', animationDelay: '2s' }} />
+        <div className="absolute w-[110vw] h-[110vh] -bottom-[20%] -right-[10%] bg-zinc-300 rounded-full mix-blend-multiply filter blur-[90px] opacity-60 animate-pulse" style={{ animationDuration: '18s', animationDelay: '5s' }} />
+      </div>
       
       {/* Main Content wrapper */}
       <div className="relative z-10 flex flex-col w-full items-center">
