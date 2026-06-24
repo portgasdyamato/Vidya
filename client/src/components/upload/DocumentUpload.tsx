@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Upload, FileText, CheckCircle2, AlertTriangle } from "lucide-react";
+import { Loader2, Upload, FileText, CheckCircle2, Check, AlertTriangle } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 
 type ProcessingState = {
@@ -177,12 +177,12 @@ export default function DocumentUpload({ onSuccess, hideProgress = false, notebo
   };
 
   return (
-    <Card className="glass-card border border-white/10 rounded-[32px] shadow-[0_8px_32px_rgba(0,0,0,0.5)] bg-white/[0.02] backdrop-blur-[60px] overflow-hidden">
+    <Card className="glass-card border border-white/30 rounded-[32px] shadow-[inset_0_1px_4px_rgba(255,255,255,0.8),0_8px_32px_rgba(0,0,0,0.05)] bg-white/10 backdrop-blur-xl overflow-hidden">
       <CardContent className="p-8">
         <h3 className="text-2xl font-semibold text-card-foreground mb-6 font-serif">Upload Your Documents</h3>
         
         {(processingItem || uploadMutation.isPending) && !hideProgress && (
-          <div className="mb-8 rounded-2xl border border-border/60 bg-muted/20 p-6">
+          <div className="mb-8 rounded-3xl border border-white/20 bg-white/10 backdrop-blur-md shadow-[inset_0_1px_4px_rgba(255,255,255,0.8),0_4px_16px_rgba(0,0,0,0.05)] p-6">
             <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
               <div>
                 <p className="text-xs uppercase tracking-wide text-white">Processing</p>
@@ -205,11 +205,17 @@ export default function DocumentUpload({ onSuccess, hideProgress = false, notebo
               </div>
               <div className="flex items-center gap-2">
                 {processingItem?.status === "completed" ? (
-                  <CheckCircle2 className="h-10 w-10 text-primary" />
+                  <div className="w-12 h-12 rounded-full bg-black flex items-center justify-center">
+                    <Check className="h-6 w-6 text-white" />
+                  </div>
                 ) : processingItem?.status === "failed" ? (
-                  <AlertTriangle className="h-10 w-10 text-destructive" />
+                  <div className="w-12 h-12 rounded-full bg-black flex items-center justify-center">
+                    <AlertTriangle className="h-6 w-6 text-white" />
+                  </div>
                 ) : (
-                  <Loader2 className="h-10 w-10 animate-spin text-white" />
+                  <div className="w-12 h-12 rounded-full bg-black flex items-center justify-center">
+                    <Loader2 className="h-6 w-6 animate-spin text-white" />
+                  </div>
                 )}
               </div>
             </div>
@@ -234,8 +240,8 @@ export default function DocumentUpload({ onSuccess, hideProgress = false, notebo
 
         {/* File Drop Zone */}
         <div
-          className={`border-2 border-dashed rounded-3xl p-12 text-center transition-all duration-300 ${
-            dragActive ? "border-white/40 bg-white/10" : "border-white/10 hover:border-white/20 bg-white/[0.02] hover:bg-white/[0.04]"
+          className={`border-2 border-dashed rounded-[32px] p-12 text-center transition-all duration-300 ${
+            dragActive ? "border-white/60 bg-white/20" : "border-white/30 hover:border-white/50 bg-white/5 hover:bg-white/10"
           }`}
           onDragEnter={handleDrag}
           onDragLeave={handleDrag}
