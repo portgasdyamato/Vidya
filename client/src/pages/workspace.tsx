@@ -1748,7 +1748,7 @@ function CenterColumn({
       overallProgress < 80 ? 'Almost there' : 'Mastered';
 
     const masteryColor =
-      overallProgress < 20 ? '#636366' :
+      overallProgress < 20 ? '#00a3b6' :
       overallProgress < 50 ? '#0A84FF' :
       overallProgress < 80 ? '#FF9F0A' : '#30D158';
 
@@ -1863,7 +1863,7 @@ function CenterColumn({
                   
                   <div className="flex items-center justify-between">
                     <span className="text-[11px] font-bold tracking-widest text-white uppercase">{label}</span>
-                    <div className="w-9 h-9 rounded-[10px] flex items-center justify-center transition-colors shadow-md group-hover:brightness-110" style={{ background: color, color: '#ffffff' }}>
+                    <div className="w-9 h-9 rounded-full bg-black flex items-center justify-center transition-colors shadow-md group-hover:brightness-110 text-white">
                       {icon}
                     </div>
                   </div>
@@ -1893,8 +1893,8 @@ function CenterColumn({
                   <div>
                      <div className="flex items-center justify-between mb-8 relative z-10">
                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-2xl bg-[#30D158]/10 flex items-center justify-center border border-[#30D158]/20">
-                             <Layers className="w-5 h-5 text-[#30D158]" />
+                          <div className="w-10 h-10 rounded-full bg-black flex items-center justify-center shadow-md">
+                             <Layers className="w-5 h-5 text-white" />
                           </div>
                           <div>
                              <h3 className="text-[16px] font-bold text-white tracking-tight">Flashcard Recall</h3>
@@ -1906,11 +1906,11 @@ function CenterColumn({
                      <div className="flex items-end justify-between mb-6 relative z-10">
                         <div className="flex flex-col">
                            <span className="text-[48px] font-black text-white leading-none tracking-tighter">{gotItCount}</span>
-                           <span className="text-[13px] font-bold text-[#30D158] uppercase tracking-wider mt-1">Mastered</span>
+                           <span className="text-[13px] font-bold text-white uppercase tracking-wider mt-1">Mastered</span>
                         </div>
                         <div className="flex flex-col text-right">
                            <span className="text-[28px] font-bold text-white leading-none">{needReviewCount}</span>
-                           <span className="text-[11px] font-semibold text-[#FF9F0A] uppercase tracking-wider mt-1">Reviewing</span>
+                           <span className="text-[11px] font-semibold text-white uppercase tracking-wider mt-1">Reviewing</span>
                         </div>
                      </div>
                   </div>
