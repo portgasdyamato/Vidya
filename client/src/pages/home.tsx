@@ -25,12 +25,12 @@ export default function Home() {
   
   return (
     <div className="min-h-screen bg-[#0a0a0a] dark:bg-[#0a0a0a] text-black dark:text-white flex flex-col items-center justify-center p-4 selection:bg-[#00a3b6]/30 relative overflow-hidden transition-colors duration-500">
-      {/* Light Mode: White Grey Flowy Background */}
+      {/* Light Mode: Pastel Flowy Background */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none bg-slate-50 dark:hidden z-0">
-        <div className="absolute inset-0 bg-gradient-to-br from-gray-100 via-slate-50 to-gray-200 opacity-80" />
-        <div className="absolute w-[120vw] h-[120vh] -top-[10%] -left-[10%] bg-gray-300 rounded-full mix-blend-multiply filter blur-[100px] opacity-50 animate-pulse" style={{ animationDuration: '15s' }} />
-        <div className="absolute w-[100vw] h-[100vh] top-[20%] left-[20%] bg-slate-300 rounded-full mix-blend-multiply filter blur-[120px] opacity-40 animate-pulse" style={{ animationDuration: '20s', animationDelay: '2s' }} />
-        <div className="absolute w-[110vw] h-[110vh] -bottom-[20%] -right-[10%] bg-zinc-300 rounded-full mix-blend-multiply filter blur-[90px] opacity-60 animate-pulse" style={{ animationDuration: '18s', animationDelay: '5s' }} />
+        <div className="absolute inset-0 bg-gradient-to-br from-pink-50/80 via-purple-50/80 to-blue-50/80 opacity-90" />
+        <div className="absolute w-[120vw] h-[120vh] -top-[10%] -left-[10%] bg-pink-200/30 rounded-full mix-blend-multiply filter blur-[100px] opacity-70 animate-pulse" style={{ animationDuration: '15s' }} />
+        <div className="absolute w-[100vw] h-[100vh] top-[20%] left-[20%] bg-purple-200/30 rounded-full mix-blend-multiply filter blur-[120px] opacity-60 animate-pulse" style={{ animationDuration: '20s', animationDelay: '2s' }} />
+        <div className="absolute w-[110vw] h-[110vh] -bottom-[20%] -right-[10%] bg-blue-200/30 rounded-full mix-blend-multiply filter blur-[90px] opacity-70 animate-pulse" style={{ animationDuration: '18s', animationDelay: '5s' }} />
       </div>
       
       {/* Main Content wrapper */}
@@ -49,21 +49,23 @@ export default function Home() {
         <div className="flex items-center gap-6">
           <button 
             onClick={toggle} 
-            className="p-2 rounded-xl bg-black/5 border border-black/10 hover:bg-black/10 dark:bg-white/5 dark:border-white/10 dark:hover:bg-white/10 transition-colors text-black/70 dark:text-white/70"
+            className="p-3 rounded-xl bg-slate-900/10 border border-slate-900/20 hover:bg-slate-900/20 dark:bg-white/10 dark:border-white/20 dark:hover:bg-white/20 transition-colors text-slate-900 dark:text-white shadow-md flex items-center justify-center gap-2"
+            title="Toggle Theme"
           >
             {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+            <span className="text-xs font-semibold hidden sm:inline-block uppercase tracking-wider">{theme === "dark" ? "Light" : "Dark"}</span>
           </button>
           {!user ? (
             <Link href="/login">
-              <span className="text-sm font-medium text-black/70 dark:text-white/70 hover:text-black dark:hover:text-white transition-colors cursor-pointer">Login</span>
+              <span className="text-sm font-medium text-slate-900/70 dark:text-white/70 hover:text-slate-900 dark:hover:text-white transition-colors cursor-pointer">Login</span>
             </Link>
           ) : (
              <Link href="/workspace">
-              <span className="text-sm font-medium text-black/70 dark:text-white/70 hover:text-black dark:hover:text-white transition-colors cursor-pointer capitalize">Hi, {displayName}</span>
+              <span className="text-sm font-medium text-slate-900/70 dark:text-white/70 hover:text-slate-900 dark:hover:text-white transition-colors cursor-pointer capitalize">Hi, {displayName}</span>
             </Link>
           )}
           <Link href="/workspace">
-            <span className="text-sm font-medium text-black/70 dark:text-white/70 hover:text-black dark:hover:text-white transition-colors cursor-pointer">Workspace</span>
+            <span className="text-sm font-medium text-slate-900/70 dark:text-white/70 hover:text-slate-900 dark:hover:text-white transition-colors cursor-pointer">Workspace</span>
           </Link>
         </div>
       </header>
@@ -72,7 +74,7 @@ export default function Home() {
         
         {/* Hero Section */}
         <div className="text-center space-y-4">
-          <h2 className="text-5xl font-bold font-serif tracking-tight lg:text-6xl text-white/95">
+          <h2 className="text-5xl font-bold font-serif tracking-tight lg:text-6xl text-slate-900/95 dark:text-white/95">
             Vidya Web
           </h2>
           <div className="flex items-center justify-center gap-2 text-white/50 text-sm md:text-base">
@@ -87,7 +89,7 @@ export default function Home() {
             
             {/* Steps Left Panel */}
             <div className="space-y-8">
-              <h3 className="text-2xl font-semibold font-serif text-white/90">Steps to start learning</h3>
+              <h3 className="text-3xl font-bold font-serif text-slate-900 dark:text-white mb-12">Steps to start learning</h3>
               <ul className="space-y-6">
                 {[
                   { text: "Choose your material type (Document)" },
@@ -96,17 +98,17 @@ export default function Home() {
                   { text: "Receive accessible audio and interactive study material" },
                 ].map((step, i) => (
                   <li key={i} className="flex items-center gap-4 group">
-                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-white text-black flex items-center justify-center font-bold text-sm shadow-lg group-hover:scale-110 transition-transform">
+                    <div className="w-12 h-12 rounded-2xl bg-indigo-500/20 flex items-center justify-center text-indigo-400 mb-6 group-hover:scale-110 transition-transform">
                       {i + 1}
                     </div>
-                    <p className="text-white/80 font-medium leading-tight group-hover:text-white transition-colors">{step.text}</p>
+                    <p className="text-slate-700 dark:text-white/80 font-medium leading-tight group-hover:text-slate-900 dark:group-hover:text-white transition-colors">{step.text}</p>
                   </li>
                 ))}
               </ul>
               
               <div className="pt-4">
                 <Link href="/workspace">
-                  <span className="text-white/80 hover:text-white font-medium flex items-center gap-1 transition-colors cursor-pointer group">
+                  <span className="text-slate-600 dark:text-white/80 hover:text-slate-900 dark:hover:text-white font-medium flex items-center gap-1 transition-colors cursor-pointer group">
                     Get started with your first source
                     <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                   </span>
@@ -163,8 +165,8 @@ export default function Home() {
             },
           ].map((feature, i) => (
             <div key={i} className="glass-card rounded-3xl p-6 border border-white/10 flex items-center gap-4 transition-all hover:border-white/20 hover:bg-white/[0.05] group">
-              <feature.icon className="w-7 h-7 text-white/70 group-hover:text-white transition-colors flex-shrink-0" />
-              <p className="text-sm font-medium text-white/80 leading-snug">{feature.title}</p>
+              <feature.icon className="w-7 h-7 text-slate-600 dark:text-white/70 group-hover:text-slate-900 dark:group-hover:text-white transition-colors flex-shrink-0" />
+              <p className="text-sm font-medium text-slate-700 dark:text-white/80 leading-snug">{feature.title}</p>
             </div>
           ))}
         </div>
@@ -182,8 +184,8 @@ export default function Home() {
               <Layout className="absolute w-5 h-5 text-primary opacity-80" />
             </div>
             <div className="text-center md:text-left">
-              <h4 className="text-lg font-bold">Don't have a Vidya account?</h4>
-              <p className="text-sm text-white/50">Start your accessible learning journey today.</p>
+              <h4 className="text-lg font-bold text-slate-900 dark:text-white">Don't have a Vidya account?</h4>
+              <p className="text-sm text-slate-600 dark:text-white/50">Start your accessible learning journey today.</p>
             </div>
           </div>
           <Link href={user ? "/workspace" : "/login"}>
