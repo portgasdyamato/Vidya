@@ -3140,7 +3140,7 @@ export default function Workspace() {
             {/* Sidebar Toggle Button */}
             <button 
               onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-              className={`absolute z-40 top-1/2 -translate-y-1/2 flex items-center justify-center w-5 h-12 bg-white/20 backdrop-blur-[40px] border border-white/20 rounded-r-[12px] hover:bg-white/30 transition-all shadow-[0_4px_16px_rgba(0,0,0,0.1)] ${
+              className={`absolute z-40 top-1/2 -translate-y-1/2 flex items-center justify-center w-5 h-12 bg-white/40 backdrop-blur-md border border-white/60 rounded-r-[12px] hover:bg-white/50 transition-all shadow-[inset_0_1px_4px_rgba(255,255,255,0.8),0_4px_16px_rgba(0,0,0,0.05)] ${
                 isSidebarOpen ? "left-[300px] border-l-transparent shadow-none" : "left-0"
               }`}
             >
@@ -3211,7 +3211,7 @@ export default function Workspace() {
             {/* Right Sidebar Toggle Button */}
             <button
               onClick={() => setIsRightSidebarOpen(!isRightSidebarOpen)}
-              className={`absolute z-40 top-1/2 -translate-y-1/2 flex items-center justify-center w-5 h-12 bg-white/20 backdrop-blur-[40px] border border-white/20 rounded-l-[12px] hover:bg-white/30 transition-all shadow-[0_4px_16px_rgba(0,0,0,0.1)] ${
+              className={`absolute z-40 top-1/2 -translate-y-1/2 flex items-center justify-center w-5 h-12 bg-white/40 backdrop-blur-md border border-white/60 rounded-l-[12px] hover:bg-white/50 transition-all shadow-[inset_0_1px_4px_rgba(255,255,255,0.8),0_4px_16px_rgba(0,0,0,0.05)] ${
                 isRightSidebarOpen ? (selectedSession ? "right-[400px] border-r-transparent shadow-none" : "right-[320px] border-r-transparent shadow-none") : "right-0"
               }`}
             >
