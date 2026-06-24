@@ -21,11 +21,12 @@ export default function Home() {
   
   return (
     <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center p-4 selection:bg-[#00a3b6]/30 relative overflow-hidden">
-      {/* VisionOS Cinematic Environment Background with glowing orb */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none flex items-center justify-center">
-        <div className="w-[800px] h-[800px] rounded-full bg-gradient-to-br from-[#4361EE] via-[#7209B7] to-[#F72585] opacity-50 blur-[100px] animate-pulse" style={{ animationDuration: '4s' }} />
-      </div>
-      <div className="absolute inset-0 bg-black/40 pointer-events-none" />
+      {/* VisionOS Cinematic Environment Background */}
+      <div 
+        className="absolute inset-0 bg-cover bg-center opacity-[0.65] mix-blend-screen pointer-events-none"
+        style={{ backgroundImage: "url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop')" }} 
+      />
+      <div className="absolute inset-0 bg-black/30 backdrop-blur-[120px] pointer-events-none" />
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/20 to-black/80 pointer-events-none" />
       
       {/* Main Content wrapper */}
