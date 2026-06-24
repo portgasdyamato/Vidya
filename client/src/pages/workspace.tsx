@@ -2314,16 +2314,20 @@ function Dashboard({
   items, 
   notebooks, 
   onUpload, 
+  onCreateNotebook,
   onSelectSource 
 }: { 
   items: any[]; 
   notebooks?: any[]; 
   onUpload: () => void; 
+  onCreateNotebook: () => void;
   onSelectSource: (session: ChatSession) => void 
 }) {
   const sessions = getStoredSessions();
   
   const filteredSessions = sessions.filter(session => {
+    if (!session.contentItemId) return true; // Include normal/blank chats
+    
     const item = items.find(i => i.id === session.contentItemId);
     if (!item) return false;
     
@@ -2335,7 +2339,7 @@ function Dashboard({
     .slice(0, 4);
 
   return (
-    <div className="flex-1 overflow-y-auto bg-transparent relative p-8 md:p-12 custom-scrollbar">
+    <div className="flex-1 overflow-y-auto bg-transparent relative p-8 md:p-12 scrollbar-hide">
       
       <div className="max-w-5xl mx-auto relative z-10">
         <header className="mb-14">
@@ -2345,9 +2349,10 @@ function Dashboard({
           <p className="text-lg text-white/50 font-medium">What would you like to research today?</p>
         </header>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
           {[
             { title: "New Project", description: "Upload sources and start researching", icon: Plus, action: onUpload, color: "linear-gradient(135deg, #007AFF 0%, #0056b3 100%)", shadow: "rgba(0, 122, 255, 0.4)" },
+            { title: "New Notebook", description: "Create a notebook to organize your files", icon: Folder, action: onCreateNotebook, color: "linear-gradient(135deg, #FF9500 0%, #E68A00 100%)", shadow: "rgba(255, 149, 0, 0.4)" },
             { title: "Continue Reading", description: "Pick up where you left off", icon: BookOpen, action: () => {}, color: "linear-gradient(135deg, #AF52DE 0%, #7B33A4 100%)", shadow: "rgba(175, 82, 222, 0.4)" },
             { title: "Practice Mode", description: "Review flashcards and quizzes", icon: Grid, action: () => {}, color: "linear-gradient(135deg, #34C759 0%, #248A3D 100%)", shadow: "rgba(52, 199, 89, 0.4)" },
           ].map((card, i) => (
@@ -3007,6 +3012,9 @@ export default function Workspace() {
             items={items}
             notebooks={notebooks}
             onUpload={handleNewChat} 
+            onCreateNotebook={() => {
+              setActiveMainNavTab("notebooks");
+            }}
             onSelectSource={(session) => {
               setActiveMainNavTab("library");
               handleSelectSession(session);
