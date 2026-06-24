@@ -102,7 +102,7 @@ export default function FlashcardDrill({ flashcards, contentId }: FlashcardDrill
         animate={{ opacity: 1, scale: 1 }}
         className="max-w-2xl mx-auto text-center space-y-8 py-8"
       >
-        <div className="inline-flex flex-col items-center gap-4 px-16 py-12 rounded-[32px] bg-white/40 backdrop-blur-xl border border-white/60 shadow-[inset_0_1px_4px_rgba(255,255,255,0.8),0_8px_32px_rgba(0,0,0,0.05)] transition-all">
+        <div className="inline-flex flex-col items-center gap-4 px-16 py-12 rounded-[32px] bg-white/10 backdrop-blur-xl border border-white/20 shadow-[inset_0_1px_4px_rgba(255,255,255,0.8),0_8px_32px_rgba(0,0,0,0.05)] transition-all">
           <span className="text-6xl">{grade.emoji}</span>
           <div>
             <h2 className="text-4xl font-black text-white font-serif mb-2">{grade.label}</h2>
@@ -117,7 +117,7 @@ export default function FlashcardDrill({ flashcards, contentId }: FlashcardDrill
             { label: "Correct", value: correctCount, icon: Check },
             { label: "Needs Review", value: wrongCount, icon: X },
           ].map(({ label, value, icon: Icon }) => (
-            <div key={label} className="p-6 rounded-[24px] bg-white/[0.05] backdrop-blur-md border border-white/10 shadow-lg flex flex-col items-center gap-3 transition-all hover:bg-white/10">
+            <div key={label} className="p-6 rounded-[24px] bg-white/10 backdrop-blur-md border border-white/20 shadow-[inset_0_1px_4px_rgba(255,255,255,0.8),0_4px_16px_rgba(0,0,0,0.05)] flex flex-col items-center gap-3 transition-all hover:bg-white/20">
               <div className="w-10 h-10 rounded-full bg-black flex items-center justify-center shadow-md mb-1">
                 <Icon className="w-5 h-5 text-white" />
               </div>
@@ -162,15 +162,15 @@ export default function FlashcardDrill({ flashcards, contentId }: FlashcardDrill
           <p className="text-sm text-white font-medium">Card {currentIndex + 1} of {total}</p>
         </div>
         <div className="flex items-center gap-3 text-sm font-bold">
-          <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.05] border border-white/10 text-white backdrop-blur-md shadow-lg">
+          <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/20 text-white backdrop-blur-md shadow-[inset_0_1px_4px_rgba(255,255,255,0.8),0_4px_12px_rgba(0,0,0,0.05)] hover:bg-white/20 transition-all">
             <div className="w-5 h-5 rounded-full bg-black flex items-center justify-center">
-              <Check className="w-3 h-3 text-white" strokeWidth={3} />
+              <Check className="w-3 h-3 text-white" />
             </div>
             <span className="font-bold">{correctCount}</span>
           </div>
-          <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.05] border border-white/10 text-white backdrop-blur-md shadow-lg">
+          <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/20 text-white backdrop-blur-md shadow-[inset_0_1px_4px_rgba(255,255,255,0.8),0_4px_12px_rgba(0,0,0,0.05)] hover:bg-white/20 transition-all">
             <div className="w-5 h-5 rounded-full bg-black flex items-center justify-center">
-              <X className="w-3 h-3 text-white" strokeWidth={3} />
+              <X className="w-3 h-3 text-white" />
             </div>
             <span className="font-bold">{wrongCount}</span>
           </div>
@@ -213,9 +213,9 @@ export default function FlashcardDrill({ flashcards, contentId }: FlashcardDrill
                 <span className="text-[10px] font-bold text-white uppercase tracking-widest">Question</span>
               </div>
               {cardResult ? (
-                <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/[0.05] border border-white/10 text-white backdrop-blur-md shadow-lg text-[10px] font-bold uppercase tracking-widest">
+                <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 border border-white/20 text-white backdrop-blur-md shadow-[inset_0_1px_4px_rgba(255,255,255,0.8),0_4px_12px_rgba(0,0,0,0.05)] text-[10px] font-bold uppercase tracking-widest">
                   <div className="w-4 h-4 rounded-full bg-black flex items-center justify-center">
-                    {cardResult === "correct" ? <Check className="w-2.5 h-2.5 text-white" strokeWidth={3} /> : <X className="w-2.5 h-2.5 text-white" strokeWidth={3} />}
+                    {cardResult === "correct" ? <Check className="w-2.5 h-2.5 text-white" /> : <X className="w-2.5 h-2.5 text-white" />}
                   </div>
                   {cardResult}
                 </div>
@@ -284,19 +284,19 @@ export default function FlashcardDrill({ flashcards, contentId }: FlashcardDrill
           <div className="flex-1 flex gap-3">
             <Button
               onClick={() => goNext("wrong")}
-              className="flex-1 h-12 rounded-2xl bg-white/[0.05] hover:bg-white/10 backdrop-blur-md border border-white/10 hover:border-white/20 text-white font-bold gap-2 shadow-lg transition-all group"
+              className="flex-1 h-12 rounded-2xl bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white font-bold gap-2 shadow-[inset_0_1px_4px_rgba(255,255,255,0.8),0_4px_16px_rgba(0,0,0,0.05)] transition-all group"
             >
-              <div className="w-5 h-5 rounded-full bg-black flex items-center justify-center group-hover:scale-110 transition-transform">
-                <X className="w-3 h-3 text-white" strokeWidth={3} />
+              <div className="w-5 h-5 rounded-full bg-black flex items-center justify-center">
+                <X className="w-3 h-3 text-white group-hover:scale-110 transition-transform" />
               </div>
               Need to Review
             </Button>
             <Button
               onClick={() => goNext("correct")}
-              className="flex-1 h-12 rounded-2xl bg-white/[0.05] hover:bg-white/10 backdrop-blur-md border border-white/10 hover:border-white/20 text-white font-bold gap-2 shadow-lg transition-all group"
+              className="flex-1 h-12 rounded-2xl bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white font-bold gap-2 shadow-[inset_0_1px_4px_rgba(255,255,255,0.8),0_4px_16px_rgba(0,0,0,0.05)] transition-all group"
             >
-              <div className="w-5 h-5 rounded-full bg-black flex items-center justify-center group-hover:scale-110 transition-transform">
-                <Check className="w-3 h-3 text-white" strokeWidth={3} />
+              <div className="w-5 h-5 rounded-full bg-black flex items-center justify-center">
+                <Check className="w-3 h-3 text-white group-hover:scale-110 transition-transform" />
               </div>
               Got It!
             </Button>
