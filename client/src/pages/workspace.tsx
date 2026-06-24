@@ -470,7 +470,7 @@ function NotebooksView({ onSelectNotebook }: { onSelectNotebook: (id: string) =>
             </h1>
             <p className="text-lg text-white/50 font-medium">Organize your research effectively</p>
           </div>
-          <Button onClick={() => setIsCreating(true)} className="bg-white text-black hover:bg-white/90 font-bold px-6">
+          <Button onClick={() => setIsCreating(true)} className="glass-button-primary rounded-full font-bold px-6">
             <Plus className="w-4 h-4 mr-2" /> New Notebook
           </Button>
         </header>
@@ -488,7 +488,7 @@ function NotebooksView({ onSelectNotebook }: { onSelectNotebook: (id: string) =>
                   className="bg-white/10 border-white/20 text-white placeholder:text-white/30"
                   onKeyDown={(e) => e.key === "Enter" && handleCreate()}
                 />
-                <Button onClick={() => handleCreate()} className="bg-white text-black hover:bg-white/90 shrink-0">Create</Button>
+                <Button onClick={() => handleCreate()} className="glass-button-primary rounded-full shrink-0">Create</Button>
                 <Button variant="ghost" onClick={() => setIsCreating(false)} className="shrink-0 text-white hover:bg-white/10">Cancel</Button>
               </div>
             </CardContent>
@@ -546,7 +546,7 @@ function NotebooksView({ onSelectNotebook }: { onSelectNotebook: (id: string) =>
               <BookMarked className="h-10 w-10 text-white/20" />
             </div>
             <p className="text-white/50 mb-6 font-medium text-lg">You haven't created any notebooks yet.</p>
-            <Button onClick={() => setIsCreating(true)} className="bg-white text-black hover:bg-white/90 px-8 py-6 rounded-full shadow-2xl font-bold text-base">
+            <Button onClick={() => setIsCreating(true)} className="glass-button-primary px-8 py-6 rounded-full shadow-2xl font-bold text-base">
               Create your first notebook
             </Button>
           </div>
