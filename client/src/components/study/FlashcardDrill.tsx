@@ -126,21 +126,20 @@ export default function FlashcardDrill({ flashcards, contentId }: FlashcardDrill
         <div className="flex gap-4 justify-center">
           <Button
             onClick={restart}
-            className="flex items-center gap-2 px-8 py-3 h-auto bg-primary hover:bg-primary/90 text-white font-bold rounded-2xl shadow-lg shadow-primary/20"
+            className="h-14 px-8 text-base font-semibold rounded-2xl glass-button-primary shadow-2xl transition-all gap-3"
           >
-            <RotateCcw className="w-4 h-4" />
+            <RotateCcw className="w-5 h-5" />
             Study Again
           </Button>
           <Button
-            variant="outline"
             onClick={() => {
               setCurrentIndex(0);
               setIsFlipped(false);
               setCompleted(false);
             }}
-            className="flex items-center gap-2 px-8 py-3 h-auto border-white/10 hover:bg-white/5 text-white rounded-2xl"
+            className="h-14 px-8 text-base font-semibold rounded-2xl glass-button-primary shadow-2xl transition-all gap-3"
           >
-            <Eye className="w-4 h-4" />
+            <Eye className="w-5 h-5" />
             Review Deck
           </Button>
         </div>

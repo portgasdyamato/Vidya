@@ -85,7 +85,7 @@ export default function Header() {
               >
                 <DropdownMenuLabel className="font-normal p-3">
                   <div className="flex flex-col space-y-1">
-                    <p className="text-base font-semibold text-white/90 tracking-tight">{user.name || user.username}</p>
+                    <p className="text-base font-semibold text-white/90 tracking-tight">{user.displayName || user.name || user.username}</p>
                     <p className="text-xs text-white/50">{user.username}</p>
                   </div>
                 </DropdownMenuLabel>

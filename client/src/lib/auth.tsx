@@ -7,6 +7,7 @@ type User = {
   id: string;
   username: string;
   name?: string;
+  displayName?: string | null;
   photo?: string;
 };
 

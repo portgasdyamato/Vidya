@@ -17,6 +17,7 @@ import { useAuth } from "@/lib/auth";
 
 export default function Home() {
   const { user } = useAuth();
+  const displayName = user ? (user.displayName || user.name || user.username) : '';
   
   return (
     <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center p-4 selection:bg-[#00a3b6]/30 relative overflow-hidden">
@@ -48,7 +49,7 @@ export default function Home() {
             </Link>
           ) : (
              <Link href="/workspace">
-              <span className="text-sm font-medium text-white/70 hover:text-white transition-colors cursor-pointer capitalize">Hi, {user.name || user.username}</span>
+              <span className="text-sm font-medium text-white/70 hover:text-white transition-colors cursor-pointer capitalize">Hi, {displayName}</span>
             </Link>
           )}
           <Link href="/workspace">
@@ -95,7 +96,7 @@ export default function Home() {
               
               <div className="pt-4">
                 <Link href="/workspace">
-                  <span className="text-[#00a3b6] hover:text-[#22d3ee] font-medium flex items-center gap-1 transition-colors cursor-pointer group">
+                  <span className="text-white/80 hover:text-white font-medium flex items-center gap-1 transition-colors cursor-pointer group">
                     Get started with your first source
                     <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                   </span>
@@ -152,9 +153,7 @@ export default function Home() {
             },
           ].map((feature, i) => (
             <div key={i} className="glass-card rounded-3xl p-6 border border-white/10 flex items-center gap-4 transition-all hover:border-white/20 hover:bg-white/[0.05] group">
-              <div className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center border border-white/10 group-hover:bg-primary/20 transition-colors">
-                <feature.icon className="w-6 h-6 text-white/70 group-hover:text-primary transition-colors" />
-              </div>
+              <feature.icon className="w-7 h-7 text-white/70 group-hover:text-white transition-colors flex-shrink-0" />
               <p className="text-sm font-medium text-white/80 leading-snug">{feature.title}</p>
             </div>
           ))}

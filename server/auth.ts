@@ -41,9 +41,13 @@ export function setupGoogleAuth(app: Express) {
               user = await storage.createUser({
                 id: profile.id, // We use Google ID as the primary key
                 username: profile.emails?.[0]?.value || profile.displayName || profile.id,
+                displayName: profile.displayName,
                 password: "google-authenticated-user", // Placeholder since we use OAuth
               } as any);
               console.log(`Created new Google user: ${user.username}`);
+            } else if (!user.displayName && profile.displayName) {
+              // Update existing user to have displayName
+              user = await storage.updateUser(user.id, { displayName: profile.displayName }) || user;
             }
             
             // For session data that isn't in DB yet (like photo)

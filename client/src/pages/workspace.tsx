@@ -293,24 +293,30 @@ function MainNav({ activeTab, onTabChange }: { activeTab: string; onTabChange: (
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start" side="right" sideOffset={16} className="w-60 p-2 bg-white/[0.05] backdrop-blur-[80px] border border-white/10 text-white rounded-[24px] shadow-[0_8px_32px_rgba(0,0,0,0.5)]">
-              <div className="px-3 py-3 mb-2 border-b border-white/10 flex flex-col gap-0.5">
+              <div className={`px-3 py-3 flex flex-col gap-0.5 ${user?.username !== "default-user" ? "mb-2 border-b border-white/10" : ""}`}>
                 <p className="text-[14px] font-bold tracking-tight truncate text-white">{user?.name || user?.displayName || user?.username}</p>
-                <p className="text-[11px] font-medium tracking-wide text-white/40 uppercase truncate">Student Account</p>
+                <p className="text-[11px] font-medium tracking-wide text-white/40 uppercase truncate">
+                  {user?.username === "default-user" ? "Guest Account" : "Student Account"}
+                </p>
               </div>
-              <DropdownMenuItem 
-                onClick={() => setIsProfileModalOpen(true)}
-                className="rounded-[16px] cursor-pointer py-2.5 px-3 hover:bg-white/10 focus:bg-white/10 focus:text-white transition-colors"
-              >
-                <UserCircle className="w-4 h-4 mr-2.5 opacity-70" />
-                <span className="font-medium text-[13px]">Edit Profile Name</span>
-              </DropdownMenuItem>
-              <DropdownMenuItem 
-                onClick={() => logoutMutation.mutate()}
-                className="rounded-[16px] cursor-pointer py-2.5 px-3 text-[#FF453A] hover:bg-[#FF453A]/10 focus:bg-[#FF453A]/10 focus:text-[#FF453A] mt-1 transition-colors"
-              >
-                <LogOut className="w-4 h-4 mr-2.5 opacity-70" />
-                <span className="font-medium text-[13px]">Log Out</span>
-              </DropdownMenuItem>
+              {user?.username !== "default-user" && (
+                <>
+                  <DropdownMenuItem 
+                    onClick={() => setIsProfileModalOpen(true)}
+                    className="rounded-[16px] cursor-pointer py-2.5 px-3 hover:bg-white/10 focus:bg-white/10 focus:text-white transition-colors"
+                  >
+                    <UserCircle className="w-4 h-4 mr-2.5 opacity-70" />
+                    <span className="font-medium text-[13px]">Edit Profile Name</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem 
+                    onClick={() => logoutMutation.mutate()}
+                    className="rounded-[16px] cursor-pointer py-2.5 px-3 text-[#FF453A] hover:bg-[#FF453A]/10 focus:bg-[#FF453A]/10 focus:text-[#FF453A] mt-1 transition-colors"
+                  >
+                    <LogOut className="w-4 h-4 mr-2.5 opacity-70" />
+                    <span className="font-medium text-[13px]">Log Out</span>
+                  </DropdownMenuItem>
+                </>
+              )}
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
@@ -723,7 +729,7 @@ function CenterColumn({
 
             <Button
               onClick={onUpload}
-              className="h-14 px-10 text-base font-black rounded-2xl glass-button-primary shadow-2xl transition-all gap-3"
+              className="h-14 px-10 text-base font-semibold rounded-2xl glass-button-primary shadow-2xl transition-all gap-3"
             >
               <UploadCloud className="h-5 w-5" />
               Upload Your First Source
@@ -1440,11 +1446,19 @@ function CenterColumn({
       ? Math.round(quizScores.reduce((acc, s) => acc + (s.score / s.total) * 100, 0) / quizScores.length)
       : 0;
     
+    const options = (contentItem.processingOptions as any) || {};
+    const hasQuiz = !!options.generateQuiz;
+    const hasFlashcards = !!options.generateSummary;
+    
     // Adjusted scoring model based on actual data
-    const readingScore = Math.min(pagesRead.length * 5, 40); // cap at 40
-    const flashScore = flashcardProgress * 0.35;
-    const quizScore = lastQuizScore ? ((lastQuizScore.score / lastQuizScore.total) * 100) * 0.25 : 0;
-    const overallProgress = Math.min(Math.round(readingScore + flashScore + quizScore), 100);
+    const readingScoreRaw = Math.min(pagesRead.length * 5, 40); // cap at 40
+    const flashScoreRaw = hasFlashcards ? flashcardProgress * 0.35 : 0;
+    const quizScoreRaw = (hasQuiz && lastQuizScore) ? ((lastQuizScore.score / lastQuizScore.total) * 100) * 0.25 : 0;
+    
+    const totalAchievedRaw = readingScoreRaw + flashScoreRaw + quizScoreRaw;
+    const maxPossibleRaw = 40 + (hasFlashcards ? 35 : 0) + (hasQuiz ? 25 : 0);
+    
+    const overallProgress = maxPossibleRaw > 0 ? Math.min(Math.round((totalAchievedRaw / maxPossibleRaw) * 100), 100) : 0;
     const circumference = 2 * Math.PI * 54;
 
     const masteryLabel =
@@ -1527,10 +1541,10 @@ function CenterColumn({
                 {/* Mini progress segments */}
                 <div className="space-y-2 mt-2 w-full max-w-md">
                   {[
-                    { label: 'Reading', value: readingScore > 0 ? Math.round((readingScore/40)*100) : 0, color: '#0A84FF' },
-                    { label: 'Flashcards', value: flashcardProgress, color: '#30D158' },
-                    { label: 'Quiz', value: lastQuizScore ? Math.round((lastQuizScore.score / lastQuizScore.total) * 100) : 0, color: '#FF9F0A' },
-                  ].map(({ label, value, color }) => (
+                    { label: 'Reading', value: readingScoreRaw > 0 ? Math.round((readingScoreRaw/40)*100) : 0, color: '#0A84FF', show: true },
+                    { label: 'Flashcards', value: flashcardProgress, color: '#30D158', show: hasFlashcards },
+                    { label: 'Quiz', value: lastQuizScore ? Math.round((lastQuizScore.score / lastQuizScore.total) * 100) : 0, color: '#FF9F0A', show: hasQuiz },
+                  ].filter(x => x.show).map(({ label, value, color }) => (
                     <div key={label} className="flex items-center gap-3">
                       <span className="text-[11px] text-white/40 w-20 font-semibold tracking-wide">{label}</span>
                       <div className="flex-1 h-1.5 rounded-full" style={{ background: 'rgba(255,255,255,0.06)' }}>
@@ -1544,13 +1558,13 @@ function CenterColumn({
             </motion.div>
 
             {/* Stats Bento Grid */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className={`grid gap-4 ${hasQuiz ? 'grid-cols-2 md:grid-cols-4' : 'grid-cols-1 md:grid-cols-3'}`}>
               {[
-                { icon: <BookOpen className="w-5 h-5" />, label: 'Pages Read', value: pagesRead.length, sub: 'pages visited', color: '#0A84FF', bg: 'rgba(10, 132, 255, 0.15)' },
-                { icon: <Highlighter className="w-5 h-5" />, label: 'Highlights', value: highlightsCount, sub: 'annotations', color: '#BF5AF2', bg: 'rgba(191, 90, 242, 0.15)' },
-                { icon: <CheckSquare className="w-5 h-5" />, label: 'Quiz Attempts', value: quizScores.length, sub: quizScores.length > 0 ? `avg ${avgQuizScore}%` : 'none yet', color: '#FF9F0A', bg: 'rgba(255, 159, 10, 0.15)' },
-                { icon: <MessageSquare className="w-5 h-5" />, label: 'AI Chat', value: chatInteractionsCount, sub: 'messages sent', color: '#FF375F', bg: 'rgba(255, 55, 95, 0.15)' },
-              ].map(({ icon, label, value, sub, color, bg }, i) => (
+                { icon: <BookOpen className="w-5 h-5" />, label: 'Pages Read', value: pagesRead.length, sub: 'pages visited', color: '#0A84FF', bg: 'rgba(10, 132, 255, 0.15)', show: true },
+                { icon: <Highlighter className="w-5 h-5" />, label: 'Highlights', value: highlightsCount, sub: 'annotations', color: '#BF5AF2', bg: 'rgba(191, 90, 242, 0.15)', show: true },
+                { icon: <CheckSquare className="w-5 h-5" />, label: 'Quiz Attempts', value: quizScores.length, sub: quizScores.length > 0 ? `avg ${avgQuizScore}%` : 'none yet', color: '#FF9F0A', bg: 'rgba(255, 159, 10, 0.15)', show: hasQuiz },
+                { icon: <MessageSquare className="w-5 h-5" />, label: 'AI Chat', value: chatInteractionsCount, sub: 'messages sent', color: '#FF375F', bg: 'rgba(255, 55, 95, 0.15)', show: true },
+              ].filter(x => x.show).map(({ icon, label, value, sub, color, bg }, i) => (
                 <motion.div 
                   initial={{ opacity: 0, y: 15 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -1583,7 +1597,7 @@ function CenterColumn({
             {/* Bottom Row - Redesigned */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
               {/* Flashcard Confidence */}
-              {totalFlashcards > 0 && (
+              {hasFlashcards && totalFlashcards > 0 && (
                 <motion.div 
                   initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
                   style={{
@@ -1633,7 +1647,7 @@ function CenterColumn({
               )}
 
               {/* Quiz History */}
-              {quizScores.length > 0 && (
+              {hasQuiz && quizScores.length > 0 && (
                 <motion.div 
                   initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}
                   style={{
