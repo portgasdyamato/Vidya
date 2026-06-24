@@ -2527,6 +2527,15 @@ export default function Workspace() {
     ? notebooks?.find((n: any) => n.id === activeNotebookId)?.name 
     : null;
 
+  const { data: items = [] } = useQuery<ContentItem[]>({
+    queryKey: ["/api/content"],
+    queryFn: async () => {
+      const res = await fetch("/api/content", { credentials: "include" });
+      if (!res.ok) throw new Error("Failed to fetch content");
+      return res.json();
+    }
+  });
+
   const { data: contentItem, isLoading, refetch } = useQuery<ContentItem>({
     queryKey: ["content-item", selectedSession?.contentItemId],
     queryFn: async () => {
