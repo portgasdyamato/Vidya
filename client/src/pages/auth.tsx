@@ -17,8 +17,8 @@ const BackgroundNodes = () => {
     <div className="absolute inset-0 pointer-events-none overflow-hidden hidden lg:block opacity-60 dark:opacity-40">
       
       {/* Top Left */}
-      <svg className="absolute top-[150px] left-0 w-[400px] h-[200px] stroke-black/20 dark:stroke-white/20" preserveAspectRatio="none">
-        <path d="M 0 0 L 250 0 L 350 150 L 400 150" fill="none" stroke="currentColor" strokeWidth="1" />
+      <svg className="absolute top-[150px] left-0 w-[400px] h-[200px] stroke-white dark:stroke-white/20" preserveAspectRatio="none">
+        <path d="M 85 0 L 250 0 L 350 150 L 400 150" fill="none" stroke="currentColor" strokeWidth="1" />
       </svg>
       <div className="absolute top-[130px] -left-[20px] w-24 h-10 bg-white/40 dark:bg-[#111] backdrop-blur-md border border-black/10 dark:border-white/10 rounded-lg flex items-center justify-end pr-2 shadow-lg">
         <div className="flex flex-col gap-1 pr-2">
@@ -26,11 +26,11 @@ const BackgroundNodes = () => {
            <div className="flex gap-1"><div className="w-1 h-1 bg-black/20 dark:bg-white/20 rounded-full"/><div className="w-1 h-1 bg-black/20 dark:bg-white/20 rounded-full"/></div>
         </div>
       </div>
-      <div className="absolute top-[148px] left-[85px] w-1.5 h-1.5 bg-black/40 dark:bg-white/60 rounded-full shadow-[0_0_8px_rgba(0,0,0,0.2)] dark:shadow-[0_0_8px_rgba(255,255,255,0.8)]" />
+      <div className="absolute top-[148px] left-[85px] w-1.5 h-1.5 bg-white dark:bg-white/60 rounded-full shadow-[0_0_8px_rgba(255,255,255,0.8)] dark:shadow-[0_0_8px_rgba(255,255,255,0.8)]" />
 
       {/* Bottom Left */}
-      <svg className="absolute bottom-[150px] left-0 w-[400px] h-[200px] stroke-black/20 dark:stroke-white/20" preserveAspectRatio="none">
-        <path d="M 0 200 L 250 200 L 350 50 L 400 50" fill="none" stroke="currentColor" strokeWidth="1" />
+      <svg className="absolute bottom-[150px] left-0 w-[400px] h-[200px] stroke-white dark:stroke-white/20" preserveAspectRatio="none">
+        <path d="M 85 200 L 250 200 L 350 50 L 400 50" fill="none" stroke="currentColor" strokeWidth="1" />
       </svg>
       <div className="absolute bottom-[130px] -left-[20px] w-24 h-10 bg-white/40 dark:bg-[#111] backdrop-blur-md border border-black/10 dark:border-white/10 rounded-lg flex items-center justify-end pr-2 shadow-lg">
          <div className="flex flex-col gap-1 pr-2">
@@ -38,11 +38,11 @@ const BackgroundNodes = () => {
            <div className="flex gap-1"><div className="w-1 h-1 bg-black/20 dark:bg-white/20 rounded-full"/><div className="w-1 h-1 bg-black/20 dark:bg-white/20 rounded-full"/></div>
         </div>
       </div>
-      <div className="absolute bottom-[148px] left-[85px] w-1.5 h-1.5 bg-black/40 dark:bg-white/60 rounded-full shadow-[0_0_8px_rgba(0,0,0,0.2)] dark:shadow-[0_0_8px_rgba(255,255,255,0.8)]" />
+      <div className="absolute top-[148px] left-[85px] w-1.5 h-1.5 bg-white dark:bg-white/60 rounded-full shadow-[0_0_8px_rgba(255,255,255,0.8)] dark:shadow-[0_0_8px_rgba(255,255,255,0.8)]" />
 
       {/* Top Right */}
-      <svg className="absolute top-[150px] right-0 w-[400px] h-[200px] stroke-black/20 dark:stroke-white/20" preserveAspectRatio="none">
-        <path d="M 400 0 L 150 0 L 50 150 L 0 150" fill="none" stroke="currentColor" strokeWidth="1" />
+      <svg className="absolute top-[150px] right-0 w-[400px] h-[200px] stroke-white dark:stroke-white/20" preserveAspectRatio="none">
+        <path d="M 315 0 L 150 0 L 50 150 L 0 150" fill="none" stroke="currentColor" strokeWidth="1" />
       </svg>
       <div className="absolute top-[130px] -right-[20px] w-24 h-10 bg-white/40 dark:bg-[#111] backdrop-blur-md border border-black/10 dark:border-white/10 rounded-lg flex items-center justify-start pl-2 shadow-lg">
          <div className="flex flex-col gap-1 pl-2">
@@ -50,11 +50,11 @@ const BackgroundNodes = () => {
            <div className="flex gap-1"><div className="w-1 h-1 bg-black/20 dark:bg-white/20 rounded-full"/><div className="w-1 h-1 bg-black/20 dark:bg-white/20 rounded-full"/></div>
         </div>
       </div>
-      <div className="absolute top-[148px] right-[85px] w-1.5 h-1.5 bg-black/40 dark:bg-white/60 rounded-full shadow-[0_0_8px_rgba(0,0,0,0.2)] dark:shadow-[0_0_8px_rgba(255,255,255,0.8)]" />
+      <div className="absolute top-[148px] right-[85px] w-1.5 h-1.5 bg-white dark:bg-white/60 rounded-full shadow-[0_0_8px_rgba(255,255,255,0.8)] dark:shadow-[0_0_8px_rgba(255,255,255,0.8)]" />
 
       {/* Bottom Right */}
-      <svg className="absolute bottom-[150px] right-0 w-[400px] h-[200px] stroke-black/20 dark:stroke-white/20" preserveAspectRatio="none">
-        <path d="M 400 200 L 150 200 L 50 50 L 0 50" fill="none" stroke="currentColor" strokeWidth="1" />
+      <svg className="absolute bottom-[150px] right-0 w-[400px] h-[200px] stroke-white dark:stroke-white/20" preserveAspectRatio="none">
+        <path d="M 315 200 L 150 200 L 50 50 L 0 50" fill="none" stroke="currentColor" strokeWidth="1" />
       </svg>
       <div className="absolute bottom-[130px] -right-[20px] w-24 h-10 bg-white/40 dark:bg-[#111] backdrop-blur-md border border-black/10 dark:border-white/10 rounded-lg flex items-center justify-start pl-2 shadow-lg">
          <div className="flex flex-col gap-1 pl-2">
@@ -62,7 +62,7 @@ const BackgroundNodes = () => {
            <div className="flex gap-1"><div className="w-1 h-1 bg-black/20 dark:bg-white/20 rounded-full"/><div className="w-1 h-1 bg-black/20 dark:bg-white/20 rounded-full"/></div>
         </div>
       </div>
-      <div className="absolute bottom-[148px] right-[85px] w-1.5 h-1.5 bg-black/40 dark:bg-white/60 rounded-full shadow-[0_0_8px_rgba(0,0,0,0.2)] dark:shadow-[0_0_8px_rgba(255,255,255,0.8)]" />
+      <div className="absolute bottom-[148px] right-[85px] w-1.5 h-1.5 bg-white dark:bg-white/60 rounded-full shadow-[0_0_8px_rgba(255,255,255,0.8)] dark:shadow-[0_0_8px_rgba(255,255,255,0.8)]" />
 
     </div>
   );
