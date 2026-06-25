@@ -2614,7 +2614,7 @@ function Canvas({ initialContent, title }: { initialContent?: string; title: str
 
 export default function Workspace() {
   const { user } = useAuth();
-  const [activeMainNavTab, setActiveMainNavTab] = useState("notebooks"); // Start on notebooks view usually, but wait, library is default
+  const [activeMainNavTab, setActiveMainNavTab] = useState("home");
   const [activeNotebookId, setActiveNotebookId] = useState<string | null>(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isRightSidebarOpen, setIsRightSidebarOpen] = useState(true);
