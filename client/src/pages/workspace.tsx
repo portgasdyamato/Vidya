@@ -1497,16 +1497,16 @@ function CenterColumn({
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: questionIndex * 0.05, duration: 0.4 }}
-          className="p-6 md:p-8 rounded-[28px] bg-white/60 dark:bg-[#1C1C1E]/60 backdrop-blur-2xl border border-black/5 dark:border-white/5 shadow-2xl relative overflow-hidden"
+          className="p-6 md:p-8 rounded-[28px] bg-white/10 dark:bg-[#1C1C1E]/60 backdrop-blur-2xl border border-white/20 dark:border-white/5 shadow-2xl relative overflow-hidden"
         >
           {/* Subtle top highlight */}
           <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-black/10 dark:via-white/10 to-transparent opacity-50" />
           
           <div className="flex items-start gap-4 mb-8">
-            <span className="flex items-center justify-center w-8 h-8 rounded-full bg-black/5 dark:bg-white/5 text-black dark:text-white text-[13px] font-bold border border-black/5 dark:border-white/5 shrink-0 mt-0.5">
+            <span className="flex items-center justify-center w-8 h-8 rounded-full bg-white/10 text-white text-[13px] font-bold border border-white/20 shrink-0 mt-0.5 shadow-inner">
               {questionIndex + 1}
             </span>
-            <h3 className="text-[17px] font-medium text-black dark:text-[#F2F2F7] leading-relaxed tracking-wide">
+            <h3 className="text-[17px] font-medium text-white leading-relaxed tracking-wide shadow-sm">
               {q.question}
             </h3>
           </div>
@@ -1517,19 +1517,19 @@ function CenterColumn({
                 const isSelected = selectedOption === idx;
                 const isCorrectOption = Number(q.correctAnswer) === idx;
                 
-                let stateClass = "bg-black/5 dark:bg-[#2C2C2E]/40 border-transparent hover:bg-black/10 dark:hover:bg-[#3A3A3C]/60 text-black dark:text-white";
-                let letterClass = "bg-black/10 dark:bg-white/10 text-black dark:text-white";
+                let stateClass = "bg-white/5 border border-white/10 hover:bg-white/10 text-white";
+                let letterClass = "bg-white/10 text-white shadow-inner border border-white/10";
                 
                 if (isAnswered) {
                   if (isCorrectOption) {
-                    stateClass = "bg-[#34C759]/20 dark:bg-[#34C759]/10 border-transparent text-[#248A3D] dark:text-[#34C759]";
-                    letterClass = "bg-[#34C759] text-white dark:text-black shadow-[0_0_15px_rgba(52,199,89,0.3)]";
+                    stateClass = "bg-[#34C759]/20 border border-[#34C759]/30 text-white";
+                    letterClass = "bg-[#34C759] text-white shadow-[0_0_15px_rgba(52,199,89,0.3)]";
                   } else if (isSelected && !isCorrectOption) {
-                    stateClass = "bg-black/5 dark:bg-[#2C2C2E]/40 border-transparent text-black dark:text-white opacity-60";
+                    stateClass = "bg-white/5 border border-white/10 text-white opacity-60";
                     letterClass = "bg-[#FF453A] text-white shadow-[0_0_15px_rgba(255,69,58,0.3)]";
                   } else {
-                    stateClass = "bg-black/5 dark:bg-[#2C2C2E]/20 border-transparent opacity-30 cursor-not-allowed text-black dark:text-white";
-                    letterClass = "bg-black/10 dark:bg-black/20 text-black dark:text-white";
+                    stateClass = "bg-white/5 border border-white/5 opacity-40 cursor-not-allowed text-white";
+                    letterClass = "bg-white/10 text-white";
                   }
                 }
 
