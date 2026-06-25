@@ -24,7 +24,7 @@ export default function Home() {
   const displayName = user ? (user.displayName || user.name || user.username) : '';
   
   return (
-    <div className="min-h-screen bg-white dark:bg-[#0a0a0a] text-black dark:text-white flex flex-col items-center justify-center p-4 selection:bg-[#00a3b6]/30 relative overflow-hidden transition-colors duration-500">
+    <div className="min-h-screen bg-white dark:bg-[#0a0a0a] text-white flex flex-col items-center justify-center p-4 selection:bg-[#00a3b6]/30 relative overflow-hidden transition-colors duration-500">
       {/* Light Mode: Dynamic Colorful Flowy Background */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none dark:hidden z-0 bg-white/10 backdrop-blur-3xl">
         <div className="absolute w-[120vw] h-[120vh] -top-[10%] -left-[10%] bg-pink-400 rounded-full filter blur-[120px] opacity-60 animate-pulse" style={{ animationDuration: '12s' }} />
