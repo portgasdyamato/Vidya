@@ -82,7 +82,7 @@ export default function Home() {
         </div>
 
         {/* Main Interface Card */}
-        <div className="w-full max-w-5xl glass-card rounded-[2.5rem] border border-white/10 p-6 md:p-10 relative shadow-[0_32px_64px_-16px_rgba(0,0,0,0.6)]">
+        <div className="w-full max-w-5xl glass-card rounded-[2.5rem] border border-white/10 p-6 md:p-10 relative shadow-[0_32px_64px_-16px_rgba(0,0,0,0.15)]">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             
             {/* Steps Left Panel */}
