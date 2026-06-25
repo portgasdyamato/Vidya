@@ -30,8 +30,8 @@
   
   --font-sans: 'Outfit', 'Inter', ui-sans-serif, system-ui;
   --font-serif: 'Libre Baskerville', Georgia, serif;
-  --glass-bg: rgba(255, 255, 255, 0.015);
-  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-bg: rgba(255, 255, 255, 0.04);
+  --glass-border: rgba(255, 255, 255, 0.15);
   --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
   --glow-primary: 0 0 24px rgba(255, 255, 255, 0.2);
 }
@@ -73,8 +73,8 @@
     background: var(--glass-bg);
     border: 1px solid var(--glass-border);
     box-shadow: var(--glass-shadow);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
   }
 
   .glass-card::before {
