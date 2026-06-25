@@ -116,7 +116,7 @@ export default function Home() {
 
             {/* AI Visual Right Panel */}
             <div className="flex flex-col items-end gap-6 relative">
-              <div className="w-full max-w-sm aspect-square glass-card rounded-[2.5rem] flex items-center justify-center relative group transition-all dark:hover:bg-[#00a3b6]/10 shadow-[0_20px_50px_rgba(0,163,182,0.05)] border-transparent dark:border-white/20 !border-t-transparent dark:!border-t-white/40">
+              <div className="w-full max-w-sm aspect-square glass-card rounded-[2.5rem] flex items-center justify-center relative group transition-all dark:hover:bg-[#00a3b6]/10 shadow-[0_20px_50px_rgba(0,163,182,0.05)]">
                 <img 
                   src={theme === "dark" ? "/bg.gif" : "/lightide.gif"} 
                   alt="AI Assistant Visualization" 
