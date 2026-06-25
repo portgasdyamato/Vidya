@@ -316,8 +316,8 @@ function MainNav({ activeTab, onTabChange }: { activeTab: string; onTabChange: (
               <Button variant="ghost" className="rounded-full h-11 w-11 p-0 relative hover:scale-105 transition-transform border border-white/10 group">
                 <div className="h-2.5 w-2.5 rounded-full bg-[#30D158] absolute bottom-0 right-0 z-10" />
                 <div className="h-full w-full rounded-full bg-gradient-to-br from-indigo-500 to-blue-600 flex items-center justify-center text-[11px] text-white font-bold overflow-hidden">
-                  {user?.photo ? (
-                    <img src={user.photo} alt={user.name} className="w-full h-full object-cover" />
+                  {(user?.photo || user?.avatarUrl) ? (
+                    <img src={user?.photo || user?.avatarUrl} alt={user?.name || user?.displayName} className="w-full h-full object-cover" />
                   ) : (
                     getInitials(user?.name || user?.displayName || user?.username || 'JD')
                   )}
