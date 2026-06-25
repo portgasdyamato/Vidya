@@ -1503,10 +1503,10 @@ function CenterColumn({
           <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-black/10 dark:via-white/10 to-transparent opacity-50" />
           
           <div className="flex items-start gap-4 mb-8">
-            <span className="flex items-center justify-center w-8 h-8 rounded-full bg-black/5 dark:bg-white/5 text-foreground dark:text-white text-[13px] font-bold border border-black/5 dark:border-white/5 shrink-0 mt-0.5">
+            <span className="flex items-center justify-center w-8 h-8 rounded-full bg-black/5 dark:bg-white/5 text-black dark:text-white text-[13px] font-bold border border-black/5 dark:border-white/5 shrink-0 mt-0.5">
               {questionIndex + 1}
             </span>
-            <h3 className="text-[17px] font-medium text-foreground dark:text-[#F2F2F7] leading-relaxed tracking-wide">
+            <h3 className="text-[17px] font-medium text-black dark:text-[#F2F2F7] leading-relaxed tracking-wide">
               {q.question}
             </h3>
           </div>
@@ -1517,19 +1517,19 @@ function CenterColumn({
                 const isSelected = selectedOption === idx;
                 const isCorrectOption = Number(q.correctAnswer) === idx;
                 
-                let stateClass = "bg-black/5 dark:bg-[#2C2C2E]/40 border-transparent hover:bg-black/10 dark:hover:bg-[#3A3A3C]/60 text-foreground dark:text-white";
-                let letterClass = "bg-black/10 dark:bg-white/10 text-foreground dark:text-white";
+                let stateClass = "bg-black/5 dark:bg-[#2C2C2E]/40 border-transparent hover:bg-black/10 dark:hover:bg-[#3A3A3C]/60 text-black dark:text-white";
+                let letterClass = "bg-black/10 dark:bg-white/10 text-black dark:text-white";
                 
                 if (isAnswered) {
                   if (isCorrectOption) {
                     stateClass = "bg-[#34C759]/20 dark:bg-[#34C759]/10 border-transparent text-[#248A3D] dark:text-[#34C759]";
                     letterClass = "bg-[#34C759] text-white dark:text-black shadow-[0_0_15px_rgba(52,199,89,0.3)]";
                   } else if (isSelected && !isCorrectOption) {
-                    stateClass = "bg-black/5 dark:bg-[#2C2C2E]/40 border-transparent text-foreground dark:text-white opacity-60";
+                    stateClass = "bg-black/5 dark:bg-[#2C2C2E]/40 border-transparent text-black dark:text-white opacity-60";
                     letterClass = "bg-[#FF453A] text-white shadow-[0_0_15px_rgba(255,69,58,0.3)]";
                   } else {
-                    stateClass = "bg-black/5 dark:bg-[#2C2C2E]/20 border-transparent opacity-30 cursor-not-allowed text-foreground dark:text-white";
-                    letterClass = "bg-black/10 dark:bg-black/20 text-foreground dark:text-white";
+                    stateClass = "bg-black/5 dark:bg-[#2C2C2E]/20 border-transparent opacity-30 cursor-not-allowed text-black dark:text-white";
+                    letterClass = "bg-black/10 dark:bg-black/20 text-black dark:text-white";
                   }
                 }
 
