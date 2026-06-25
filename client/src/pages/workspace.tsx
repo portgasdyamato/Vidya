@@ -342,7 +342,7 @@ function MainNav({ activeTab, onTabChange }: { activeTab: string; onTabChange: (
                   </DropdownMenuItem>
                   <DropdownMenuItem 
                     onSelect={() => logoutMutation.mutate()}
-                    className="rounded-[16px] cursor-pointer py-2.5 px-3 text-[#FF453A] hover:bg-white/10 focus:bg-white/10 focus:text-[#FF453A] mt-1 transition-colors"
+                    className="rounded-[16px] cursor-pointer py-2.5 px-3 text-[#FF453A] hover:bg-red-500/10 focus:bg-red-500/10 focus:text-[#FF453A] mt-1 transition-colors"
                   >
                     <LogOut className="w-4 h-4 mr-2.5 opacity-70" />
                     <span className="font-medium text-[13px]">Log Out</span>
@@ -620,7 +620,7 @@ function NotebooksView({ onSelectNotebook }: { onSelectNotebook: (id: string) =>
                           Edit Name
                         </DropdownMenuItem>
                         <DropdownMenuItem 
-                          className="text-red-400 focus:text-red-300 focus:bg-red-400/10 py-2"
+                          className="text-red-500 dark:text-red-400 focus:text-red-600 dark:focus:text-red-300 focus:bg-red-500/10 dark:focus:bg-red-400/10 py-2"
                           onClick={(e) => { e.stopPropagation(); setDeletingNotebookId(String(notebook.id)); }}
                         >
                           <Trash2 className="w-4 h-4 mr-2" /> Delete Notebook
@@ -856,7 +856,7 @@ function SessionsPanel({
                               </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
-                              <DropdownMenuItem onClick={(e) => { e.stopPropagation(); handleDelete(session.id, e); }} className="text-destructive">
+                              <DropdownMenuItem onClick={(e) => { e.stopPropagation(); handleDelete(session.id, e); }} className="text-red-500 dark:text-red-400 focus:text-red-600 dark:focus:text-red-300 focus:bg-red-500/10 dark:focus:bg-red-400/10">
                                 <Trash2 className="h-4 w-4 mr-2" /> Delete
                               </DropdownMenuItem>
                             </DropdownMenuContent>
