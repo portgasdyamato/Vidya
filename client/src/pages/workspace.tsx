@@ -1886,7 +1886,7 @@ function CenterColumn({
                   
                   <div className="flex items-center justify-between">
                     <span className="text-[11px] font-bold tracking-widest text-white uppercase">{label}</span>
-                    <div className="w-9 h-9 rounded-full bg-black flex items-center justify-center transition-colors shadow-md group-hover:brightness-110 text-white">
+                    <div className="w-9 h-9 rounded-full bg-white/20 dark:bg-black flex items-center justify-center transition-colors shadow-md group-hover:brightness-110 text-white border border-white/20 dark:border-transparent">
                       {icon}
                     </div>
                   </div>
@@ -1916,7 +1916,7 @@ function CenterColumn({
                   <div>
                      <div className="flex items-center justify-between mb-8 relative z-10">
                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-full bg-black flex items-center justify-center shadow-md">
+                          <div className="w-10 h-10 rounded-full bg-white/20 dark:bg-black flex items-center justify-center shadow-md border border-white/20 dark:border-transparent">
                              <Layers className="w-5 h-5 text-white" />
                           </div>
                           <div>
@@ -2479,7 +2479,7 @@ function Dashboard({
               <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
               
               <div 
-                className="w-12 h-12 rounded-xl flex items-center justify-center mb-6 text-white bg-black border border-white/10"
+                className="w-12 h-12 rounded-xl flex items-center justify-center mb-6 text-white bg-white/20 dark:bg-black border border-white/20 dark:border-white/10"
                 style={{ 
                   boxShadow: `0 8px 20px -4px rgba(0,0,0,0.5), inset 0 2px 4px rgba(255,255,255,0.1)`
                 }}
