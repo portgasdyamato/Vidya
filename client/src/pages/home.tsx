@@ -49,9 +49,10 @@ export default function Home() {
         <div className="flex items-center gap-6">
           <button 
             onClick={toggle} 
-            className="p-2 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors text-white hover:text-white"
+            className="glass-button w-10 h-10 p-0 rounded-xl flex items-center justify-center text-white"
             aria-label="Toggle theme"
-          >  {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+          >
+            {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
           </button>
           {!user ? (
             <Link href="/login">
