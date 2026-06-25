@@ -34,7 +34,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // For demo purposes, using a default user ID
       // In a real app, this would come from authentication
-      const userId = "default-user";
+      const userId = (req.user as any)?.id || "default-user";
       const items = await storage.getUserContentItems(userId);
       // Strip large base64 data URIs from the list
       const cleanItems = items.map(item => {
@@ -53,7 +53,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get user notebooks
   app.get("/api/notebooks", async (req, res) => {
     try {
-      const userId = defaultUserId || "default-user";
+      const userId = (req.user as any)?.id || "default-user";
       const notebooks = await storage.getNotebooksByUserId(userId);
       res.json(notebooks);
     } catch (error: any) {
@@ -66,7 +66,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { name } = req.body;
       if (!name) return res.status(400).json({ message: "Name is required" });
-      const userId = defaultUserId || "default-user";
+      const userId = (req.user as any)?.id || "default-user";
       const notebook = await storage.createNotebook({ name, userId });
       res.json(notebook);
     } catch (error: any) {
@@ -120,7 +120,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Create content item
       const contentItem = await storage.createContentItem({
-        userId: defaultUserId || "default-user", // In real app, get from auth
+        userId: (req.user as any)?.id || "default-user", // In real app, get from auth
         notebookId: notebookId || null,
         title: title || req.file.originalname,
         type: "document",
@@ -156,7 +156,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const contentItem = await storage.createContentItem({
-        userId: defaultUserId || "default-user",
+        userId: (req.user as any)?.id || "default-user",
         notebookId: notebookId || null,
         title: title || req.file.originalname,
         type: "image",
@@ -214,7 +214,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const contentItem = await storage.createContentItem({
-        userId: defaultUserId,
+        userId: (req.user as any)?.id || "default-user",
         notebookId: notebookId || null,
         title: title || "Video Content",
         type: "video",
@@ -245,7 +245,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const parsedOptions = processingOptionsSchema.parse(JSON.parse(processingOptions || "{}"));
 
       const contentItem = await storage.createContentItem({
-        userId: defaultUserId || "default-user",
+        userId: (req.user as any)?.id || "default-user",
         notebookId: notebookId || null,
         title: title || req.file.originalname,
         type: "document", // Store as document type but process as audio

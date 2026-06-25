@@ -313,8 +313,8 @@ function MainNav({ activeTab, onTabChange }: { activeTab: string; onTabChange: (
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="rounded-full h-11 w-11 p-0 relative hover:scale-105 transition-transform border border-white/10 shadow-lg group">
-                <div className="h-2.5 w-2.5 rounded-full bg-[#30D158] absolute bottom-0 right-0 border-2 border-black z-10 shadow-[0_0_8px_#30D158]" />
+              <Button variant="ghost" className="rounded-full h-11 w-11 p-0 relative hover:scale-105 transition-transform border border-white/10 group">
+                <div className="h-2.5 w-2.5 rounded-full bg-[#30D158] absolute bottom-0 right-0 z-10" />
                 <div className="h-full w-full rounded-full bg-gradient-to-br from-indigo-500 to-blue-600 flex items-center justify-center text-[11px] text-white font-bold overflow-hidden">
                   {user?.photo ? (
                     <img src={user.photo} alt={user.name} className="w-full h-full object-cover" />
@@ -2495,7 +2495,7 @@ function Dashboard({
         <section>
           <div className="flex items-center justify-between mb-8">
             <h2 className="text-2xl font-bold text-white tracking-tight font-serif">Recent Sources</h2>
-            <Button variant="ghost" size="sm" className="text-white hover:text-white hover:bg-white/10 rounded-full px-4">
+            <Button onClick={onViewLibrary} variant="ghost" size="sm" className="text-white hover:text-white hover:bg-white/10 rounded-full px-4">
               View Library
             </Button>
           </div>

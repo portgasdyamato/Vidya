@@ -4,10 +4,10 @@ import { Network } from 'lucide-react';
 
 const DEPTH = [
   { bgTop: 'rgba(255, 255, 255, 0.15)', bgBot: 'rgba(255, 255, 255, 0.02)', border: 'rgba(255, 255, 255, 0.25)', text: '#ffffff', shadow: 'rgba(255, 255, 255, 0.2)' }, // Root
-  { bgTop: 'rgba(255, 255, 255, 0.1)', bgBot: 'rgba(255, 255, 255, 0.01)', border: 'rgba(255, 255, 255, 0.15)', text: '#e2e8f0', shadow: 'rgba(255, 255, 255, 0.1)' }, // L1
-  { bgTop: 'rgba(255, 255, 255, 0.08)', bgBot: 'rgba(255, 255, 255, 0.01)', border: 'rgba(255, 255, 255, 0.12)', text: '#cbd5e1', shadow: 'rgba(255, 255, 255, 0.08)' }, // L2
-  { bgTop: 'rgba(255, 255, 255, 0.06)', bgBot: 'rgba(255, 255, 255, 0.01)', border: 'rgba(255, 255, 255, 0.1)', text: '#94a3b8', shadow: 'rgba(255, 255, 255, 0.05)' }, // L3
-  { bgTop: 'rgba(255, 255, 255, 0.04)', bgBot: 'rgba(255, 255, 255, 0.01)', border: 'rgba(255, 255, 255, 0.08)', text: '#64748b', shadow: 'rgba(255, 255, 255, 0.03)' }, // L4
+  { bgTop: 'rgba(255, 255, 255, 0.1)', bgBot: 'rgba(255, 255, 255, 0.01)', border: 'rgba(255, 255, 255, 0.15)', text: '#ffffff', shadow: 'rgba(255, 255, 255, 0.1)' }, // L1
+  { bgTop: 'rgba(255, 255, 255, 0.08)', bgBot: 'rgba(255, 255, 255, 0.01)', border: 'rgba(255, 255, 255, 0.12)', text: '#ffffff', shadow: 'rgba(255, 255, 255, 0.08)' }, // L2
+  { bgTop: 'rgba(255, 255, 255, 0.06)', bgBot: 'rgba(255, 255, 255, 0.01)', border: 'rgba(255, 255, 255, 0.1)', text: '#ffffff', shadow: 'rgba(255, 255, 255, 0.05)' }, // L3
+  { bgTop: 'rgba(255, 255, 255, 0.04)', bgBot: 'rgba(255, 255, 255, 0.01)', border: 'rgba(255, 255, 255, 0.08)', text: '#ffffff', shadow: 'rgba(255, 255, 255, 0.03)' }, // L4
 ];
 
 const dc = (d: number) => DEPTH[Math.min(d, DEPTH.length - 1)];
