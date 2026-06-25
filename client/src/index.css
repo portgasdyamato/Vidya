@@ -80,7 +80,7 @@
   .glass-card::before {
     content: '';
     @apply absolute inset-0 pointer-events-none rounded-[inherit];
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0) 40%, rgba(255, 255, 255, 0) 100%);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, transparent 35%);
   }
 
   .glass-button {
