@@ -201,7 +201,7 @@ export default function Home() {
       {/* Simplified Footer */}
       <footer className="w-full max-w-6xl flex justify-center py-8 opacity-40 hover:opacity-100 transition-opacity">
         <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-white">
-          Powered by Project Vidya AI 2026 &bull; Designed by Sakshi Agrahari
+          Powered by Project Vidya AI 2026 &bull; Built by Sakshi Agrahari
         </p>
       </footer>
       </div>

@@ -72,15 +72,18 @@
     @apply relative overflow-hidden;
     background: var(--glass-bg);
     border: 1px solid var(--glass-border);
-    box-shadow: var(--glass-shadow);
+    border-top-color: rgba(255, 255, 255, 0.3);
+    border-left-color: rgba(255, 255, 255, 0.2);
+    box-shadow: var(--glass-shadow), inset 0 1px 1px rgba(255, 255, 255, 0.4), inset 0 0 20px rgba(255, 255, 255, 0.05);
     backdrop-filter: blur(24px);
     -webkit-backdrop-filter: blur(24px);
   }
 
   .glass-card::before {
     content: '';
-    @apply absolute inset-0 -z-10 pointer-events-none rounded-[inherit];
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.04) 0%, transparent 50%);
+    @apply absolute inset-0 pointer-events-none rounded-[inherit];
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0.05) 25%, transparent 60%);
+    z-index: 10;
   }
 
   .glass-button {
