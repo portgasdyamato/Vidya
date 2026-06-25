@@ -443,7 +443,13 @@ ${text}`;
     const parseQuizResponse = (jsonText: string) => {
       try {
         const parsed = JSON.parse(jsonText.replace(/```json\n?|\n?```/g, ''));
-        return parsed.questions || [];
+        let q = parsed.questions || parsed.quiz || parsed.quizData;
+        if (!q && Array.isArray(parsed)) q = parsed;
+        if (!q && typeof parsed === 'object') {
+           const firstValue = Object.values(parsed)[0];
+           if (Array.isArray(firstValue)) q = firstValue;
+        }
+        return Array.isArray(q) && q.length > 0 ? q : null;
       } catch {
         return null;
       }
@@ -504,7 +510,13 @@ Content: ${text.substring(0, 15000)}`;
     const parseQuizResponse = (jsonText: string) => {
       try {
         const parsed = JSON.parse(jsonText.replace(/```json\n?|\n?```/g, ''));
-        return Array.isArray(parsed.questions) ? parsed.questions : null;
+        let q = parsed.questions || parsed.quiz || parsed.quizData;
+        if (!q && Array.isArray(parsed)) q = parsed;
+        if (!q && typeof parsed === 'object') {
+           const firstValue = Object.values(parsed)[0];
+           if (Array.isArray(firstValue)) q = firstValue;
+        }
+        return Array.isArray(q) && q.length > 0 ? q : null;
       } catch { return null; }
     };
 
