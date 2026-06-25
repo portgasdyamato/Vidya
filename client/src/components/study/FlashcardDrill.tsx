@@ -158,8 +158,8 @@ export default function FlashcardDrill({ flashcards, contentId }: FlashcardDrill
       {/* Progress & Stats Header */}
       <div className="flex items-center justify-between mb-2">
         <div>
-          <h2 className="text-xl font-bold text-white tracking-tight">Flashcard Drill</h2>
-          <p className="text-sm text-white font-medium">Card {currentIndex + 1} of {total}</p>
+          <h2 className="text-xl font-bold text-black dark:text-white tracking-tight">Flashcard Drill</h2>
+          <p className="text-sm text-black/70 dark:text-white font-medium">Card {currentIndex + 1} of {total}</p>
         </div>
         <div className="flex items-center gap-3 text-sm font-bold">
           <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/20 text-white backdrop-blur-md shadow-[inset_0_1px_4px_rgba(255,255,255,0.8),0_4px_12px_rgba(0,0,0,0.05)] hover:bg-white/20 transition-all">
@@ -201,16 +201,16 @@ export default function FlashcardDrill({ flashcards, contentId }: FlashcardDrill
         >
           {/* Front Face */}
           <div
-            className="relative rounded-3xl border border-white/8 bg-gradient-to-br from-white/5 to-transparent p-10 min-h-[300px] flex flex-col justify-between overflow-hidden"
+            className="relative rounded-3xl border border-black/10 dark:border-white/8 bg-white/40 dark:bg-transparent dark:bg-gradient-to-br from-white/5 to-transparent backdrop-blur-xl p-10 min-h-[300px] flex flex-col justify-between overflow-hidden shadow-[0_8px_32px_rgba(0,0,0,0.05)] dark:shadow-none"
             style={{ backfaceVisibility: "hidden" }}
           >
             <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-blue-500/3 pointer-events-none" />
             <div className="absolute top-0 right-0 w-64 h-64 bg-primary/3 blur-[80px] rounded-full pointer-events-none" />
 
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/8">
-                <BookOpen className="w-3 h-3 text-white" />
-                <span className="text-[10px] font-bold text-white uppercase tracking-widest">Question</span>
+              <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/8">
+                <BookOpen className="w-3 h-3 text-black dark:text-white" />
+                <span className="text-[10px] font-bold text-black dark:text-white uppercase tracking-widest">Question</span>
               </div>
               {cardResult ? (
                 <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 border border-white/20 text-white backdrop-blur-md shadow-[inset_0_1px_4px_rgba(255,255,255,0.8),0_4px_12px_rgba(0,0,0,0.05)] text-[10px] font-bold uppercase tracking-widest">
@@ -220,7 +220,7 @@ export default function FlashcardDrill({ flashcards, contentId }: FlashcardDrill
                   {cardResult}
                 </div>
               ) : (
-                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] font-bold">
+                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black/5 dark:bg-primary/10 border border-black/10 dark:border-primary/20 text-black dark:text-primary text-[10px] font-bold">
                   <Eye className="w-3 h-3" />
                   Click to reveal
                 </div>
@@ -228,12 +228,12 @@ export default function FlashcardDrill({ flashcards, contentId }: FlashcardDrill
             </div>
 
             <div className="flex-1 flex items-center justify-center py-8 relative z-10">
-              <p className="text-xl md:text-2xl font-bold text-white text-center leading-relaxed font-serif">
+              <p className="text-xl md:text-2xl font-bold text-black dark:text-white text-center leading-relaxed font-serif">
                 {current.question}
               </p>
             </div>
 
-            <div className="flex items-center justify-center gap-2 text-white text-[10px] font-bold uppercase tracking-widest">
+            <div className="flex items-center justify-center gap-2 text-black/60 dark:text-white text-[10px] font-bold uppercase tracking-widest">
               <Zap className="w-3 h-3" />
               Tap to flip
             </div>
@@ -241,26 +241,26 @@ export default function FlashcardDrill({ flashcards, contentId }: FlashcardDrill
 
           {/* Back Face */}
           <div
-            className="absolute inset-0 rounded-3xl border border-white/8 bg-gradient-to-br from-white/5 to-transparent p-10 flex flex-col justify-between overflow-hidden"
+            className="absolute inset-0 rounded-3xl border border-black/10 dark:border-white/8 bg-white/40 dark:bg-transparent dark:bg-gradient-to-br from-white/5 to-transparent backdrop-blur-xl p-10 flex flex-col justify-between overflow-hidden shadow-[0_8px_32px_rgba(0,0,0,0.05)] dark:shadow-none"
             style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}
           >
             <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-blue-500/3 pointer-events-none" />
             <div className="absolute top-0 right-0 w-64 h-64 bg-primary/3 blur-[80px] rounded-full pointer-events-none" />
 
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/8 w-fit relative z-10">
-                <Target className="w-3 h-3 text-white" />
-                <span className="text-[10px] font-bold text-white uppercase tracking-widest">Answer</span>
+              <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/8 w-fit relative z-10">
+                <Target className="w-3 h-3 text-black dark:text-white" />
+                <span className="text-[10px] font-bold text-black dark:text-white uppercase tracking-widest">Answer</span>
               </div>
             </div>
 
             <div className="flex-1 flex items-center justify-center py-8 relative z-10 overflow-y-auto">
-              <p className="text-xl md:text-2xl font-bold text-white text-center leading-relaxed font-serif">
+              <p className="text-xl md:text-2xl font-bold text-black dark:text-white text-center leading-relaxed font-serif">
                 {current.answer}
               </p>
             </div>
 
-            <div className="flex items-center justify-center gap-2 text-white text-[10px] font-bold uppercase tracking-widest">
+            <div className="flex items-center justify-center gap-2 text-black/60 dark:text-white text-[10px] font-bold uppercase tracking-widest">
               <RotateCcw className="w-3 h-3" />
               Tap to flip back
             </div>
@@ -275,7 +275,7 @@ export default function FlashcardDrill({ flashcards, contentId }: FlashcardDrill
           size="icon"
           onClick={goPrev}
           disabled={currentIndex === 0}
-          className="w-12 h-12 rounded-2xl border border-white/8 hover:bg-white/5 text-white disabled:opacity-30"
+          className="w-12 h-12 rounded-2xl border border-black/10 dark:border-white/8 hover:bg-black/5 dark:hover:bg-white/5 text-black dark:text-white disabled:opacity-30"
         >
           <ChevronLeft className="w-5 h-5" />
         </Button>
@@ -305,7 +305,7 @@ export default function FlashcardDrill({ flashcards, contentId }: FlashcardDrill
           <div className="flex-1 flex gap-3">
             <Button
               onClick={() => setIsFlipped(true)}
-              className="flex-1 h-12 rounded-2xl bg-primary/10 hover:bg-primary/20 border border-primary/20 text-primary font-bold gap-2"
+              className="flex-1 h-12 rounded-2xl bg-black/5 dark:bg-primary/10 hover:bg-black/10 dark:hover:bg-primary/20 border border-black/10 dark:border-primary/20 text-black dark:text-primary font-bold gap-2"
             >
               <Eye className="w-4 h-4" />
               Reveal Answer
@@ -313,7 +313,7 @@ export default function FlashcardDrill({ flashcards, contentId }: FlashcardDrill
             <Button
               onClick={() => goNext()}
               variant="ghost"
-              className="h-12 w-12 rounded-2xl border border-white/8 hover:bg-white/5 text-white"
+              className="h-12 w-12 rounded-2xl border border-black/10 dark:border-white/8 hover:bg-black/5 dark:hover:bg-white/5 text-black dark:text-white"
             >
               <ChevronRight className="w-5 h-5" />
             </Button>
