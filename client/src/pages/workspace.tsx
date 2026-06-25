@@ -1506,7 +1506,7 @@ function CenterColumn({
             <span className="flex items-center justify-center w-8 h-8 rounded-full bg-white/10 text-white text-[13px] font-bold border border-white/20 shrink-0 mt-0.5 shadow-inner">
               {questionIndex + 1}
             </span>
-            <h3 className="text-[17px] font-medium text-white leading-relaxed tracking-wide shadow-sm">
+            <h3 className="text-[17px] font-medium text-white leading-relaxed tracking-wide">
               {q.question}
             </h3>
           </div>
